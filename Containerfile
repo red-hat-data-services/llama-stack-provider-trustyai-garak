@@ -12,7 +12,7 @@ ARG BUILD_TYPE=gpu
 RUN if [ "$BUILD_TYPE" = "cpu" ]; then \
         pip install --index-url https://download.pytorch.org/whl/cpu torch>=2.6.0; \
     fi
-
+RUN ls
 RUN pip install --no-cache-dir -e ".[remote]"
 
 # Set XDG environment variables to use /tmp (always writable) for garak to write to

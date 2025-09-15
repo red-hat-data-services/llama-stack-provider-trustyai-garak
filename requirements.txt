@@ -1778,6 +1778,7 @@ packaging==25.0 \
     #   langchain-core
     #   langsmith
     #   replicate
+    #   setuptools-scm
     #   transformers
 pandas==2.3.2 \
     --hash=sha256:0064187b80a5be6f2f9c9d6bdde29372468751dfa89f4211a3c5871854cfbf7a \
@@ -2885,9 +2886,14 @@ setuptools==80.9.0 \
     # via
     #   grpcio-tools
     #   nvidia-riva-client
+    #   setuptools-scm
     #   torch
     #   triton
     #   zope-interface
+setuptools-scm==9.2.0 \
+    --hash=sha256:6662c9b9497b6c9bf13bead9d7a9084756f68238302c5ed089fb4dbd29d102d7 \
+    --hash=sha256:c551ef54e2270727ee17067881c9687ca2aedf179fa5b8f3fab9e8d73bdc421f
+    # via llama-stack-provider-trustyai-garak (pyproject.toml)
 shortuuid==1.0.13 \
     --hash=sha256:3bb9cf07f606260584b1df46399c0b87dd84773e7b25912b7e391e30797c5e72 \
     --hash=sha256:a482a497300b49b4953e15108a7913244e1bb0d41f9d332f5e9925dba33a3c5a

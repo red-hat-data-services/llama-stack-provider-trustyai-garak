@@ -8,6 +8,8 @@ COPY . .
 # Build argument to specify CPU or GPU build
 ARG BUILD_TYPE=gpu
 
+RUN dnf install -y cargo && dnf clean all
+
 # Conditionally install CPU-specific torch
 RUN if [ "$BUILD_TYPE" = "cpu" ]; then \
         pip install --index-url https://download.pytorch.org/whl/cpu torch>=2.6.0; \

@@ -1,0 +1,54 @@
+---
+lockfileVersion: 1
+lockfileVendor: redhat
+arches:
+- arch: aarch64
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/c/cargo-1.84.1-1.el9.aarch64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 7744425
+    checksum: sha256:5db626d49748f31fb02916c24fa1a7e5759ce7b905ac3e781d42079fba8fa1c4
+    name: cargo
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-1.84.1-1.el9.aarch64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 26093725
+    checksum: sha256:5be9185a7d684022bc0686049c22ef901c4df6dce2822bdec16a1a47c46b6861
+    name: rust
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-std-static-1.84.1-1.el9.aarch64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 39259196
+    checksum: sha256:5889bced81144c4ea201085e5bfd040300c56048e5d7987e9eb69d4d252f87bf
+    name: rust-std-static
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
+  source: []
+  module_metadata: []
+- arch: x86_64
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/c/cargo-1.84.1-1.el9.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 8292467
+    checksum: sha256:7dd011cd79a635654ade4e3186c5f7545d692de81157d1ce1d42656eaa6993b2
+    name: cargo
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-1.84.1-1.el9.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 28050444
+    checksum: sha256:9ba3c53fd811af2f294e31360d75e33e4cb89893130c7b3fe0c6191e20a09f3e
+    name: rust
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-std-static-1.84.1-1.el9.x86_64.rpm
+    repoid: ubi-9-appstream-rpms
+    size: 41211472
+    checksum: sha256:73bb90884432e2b43758f1043f107a570b5d54b38f17d5d0af51bac103ceb4f5
+    name: rust-std-static
+    evr: 1.84.1-1.el9
+    sourcerpm: rust-1.84.1-1.el9.src.rpm
+  source: []
+  module_metadata: []

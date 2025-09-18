@@ -25,13 +25,7 @@ arches:
     name: rust-std-static
     evr: 1.84.1-1.el9
     sourcerpm: rust-1.84.1-1.el9.src.rpm
-  source:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/r/rust-1.84.1-1.el9.src.rpm
-    repoid: ubi-9-for-aarch64-appstream-source-rpms
-    size: 356648553
-    checksum: sha256:0469e86c9783d94d1702b574e25d5ff4270ade22d36cbe97198e76d16667d4fe
-    name: rust
-    evr: 1.84.1-1.el9
+  source: []
   module_metadata: []
 - arch: x86_64
   packages:
@@ -56,11 +50,5 @@ arches:
     name: rust-std-static
     evr: 1.84.1-1.el9
     sourcerpm: rust-1.84.1-1.el9.src.rpm
-  source:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/r/rust-1.84.1-1.el9.src.rpm
-    repoid: ubi-9-for-x86_64-appstream-source-rpms
-    size: 356648553
-    checksum: sha256:0469e86c9783d94d1702b574e25d5ff4270ade22d36cbe97198e76d16667d4fe
-    name: rust
-    evr: 1.84.1-1.el9
+  source: []
   module_metadata: []

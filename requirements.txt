@@ -1325,6 +1325,20 @@ markupsafe==3.0.2 \
     --hash=sha256:f8b3d067f2e40fe93e1ccdd6b2e1d16c43140e76f02fb1319a05cf2b79d99430 \
     --hash=sha256:fcabf5ff6eea076f859677f5f0b6b5c1a51e70a376b0579e0eadef8db48c6b50
     # via jinja2
+maturin==0.13.7 \
+    --hash=sha256:0b6ac1219a809155057fd1f358f7ece03c3abd2e2991832ce5146825a9fa4160 \
+    --hash=sha256:3137876c338eb7e551ba44a609b5f02d02454d1b3a8677ad6bf2121c5a92b2b7 \
+    --hash=sha256:3c36f429adc3a8af8de9838399750742a86053f0031a953b48ee92932120dc0c \
+    --hash=sha256:424d53adc9684167cf89829275fe5072331a197de0ac08e7a893f9283c7df213 \
+    --hash=sha256:63586eb286866264ec62d29df6ab955360de6226128f67d14623ffe1a12d4963 \
+    --hash=sha256:794f58d3103449f8cd8ab5f36fd05c31b8d8de3643cd0e3720fd5dc3c328dd5c \
+    --hash=sha256:8c6225e7eba2885a0cd82a6cf898e74bb720796a5744e0450f3b1340d1ca97af \
+    --hash=sha256:a96f1b3ede71c0f76b8c7cfac18a9eec90174bdf434fa9aeff491be9a7ca5179 \
+    --hash=sha256:bb3a2830d64ae6a324571f694475b91111e827bc0ccc60a0c47f4fb596a46bd8 \
+    --hash=sha256:bc58b0266a4c124f9afd69a987ac324ff35c0d963b41073ed64a32f94c226d5a \
+    --hash=sha256:c0a77aa0c57f945649ca711c806203a1b6888ad49c2b8b85196ffdcf0421db77 \
+    --hash=sha256:f50d62aca567fdbbb929771794f3c5c78048ef0efa4af7d83ed472a8b8d26454
+    # via llama-stack-provider-trustyai-garak (pyproject.toml)
 mdurl==0.1.2 \
     --hash=sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8 \
     --hash=sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba
@@ -3154,9 +3168,7 @@ typing-extensions==4.15.0 \
     --hash=sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466 \
     --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
     # via
-    #   aiosignal
     #   aiosqlite
-    #   anyio
     #   avidtools
     #   fastapi
     #   huggingface-hub
@@ -3171,10 +3183,8 @@ typing-extensions==4.15.0 \
     #   opentelemetry-semantic-conventions
     #   pydantic
     #   pydantic-core
-    #   referencing
     #   replicate
     #   sqlalchemy
-    #   starlette
     #   torch
     #   typing-inspect
     #   typing-inspection

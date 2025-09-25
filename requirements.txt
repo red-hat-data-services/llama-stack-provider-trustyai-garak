@@ -1220,7 +1220,7 @@ langdetect==1.0.9 \
     --hash=sha256:7cbc0746252f19e76f77c0b1690aadf01963be835ef0cd4b56dddf2a8f1dfc2a \
     --hash=sha256:cbc1fef89f8d062739774bd51eda3da3274006b3661d199c2655f6b3f6d605a0
     # via garak
-langsmith==0.4.27 \
+langsmith==0.4.31 \
     --hash=sha256:23708e6478d1c74ac0e428bbc92df6704993e34305fb62a0c64d2fefc35bd67f \
     --hash=sha256:6e8bbc425797202952d4e849431e6276e7985b44536ec0582eb96eaf9129c393
     # via

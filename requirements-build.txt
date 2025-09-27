@@ -100,7 +100,7 @@ coherent-licensed==0.5.2 \
     --hash=sha256:d8071403ce742d3ac3592ddc4fb7057a46caffb415b928b4d52802e5f208416d \
     --hash=sha256:edccc5193ca2786f8fb3f0c7374637a143985f781f7eaa21aca3af2bd634b82f
     # via zipp
-cython==3.0.12 \
+cython==3.1.4 \
     --hash=sha256:0038c9bae46c459669390e53a1ec115f8096b2e4647ae007ff1bf4e6dee92806 \
     --hash=sha256:0faa5e39e5c8cdf6f9c3b1c3f24972826e45911e7f5b99cf99453fca5432f45e \
     --hash=sha256:120681093772bf3600caddb296a65b352a0d3556e962b9b147efcfb8e8c9801b \
@@ -166,7 +166,7 @@ cython==3.0.12 \
     --hash=sha256:feb86122a823937cc06e4c029d80ff69f082ebb0b959ab52a5af6cdd271c5dc3 \
     --hash=sha256:ff5c0b6a65b08117d0534941d404833d516dac422eee88c6b4fd55feb409a5ed
     # via numpy
-cython==3.1.3 \
+cython==3.1.4 \
     --hash=sha256:00264cafcc451dcefc01eaf29ed5ec150fb73af21d4d21105d97e9d829a53e99 \
     --hash=sha256:08ac646ff42781827f23b7a9b61669cdb92055f52724cd8cbe0e1defc56fce2e \
     --hash=sha256:097374fa1370e9967e48442a41a0acbebb94fe9d63976cad31eacd38424847bf \

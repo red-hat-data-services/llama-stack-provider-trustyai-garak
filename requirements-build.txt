@@ -395,7 +395,7 @@ meson-python==0.18.0 \
     # via
     #   numpy
     #   pandas
-meson==1.9.0 \
+meson==1.9.1 \
     --hash=sha256:45e51ddc41e37d961582d06e78c48e0f9039011587f3495c4d6b0781dad92357 \
     --hash=sha256:cd27277649b5ed50d19875031de516e270b22e890d9db65ed9af57d18ebc498d
     # via

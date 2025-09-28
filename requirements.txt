@@ -1262,7 +1262,7 @@ markdown2==2.5.4 \
     --hash=sha256:3c4b2934e677be7fec0e6f2de4410e116681f4ad50ec8e5ba7557be506d3f439 \
     --hash=sha256:a09873f0b3c23dbfae589b0080587df52ad75bb09a5fa6559147554736676889
     # via fschat
-markupsafe==3.0.2 \
+markupsafe==3.0.3 \
     --hash=sha256:0bff5e0ae4ef2e1ae4fdf2dfd5b76c75e5c2fa4132d05fc1b0dabcd20c7e28c4 \
     --hash=sha256:0f4ca02bea9a23221c0182836703cbf8930c5e9454bacce27e767509fa286a30 \
     --hash=sha256:1225beacc926f536dc82e45f8a4d68502949dc67eea90eab715dea3a21c1b5f0 \

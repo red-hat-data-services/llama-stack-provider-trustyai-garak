@@ -1465,7 +1465,7 @@ multidict==6.6.4 \
     # via
     #   aiohttp
     #   yarl
-multiprocess==0.70.16 \
+multiprocess==0.70.18 \
     --hash=sha256:0dfd078c306e08d46d7a8d06fb120313d87aa43af60d66da43ffff40b44d2f41 \
     --hash=sha256:161af703d4652a0e1410be6abccecde4a7ddffd19341be0a7011b94aeb171ac1 \
     --hash=sha256:37b55f71c07e2d741374998c043b9520b626a8dddc8b3129222ca4f1a06ef67a \

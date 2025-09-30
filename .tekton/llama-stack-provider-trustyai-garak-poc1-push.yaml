@@ -27,8 +27,14 @@ spec:
   - name: build-platforms
     value:
     - linux/x86_64
+    - linux-d160-m4xlarge/arm64
   - name: dockerfile
     value: Containerfile.konflux
+  - name: hermetic
+    value: true
+  - name: prefetch-input
+    value: |
+      {"type": "pip", "path": ".", "allow_binary": true}
   pipelineSpec:
     description: |
       This pipeline is ideal for building multi-arch container images from a Containerfile while maintaining trust after pipeline customization.

@@ -1179,7 +1179,7 @@ jsonschema-specifications==2025.9.1 \
     --hash=sha256:98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe \
     --hash=sha256:b540987f239e745613c7a9176f3edb72b832a4ac465cf02712288397832b5e8d
     # via jsonschema
-kfp==2.14.3 \
+kfp==2.14.4 \
     --hash=sha256:512c10d344b0efa0a18b342f86b56bb6ef0ccfb82f275ded51fdeb2a3ad4f199 \
     --hash=sha256:53683dc31793f36391d35d711060f60d006a8f51b92d2c7debce13af8ebeba3b
     # via

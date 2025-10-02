@@ -3152,7 +3152,7 @@ tqdm==4.67.1 \
     #   nltk
     #   openai
     #   transformers
-transformers==4.56.1 \
+transformers==4.56.2 \
     --hash=sha256:0d88b1089a563996fc5f2c34502f10516cad3ea1aa89f179f522b54c8311fe74 \
     --hash=sha256:1697af6addfb6ddbce9618b763f4b52d5a756f6da4899ffd1b4febf58b779248
     # via garak

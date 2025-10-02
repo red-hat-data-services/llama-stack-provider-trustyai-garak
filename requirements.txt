@@ -3045,7 +3045,7 @@ tiktoken==0.11.0 \
     #   garak
     #   litellm
     #   llama-stack
-tokenizers==0.22.0 \
+tokenizers==0.22.1 \
     --hash=sha256:1626cb186e143720c62c6c6b5371e62bbc10af60481388c0da89bc903f37ea0c \
     --hash=sha256:2e33b98525be8453f355927f3cab312c36cd3e44f4d7e9e97da2fa94d0a49dcb \
     --hash=sha256:4136e1558a9ef2e2f1de1555dcd573e1cbc4a320c1a06c4107a3d46dc8ac6e4b \

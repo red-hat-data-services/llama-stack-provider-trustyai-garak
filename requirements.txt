@@ -1504,7 +1504,7 @@ nh3==0.3.0 \
     --hash=sha256:ec6cfdd2e0399cb79ba4dcffb2332b94d9696c52272ff9d48a630c5dca5e325a \
     --hash=sha256:f416c35efee3e6a6c9ab7716d9e57aa0a49981be915963a82697952cba1353e1
     # via fschat
-nltk==3.9.1 \
+nltk==3.9.2 \
     --hash=sha256:4fa26829c5b00715afe3061398a8989dc643b92ce7dd93fb4585a70930d168a1 \
     --hash=sha256:87d127bd3de4bd89a4f81265e5fa59cb1b199b27440175370f7417d2bc7ae868
     # via garak

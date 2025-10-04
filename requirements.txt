@@ -3482,7 +3482,7 @@ zipp==3.23.0 \
     --hash=sha256:071652d6115ed432f5ce1d34c336c0adfd6a884660d1e9712a256d3d3bd4b14e \
     --hash=sha256:a07157588a12518c9d4034df3fbbee09c814741a33ff63c05fa29d26a2404166
     # via importlib-metadata
-zope-interface==8.0 \
+zope-interface==8.0.1 \
     --hash=sha256:07405019f635a93b318807cb2ec7b05a5ef30f67cf913d11eb2f156ddbcead0d \
     --hash=sha256:0caca2915522451e92c96c2aec404d2687e9c5cb856766940319b3973f62abb8 \
     --hash=sha256:160ba50022b342451baf516de3e3a2cd2d8c8dbac216803889a5eefa67083688 \

@@ -1234,7 +1234,7 @@ litellm==1.77.0 \
     --hash=sha256:40c3ad4b4ef8eab109e04e71b62b9eab659d7af763d9e62d1a3a770ca25468ac \
     --hash=sha256:7025a99c88e54209a64c05824ec1fab968343be1ed4be3573afacc92160d561c
     # via garak
-llama-api-client==0.3.0 \
+llama-api-client==0.5.0 \
     --hash=sha256:0b823b4541b0522de31124bd09a7ba7358598aa3fb17e20ad08cbdc78f4a8408 \
     --hash=sha256:4355379f5c870aaaacc1af6ae3f0115e74bd3ee560531c6d48b483d41a281a43
     # via llama-stack

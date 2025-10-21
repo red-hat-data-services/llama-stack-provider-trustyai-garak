@@ -859,7 +859,7 @@ grpc-google-iam-v1==0.14.2 \
     --hash=sha256:a3171468459770907926d56a440b2bb643eec1d7ba215f48f3ecece42b4d8351 \
     --hash=sha256:b3e1fc387a1a329e41672197d0ace9de22c78dd7d215048c4c78712073f7bd20
     # via google-cloud-translate
-grpcio==1.74.0 \
+grpcio==1.76.0 \
     --hash=sha256:0f87bddd6e27fc776aacf7ebfec367b6d49cad0455123951e4488ea99d9b9b8f \
     --hash=sha256:136b53c91ac1d02c8c24201bfdeb56f8b3ac3278668cbb8e0ba49c88069e1bdc \
     --hash=sha256:1733969040989f7acc3d94c22f55b4a9501a30f6aaacdbccfaba0a3ffb255ab7 \

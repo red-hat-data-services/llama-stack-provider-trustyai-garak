@@ -921,7 +921,7 @@ grpcio-status==1.74.0 \
     --hash=sha256:52cdbd759a6760fc8f668098a03f208f493dd5c76bf8e02598bbbaf1f6fc2876 \
     --hash=sha256:c58c1b24aa454e30f1fc6a7e0dbbc194c54a408143971a94b5f4e40bb5831432
     # via google-api-core
-grpcio-tools==1.74.0 \
+grpcio-tools==1.76.0 \
     --hash=sha256:03787990b56f5c3b3f72c722a7e74fbc5a3b769bbc31ad426e2c6f6a28a9d7c8 \
     --hash=sha256:051ce925b0b99ae2daf61b3cba19962b8655cc2a72758ce4081b89272206f5a3 \
     --hash=sha256:0cab5a2c6ae75b555fee8a1a9a9b575205171e1de392fe2d4139a29e67d8f5bb \

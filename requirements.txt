@@ -1961,7 +1961,7 @@ prompt-toolkit==3.0.52 \
     #   fschat
     #   llama-stack
     #   llama-stack-client
-propcache==0.3.2 \
+propcache==0.4.1 \
     --hash=sha256:035e631be25d6975ed87ab23153db6a73426a48db688070d925aa27e996fe93c \
     --hash=sha256:03c89c1b14a5452cf15403e291c0ccd7751d5b9736ecb2c5bab977ad6c5bcd81 \
     --hash=sha256:06766d8f34733416e2e34f46fea488ad5d60726bb9481d3cddf89a6fa2d9603f \

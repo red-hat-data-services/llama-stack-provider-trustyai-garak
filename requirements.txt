@@ -2398,7 +2398,7 @@ pyyaml==6.0.2 \
     #   pyaml
     #   transformers
     #   wavedrom
-rapidfuzz==3.14.1 \
+rapidfuzz==3.14.3 \
     --hash=sha256:01eab10ec90912d7d28b3f08f6c91adbaf93458a53f849ff70776ecd70dd7a7a \
     --hash=sha256:0591df2e856ad583644b40a2b99fb522f93543c65e64b771241dda6d1cfdc96b \
     --hash=sha256:07a9fad3247e68798424bdc116c1094e88ecfabc17b29edf42a777520347648e \

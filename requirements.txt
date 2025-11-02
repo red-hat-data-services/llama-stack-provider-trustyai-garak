@@ -2091,7 +2091,7 @@ protobuf==6.31.1 \
     #   kfp-pipeline-spec
     #   opentelemetry-proto
     #   proto-plus
-psutil==7.0.0 \
+psutil==7.1.3 \
     --hash=sha256:101d71dc322e3cffd7cea0650b09b3d08b8e7c4109dd6809fe452dfd00e58b25 \
     --hash=sha256:1e744154a6580bc968a0195fd25e80432d3afec619daf145b9e5ba16cc1d688e \
     --hash=sha256:1fcee592b4c6f146991ca55919ea3d1f8926497a713ed7faaf8225e174581e91 \

@@ -2632,7 +2632,7 @@ requests-toolbelt==1.0.0 \
     #   kfp
     #   langsmith
     #   nemollm
-rich==14.1.0 \
+rich==14.2.0 \
     --hash=sha256:536f5f1785986d6dbdea3c75205c473f970777b4a0d6c6dd1b696aa05a3fa04f \
     --hash=sha256:e497a48b844b0320d45007cdebfeaeed8db2a4f4bcf49f15e455cfc4af11eaa8
     # via

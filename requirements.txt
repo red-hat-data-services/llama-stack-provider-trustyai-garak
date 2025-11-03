@@ -3022,7 +3022,7 @@ termcolor==3.1.0 \
     #   fire
     #   llama-stack
     #   llama-stack-client
-tiktoken==0.11.0 \
+tiktoken==0.12.0 \
     --hash=sha256:10331d08b5ecf7a780b4fe4d0281328b23ab22cdb4ff65e68d56caeda9940ecc \
     --hash=sha256:13220f12c9e82e399377e768640ddfe28bea962739cc3a869cad98f42c419a89 \
     --hash=sha256:195d84bec46169af3b1349a1495c151d37a0ff4cba73fd08282736be7f92cc6c \

@@ -2995,7 +2995,7 @@ starlette==0.47.3 \
     # via
     #   fastapi
     #   llama-stack
-stdlibs==2025.5.10 \
+stdlibs==2025.10.28 \
     --hash=sha256:25178d9c2b45d2680292413bf59a20293355d45056ec92d32ea6ed349ce9e2a1 \
     --hash=sha256:75d55a0b7b070ec44bd7dae5bc1ee1a6cea742122fb4253313cb4ab354f7f0c5
     # via garak

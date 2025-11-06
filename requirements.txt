@@ -498,7 +498,7 @@ fastapi==0.116.1 \
     # via
     #   fschat
     #   llama-stack
-fastavro==1.12.0 \
+fastavro==1.12.1 \
     --hash=sha256:07ff9e6c6e8739203ccced3205646fdac6141c2efc83f4dffabf5f7d0176646d \
     --hash=sha256:10c586e9e3bab34307f8e3227a2988b6e8ac49bff8f7b56635cf4928a153f464 \
     --hash=sha256:1148263931f6965e1942cf670f146148ca95b021ae7b7e1f98bf179f1c26cc58 \

@@ -2498,7 +2498,7 @@ referencing==0.36.2 \
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2025.9.1 \
+regex==2025.11.3 \
     --hash=sha256:09a41dc039e1c97d3c2ed3e26523f748e58c4de3ea7a31f95e1cf9ff973fff5a \
     --hash=sha256:0aeb0fe80331059c152a002142699a89bf3e44352aee28261315df0c9874759b \
     --hash=sha256:0fa9a7477288717f42dbd02ff5d13057549e9a8cdb81f224c313154cc10bab52 \

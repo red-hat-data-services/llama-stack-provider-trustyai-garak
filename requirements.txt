@@ -3501,7 +3501,7 @@ zope-interface==8.0 \
     --hash=sha256:ec1da7b9156ae000cea2d19bad83ddb5c50252f9d7b186da276d17768c67a3cb \
     --hash=sha256:ee9ecad04269c2da4b1be403a47993981531ffd557064b870eab4094730e5062
     # via datetime
-zstandard==0.24.0 \
+zstandard==0.25.0 \
     --hash=sha256:0101f835da7de08375f380192ff75135527e46e3f79bef224e3c49cb640fef6a \
     --hash=sha256:010302face38c9a909b8934e3bf6038266d6afc69523f3efa023c5cb5d38271b \
     --hash=sha256:05d27c953f2e0a3ecc8edbe91d6827736acc4c04d0479672e0400ccdb23d818c \

@@ -1063,7 +1063,7 @@ jinja2==3.1.6 \
     #   litellm
     #   llama-stack
     #   torch
-jiter==0.10.0 \
+jiter==0.12.0 \
     --hash=sha256:023aa0204126fe5b87ccbcd75c8a0d0261b9abdbbf46d55e7ae9f8e22424eeb8 \
     --hash=sha256:03997d2f37f6b67d2f5c475da4412be584e1cec273c1cfc03d642c46db43f8cf \
     --hash=sha256:07a7142c38aacc85194391108dc91b5b57093c978a9932bd86a36862759d9500 \

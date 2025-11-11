@@ -531,7 +531,7 @@ pathspec==0.12.1 \
     # via
     #   hatchling
     #   scikit-build-core
-pdm-backend==2.4.5 \
+pdm-backend==2.4.6 \
     --hash=sha256:56c019c440308adad5d057c08cbb777e65f43b991a3b0920749781258972fe5b \
     --hash=sha256:7f6c780b529baaf88947e12203af46b3ed45cff719b04c870b186ba9cdc2ddab
     # via

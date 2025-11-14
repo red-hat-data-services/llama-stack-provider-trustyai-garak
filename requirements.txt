@@ -1655,9 +1655,9 @@ oauthlib==3.3.1 \
     # via
     #   kubernetes
     #   requests-oauthlib
-ollama==0.5.3 \
-    --hash=sha256:40b6dff729df3b24e56d4042fd9d37e231cee8e528677e0d085413a1d6692394 \
-    --hash=sha256:a8303b413d99a9043dbf77ebf11ced672396b59bec27e6d5db67c88f01b279d2
+ollama==0.6.1 \
+    --hash=sha256:478c67546836430034b415ed64fa890fd3d1ff91781a9d548b3325274e69d7c6 \
+    --hash=sha256:fc4c984b345735c5486faeee67d8a265214a31cbb828167782dc642ce0a2bf8c
     # via garak
 openai==1.99.9 \
     --hash=sha256:9dbcdb425553bae1ac5d947147bebbd630d91bbfc7788394d4c4f3a35682ab3a \

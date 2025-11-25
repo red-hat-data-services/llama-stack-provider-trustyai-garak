@@ -3138,9 +3138,9 @@ tqdm==4.67.1 \
     #   nltk
     #   openai
     #   transformers
-transformers==4.56.1 \
-    --hash=sha256:0d88b1089a563996fc5f2c34502f10516cad3ea1aa89f179f522b54c8311fe74 \
-    --hash=sha256:1697af6addfb6ddbce9618b763f4b52d5a756f6da4899ffd1b4febf58b779248
+transformers==4.57.3 \
+    --hash=sha256:c77d353a4851b1880191603d36acb313411d3577f6e2897814f333841f7003f4 \
+    --hash=sha256:df4945029aaddd7c09eec5cad851f30662f8bd1746721b34cc031d70c65afebc
     # via garak
 triton==3.4.0 \
     --hash=sha256:00be2964616f4c619193cb0d1b29a99bd4b001d7dc333816073f92cf2a8ccdeb \

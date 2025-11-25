@@ -1161,9 +1161,9 @@ jsonpath-ng==1.7.0 \
     --hash=sha256:f3d7f9e848cba1b6da28c55b1c26ff915dc9e0b1ba7e752a53d6da8d5cbd00b6 \
     --hash=sha256:f6f5f7fd4e5ff79c785f1573b394043b39849fb2bb47bcead935d12b00beab3c
     # via garak
-jsonpath-python==1.0.6 \
-    --hash=sha256:1e3b78df579f5efc23565293612decee04214609208a2335884b3ee3f786b575 \
-    --hash=sha256:dd5be4a72d8a2995c3f583cf82bf3cd1a9544cfdabf2d22595b67aff07349666
+jsonpath-python==1.1.4 \
+    --hash=sha256:8700cb8610c44da6e5e9bff50232779c44bf7dc5bc62662d49319ee746898442 \
+    --hash=sha256:bb3e13854e4807c078a1503ae2d87c211b8bff4d9b40b6455ed583b3b50a7fdd
     # via mistralai
 jsonpointer==3.0.0 \
     --hash=sha256:13e088adc14fca8b6aa8177c044e12701e6ad4b28ff10e65f2267a90109c9942 \

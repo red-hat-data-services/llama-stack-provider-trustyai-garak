@@ -488,9 +488,9 @@ ecdsa==0.19.1 \
 ecoji==0.1.1 \
     --hash=sha256:9665b2545d73ea0b4e0c9897cc6575df8ae7dc3946a82ac9d62db2f147139a9c
     # via garak
-eval-type-backport==0.2.2 \
-    --hash=sha256:cb6ad7c393517f476f96d456d0412ea80f0a8cf96f6892834cd9340149111b0a \
-    --hash=sha256:f0576b4cf01ebb5bd358d02314d31846af5e07678387486e2c798af0e7d849c1
+eval-type-backport==0.3.1 \
+    --hash=sha256:279ab641905e9f11129f56a8a78f493518515b83402b860f6f06dd7c011fdfa8 \
+    --hash=sha256:57e993f7b5b69d271e37482e62f74e76a0276c82490cf8e4f0dffeb6b332d5ed
     # via mistralai
 fastapi==0.116.1 \
     --hash=sha256:c46ac7c312df840f0c9e220f7964bada936781bc4e2e6eb71f1c4d7553786565 \

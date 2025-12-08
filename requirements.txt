@@ -456,9 +456,9 @@ datasets==4.0.0 \
     --hash=sha256:7ef95e62025fd122882dbce6cb904c8cd3fbc829de6669a5eb939c77d50e203d \
     --hash=sha256:9657e7140a9050db13443ba21cb5de185af8af944479b00e7ff1e00a61c8dbf1
     # via garak
-datetime==5.5 \
-    --hash=sha256:0abf6c51cb4ba7cee775ca46ccc727f3afdde463be28dbbe8803631fefd4a120 \
-    --hash=sha256:21ec6331f87a7fcb57bd7c59e8a68bfffe6fcbf5acdbbc7b356d6a9a020191d3
+DateTime==6.0 \
+    --hash=sha256:c1514936d2f901e10c8e08d83bf04e6c9dbd7ca4f244da94fec980980a3bc4d5 \
+    --hash=sha256:d19988f0657a4e72c9438344157254a8dcad6aea8cd5ae70a5d1b5a75e5dc930
     # via avidtools
 deepl==1.17.0 \
     --hash=sha256:23004a8247d75d80206adec4e29012e5ff5434e998f72463e193fce704ade1cb \

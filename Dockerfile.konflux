@@ -33,3 +33,13 @@ RUN pip install --no-cache-dir --no-deps -e ".[remote]"
 ENV XDG_CACHE_HOME=/tmp/.cache
 ENV XDG_DATA_HOME=/tmp/.local/share
 ENV XDG_CONFIG_HOME=/tmp/.config
+
+LABEL com.redhat.component="odh-trustyai-garak-lls-provider-dsp-rhel9" \
+      name="rhoai/odh-trustyai-garak-lls-provider-dsp-rhel9" \
+      description="TrustyAI Garak Llama Stack Provider for DSP" \
+      summary="odh-trustyai-garak-lls-provider-dsp" \
+      maintainer="['managed-open-data-hub@redhat.com']" \
+      io.openshift.expose-services="" \
+      io.k8s.display-name="odh-trustyai-garak-lls-provider-dsp" \
+      io.k8s.description="odh-trustyai-garak-lls-provider-dsp" \
+      com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"

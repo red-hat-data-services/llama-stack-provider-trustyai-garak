@@ -2,20 +2,15 @@
 
 import pytest
 import json
-import os
-from unittest.mock import Mock, patch, AsyncMock, MagicMock, PropertyMock, call
+from unittest.mock import Mock, patch, AsyncMock, MagicMock
 from datetime import datetime
 
 from llama_stack_provider_trustyai_garak.remote import get_adapter_impl
 from llama_stack_provider_trustyai_garak.remote.garak_remote_eval import GarakRemoteEvalAdapter
 from llama_stack_provider_trustyai_garak.remote.provider import get_provider_spec
 from llama_stack_provider_trustyai_garak.config import GarakRemoteConfig, KubeflowConfig, GarakScanConfig
-from llama_stack_provider_trustyai_garak.errors import GarakError, GarakConfigError, GarakValidationError, BenchmarkNotFoundError
-
-from llama_stack.apis.datatypes import Api
-from llama_stack.apis.common.job_types import JobStatus
-from llama_stack.apis.eval import BenchmarkConfig, EvaluateResponse
-
+from llama_stack_provider_trustyai_garak.errors import GarakError, GarakConfigError, GarakValidationError
+from llama_stack_provider_trustyai_garak.compat import Api, JobStatus, EvaluateResponse
 
 class TestRemoteProvider:
     """Test cases for remote provider specification"""
@@ -25,21 +20,20 @@ class TestRemoteProvider:
         spec = get_provider_spec()
         
         assert spec.api == Api.eval
-        # Fix: Access adapter field from the spec
-        assert spec.adapter.adapter_type == "trustyai_garak"
-        assert "garak" in spec.adapter.pip_packages
-        assert "kfp" in spec.adapter.pip_packages
-        assert "kfp-kubernetes" in spec.adapter.pip_packages
-        assert "kfp-server-api" in spec.adapter.pip_packages
-        assert "boto3" in spec.adapter.pip_packages
-        assert spec.adapter.config_class == "llama_stack_provider_trustyai_garak.config.GarakRemoteConfig"
-        assert spec.adapter.module == "llama_stack_provider_trustyai_garak.remote"
-        assert Api.inference in spec.api_dependencies
-        assert Api.files in spec.api_dependencies
-        assert Api.benchmarks in spec.api_dependencies
-        assert Api.safety in spec.api_dependencies
-        assert Api.shields in spec.api_dependencies
-        assert Api.telemetry in spec.api_dependencies
+        assert spec.adapter_type == "trustyai_garak"
+        
+        # Check for garak (may have version specifier like garak==0.12.0)
+        assert any(pkg.startswith("garak") for pkg in spec.pip_packages), "garak not found in pip_packages"
+        
+        # Check for other packages (exact match)
+        for package in ["kfp", "kfp-kubernetes", "kfp-server-api", "boto3"]:
+            assert package in spec.pip_packages, f"{package} not found in pip_packages"
+        assert spec.config_class == "llama_stack_provider_trustyai_garak.config.GarakRemoteConfig"
+        assert spec.module == "llama_stack_provider_trustyai_garak.remote"
+        for api in [Api.inference, Api.files, Api.benchmarks]:
+            assert api in spec.api_dependencies, f"{api} not found in api_dependencies"
+        for api in [Api.safety, Api.shields]:
+            assert api in spec.optional_api_dependencies, f"{api} not found in optional_api_dependencies"
 
 
 class TestRemoteAdapterCreation:
@@ -49,9 +43,10 @@ class TestRemoteAdapterCreation:
     async def test_get_adapter_impl_success(self):
         """Test successful adapter implementation creation"""
         kubeflow_config = KubeflowConfig(
+            results_s3_prefix="garak-results/scans",
+            s3_credentials_secret_name="aws-connection-pipeline-artifacts",
             pipelines_endpoint="https://kfp.example.com",
             namespace="default",
-            experiment_name="test",
             base_image="test:latest"
         )
         config = GarakRemoteConfig(kubeflow_config=kubeflow_config)
@@ -76,9 +71,10 @@ class TestRemoteAdapterCreation:
     async def test_get_adapter_impl_with_optional_deps(self):
         """Test adapter implementation with optional safety and shields dependencies"""
         kubeflow_config = KubeflowConfig(
+            results_s3_prefix="garak-results/scans",
+            s3_credentials_secret_name="aws-connection-pipeline-artifacts",
             pipelines_endpoint="https://kfp.example.com",
             namespace="default",
-            experiment_name="test",
             base_image="test:latest"
         )
         config = GarakRemoteConfig(kubeflow_config=kubeflow_config)
@@ -104,9 +100,10 @@ class TestRemoteAdapterCreation:
     async def test_get_adapter_impl_error_handling(self):
         """Test error handling in adapter implementation creation"""
         kubeflow_config = KubeflowConfig(
+            results_s3_prefix="garak-results/scans",
+            s3_credentials_secret_name="aws-connection-pipeline-artifacts",
             pipelines_endpoint="https://kfp.example.com",
             namespace="default",
-            experiment_name="test",
             base_image="test:latest"
         )
         config = GarakRemoteConfig(kubeflow_config=kubeflow_config)
@@ -132,14 +129,15 @@ class TestGarakRemoteEvalAdapter:
     def adapter_config(self):
         """Create test configuration"""
         kubeflow_config = KubeflowConfig(
+            results_s3_prefix="garak-results/scans",
+            s3_credentials_secret_name="aws-connection-pipeline-artifacts",
             pipelines_endpoint="https://kfp.example.com",
             namespace="test-namespace",
-            experiment_name="test-experiment",
             base_image="test:latest"
         )
         return GarakRemoteConfig(
             kubeflow_config=kubeflow_config,
-            base_url="http://test.api.com/v1"
+            llama_stack_url="http://test.api.com/v1"
         )
 
     @pytest.fixture
@@ -167,8 +165,11 @@ class TestGarakRemoteEvalAdapter:
     def mock_benchmark_config(self):
         """Create a real BenchmarkConfig object"""
         # Import the actual classes
-        from llama_stack.apis.eval import BenchmarkConfig
-        from llama_stack.apis.inference import SamplingParams, TopPSamplingStrategy
+        from llama_stack_provider_trustyai_garak.compat import (
+            BenchmarkConfig,
+            SamplingParams,
+            TopPSamplingStrategy
+        )
         
         # Create a real BenchmarkConfig with required fields
         config = BenchmarkConfig(
@@ -447,7 +448,9 @@ class TestGarakRemoteEvalAdapter:
         adapter.kfp_client = Mock()
         adapter.kfp_client.get_run.return_value = mock_run
         
-        # Mock S3 response
+        # Mock S3 configuration and response
+        adapter._s3_bucket = "test-bucket"
+        adapter._s3_prefix = "test-prefix"
         adapter.s3_client = Mock()
         adapter.s3_client.get_object.return_value = {
             'Body': Mock(read=lambda: json.dumps({
@@ -594,7 +597,7 @@ class TestGarakRemoteEvalAdapter:
     async def test_get_openai_compatible_generator_options(self, adapter, mock_benchmark_config):
         """Test OpenAI compatible generator options"""
         # Use isinstance to check for the right type
-        from llama_stack.apis.inference import TopPSamplingStrategy
+        from llama_stack_provider_trustyai_garak.compat import TopPSamplingStrategy
         
         mock_benchmark_config.eval_candidate.sampling_params.strategy = TopPSamplingStrategy(
             temperature=0.8,

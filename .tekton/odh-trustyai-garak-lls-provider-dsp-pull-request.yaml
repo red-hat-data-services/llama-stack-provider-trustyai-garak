@@ -39,7 +39,13 @@ spec:
     value: true
   - name: prefetch-input
     value: |
-      {"type": "pip", "path": "."}
+      [{
+        "type": "pip", 
+        "path": ".", 
+        "requirements_files": ["requirements-x86_64.txt","requirements-aarch64.txt","requirements-s390x.txt","requirements-ppc64le.txt"], 
+        "binary": {"packages": ":all:"}
+      },
+      {"type":"rpm"}]
   - name: build-source-image
     value: true
   - name: build-image-index

@@ -460,9 +460,9 @@ datetime==5.5 \
     --hash=sha256:0abf6c51cb4ba7cee775ca46ccc727f3afdde463be28dbbe8803631fefd4a120 \
     --hash=sha256:21ec6331f87a7fcb57bd7c59e8a68bfffe6fcbf5acdbbc7b356d6a9a020191d3
     # via avidtools
-deepl==1.17.0 \
-    --hash=sha256:23004a8247d75d80206adec4e29012e5ff5434e998f72463e193fce704ade1cb \
-    --hash=sha256:2fb51fa8d9c04a081123c1f17c5bc3dd9c4711acd59687a71c470a345ab9b70c
+deepl==1.27.0 \
+    --hash=sha256:8d83a53d958ffa96388f5ecd6425a9d9d931144c16c05c7a84eceb9a1454bb92 \
+    --hash=sha256:97cca5ed3be23353c199889c442ca7bda4c3f03327e92d7797c077d5cfc9b61f
     # via garak
 dill==0.3.8 \
     --hash=sha256:3ebe3c479ad625c4553aca177444d89b486b1d84982eeacded644afc0cf797ca \

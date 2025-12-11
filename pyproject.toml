@@ -24,7 +24,10 @@ homepage = "https://github.com/trustyai-explainability/llama-stack-provider-trus
 repository = "https://github.com/trustyai-explainability/llama-stack-provider-trustyai-garak"
 
 [build-system]
-requires = ["setuptools==80.9.0"]
+requires = [
+    "setuptools==80.9.0",
+    "patchelf>=0.11.0", # for building numpy from source on s390x
+]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]

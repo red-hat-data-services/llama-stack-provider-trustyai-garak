@@ -1,0 +1,180 @@
+---
+lockfileVersion: 1
+lockfileVendor: redhat
+arches:
+- arch: aarch64
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/c/cargo-1.88.0-1.el9.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 7738248
+    checksum: sha256:db106a81f1e6afa16afc7a28d008f42784f6602bca19bd147cb046b5dacc11e5
+    name: cargo
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-1.88.0-1.el9.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 28639155
+    checksum: sha256:ef479c53d6d2e75753f5d36661ec01746d70ad16dcbb82f51dc4296de8e32613
+    name: rust
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 39777482
+    checksum: sha256:9431bb9d0a3dd5fbfe3bfef2c28ef5149c72173ad53b75b046e1f4dad9d9d48d
+    name: rust-std-static
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.aarch64.rpm
+    repoid: codeready-builder-for-ubi-9-aarch64-rpms
+    size: 146570
+    checksum: sha256:c6de7ce1a2bf12de2a6a5bc204e2be8a80adeba77c2074bc0bb7b8fdb1259e40
+    name: ninja-build
+    evr: 1.10.2-6.el9
+    sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
+  source:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+    repoid: ubi-9-for-aarch64-appstream-source-rpms
+    size: 284842616
+    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    name: rust
+    evr: 1.88.0-1.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
+    repoid: codeready-builder-for-ubi-9-aarch64-source-rpms
+    size: 227908
+    checksum: sha256:0461eebf9c0def0b11f42b9f7e7a455a945da6cbd4796ff015eb2a1dcbae175b
+    name: ninja-build
+    evr: 1.10.2-6.el9
+  module_metadata: []
+- arch: ppc64le
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/c/cargo-1.88.0-1.el9.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 8432875
+    checksum: sha256:134bfbd26e53ff42298e65a0b4289982bd47fa1f87ad7ff223151522db928498
+    name: cargo
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-1.88.0-1.el9.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 26079470
+    checksum: sha256:04628295d1af436836051479fc37da860b4baf5c310c61e8cbfe7cd874150bdb
+    name: rust
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 37564430
+    checksum: sha256:99facd93ed8575fcda613e4f4ee2317f4852ce4b3534f333b903864d5a4b9687
+    name: rust-std-static
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.ppc64le.rpm
+    repoid: codeready-builder-for-ubi-9-ppc64le-rpms
+    size: 159924
+    checksum: sha256:733bc0851d34fe333574b07d8cebda15e562f5f141989d5155196cc5925797d7
+    name: ninja-build
+    evr: 1.10.2-6.el9
+    sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
+  source:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+    repoid: ubi-9-for-ppc64le-appstream-source-rpms
+    size: 284842616
+    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    name: rust
+    evr: 1.88.0-1.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
+    repoid: codeready-builder-for-ubi-9-ppc64le-source-rpms
+    size: 227908
+    checksum: sha256:0461eebf9c0def0b11f42b9f7e7a455a945da6cbd4796ff015eb2a1dcbae175b
+    name: ninja-build
+    evr: 1.10.2-6.el9
+  module_metadata: []
+- arch: s390x
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/c/cargo-1.88.0-1.el9.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 8685549
+    checksum: sha256:77bc5c4dedf9cce8a572ece13c36d28447efe294fae2c4befee87c6998da9808
+    name: cargo
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-1.88.0-1.el9.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 31184880
+    checksum: sha256:33536795f2f65b928b78a2c2238dadb5cec5df8234d17f3347b3112e2fe826fd
+    name: rust
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 39210792
+    checksum: sha256:9f4514885ab9d25ccda42e076381cf44e2da05c15a3a032204fcbcb34783fa93
+    name: rust-std-static
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.s390x.rpm
+    repoid: codeready-builder-for-ubi-9-s390x-rpms
+    size: 148716
+    checksum: sha256:cf488d4dc7518d6ca1df602e07f5d5962ad50e035a40c2b4d22865665af357fa
+    name: ninja-build
+    evr: 1.10.2-6.el9
+    sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
+  source:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+    repoid: ubi-9-for-s390x-appstream-source-rpms
+    size: 284842616
+    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    name: rust
+    evr: 1.88.0-1.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
+    repoid: codeready-builder-for-ubi-9-s390x-source-rpms
+    size: 227908
+    checksum: sha256:0461eebf9c0def0b11f42b9f7e7a455a945da6cbd4796ff015eb2a1dcbae175b
+    name: ninja-build
+    evr: 1.10.2-6.el9
+  module_metadata: []
+- arch: x86_64
+  packages:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/c/cargo-1.88.0-1.el9.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 8326606
+    checksum: sha256:8d5b570c23f08d8e619cd9d69f4e6a25572cc4df0747f9cdc8c531621ce45480
+    name: cargo
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-1.88.0-1.el9.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 30892199
+    checksum: sha256:d976ea2f80c38598484e6e6e5501bc92f8581b94227dd554e0492bf5d2234f04
+    name: rust
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 41209382
+    checksum: sha256:5ac616ad878773059445a8c8cbc8ee013541712b321435a9adff5989558a3227
+    name: rust-std-static
+    evr: 1.88.0-1.el9
+    sourcerpm: rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.x86_64.rpm
+    repoid: codeready-builder-for-ubi-9-x86_64-rpms
+    size: 153299
+    checksum: sha256:1140bec45c316942f870c28fdede79c185a2e09adc48bada42a5610783d56400
+    name: ninja-build
+    evr: 1.10.2-6.el9
+    sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
+  source:
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+    repoid: ubi-9-for-x86_64-appstream-source-rpms
+    size: 284842616
+    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    name: rust
+    evr: 1.88.0-1.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
+    repoid: codeready-builder-for-ubi-9-x86_64-source-rpms
+    size: 227908
+    checksum: sha256:0461eebf9c0def0b11f42b9f7e7a455a945da6cbd4796ff015eb2a1dcbae175b
+    name: ninja-build
+    evr: 1.10.2-6.el9
+  module_metadata: []

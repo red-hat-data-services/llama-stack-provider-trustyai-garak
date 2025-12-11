@@ -1,23 +1,45 @@
-FROM registry.access.redhat.com/ubi9/python-312@sha256:a3af61fdae215cd8d8f67f8f737064b353dc0592567099de48b3c2563314810d
+FROM registry.access.redhat.com/ubi9/python-312@sha256:f90710e94f67ec27e1f91de9851a3b9bf34e786a1ad3b567c2a39e0867cf00b5
 WORKDIR /opt/app-root
 
 USER root
 
+# For Rust-based Python packages
+RUN dnf install -y --setopt install_weak_deps=0 --nodocs \
+    cargo \
+    rust \
+    && dnf clean all
+
 COPY . .
 
-# Build argument to specify CPU or GPU build
-ARG BUILD_TYPE=gpu
+# Build argument to specify architecture
+ARG TARGETARCH=x86_64
 
-# Conditionally install CPU-specific torch
-RUN if [ "$BUILD_TYPE" = "cpu" ]; then \
-        pip install --index-url https://download.pytorch.org/whl/cpu torch>=2.6.0; \
+# Install dependencies
+RUN echo "Installing $TARGETARCH dependencies ..." && \
+    if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ] || [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
+        pip install --no-cache-dir -r .konflux/x86_64/requirements.txt; \
+    elif [ "$TARGETARCH" = "s390x" ] || [ "$TARGETARCH" = "ppc64le" ]; then \
+	dnf install -y gcc ninja-build \
+         && pip install --no-cache-dir -r .konflux/${TARGETARCH}/requirements.txt; \
+    else \
+        echo "ERROR: Unsupported architecture: $TARGETARCH"; \
+        exit 1; \
     fi
 
-RUN pip install --no-cache-dir -e ".[remote]"
+# Install the package itself (--no-deps since dependencies already installed)
+RUN pip install --no-cache-dir --no-deps -e ".[inline]"
 
 # Set XDG environment variables to use /tmp (always writable) for garak to write to
 ENV XDG_CACHE_HOME=/tmp/.cache
 ENV XDG_DATA_HOME=/tmp/.local/share
 ENV XDG_CONFIG_HOME=/tmp/.config
 
-# USER 1001
+LABEL com.redhat.component="odh-trustyai-garak-lls-provider-dsp-rhel9" \
+      name="rhoai/odh-trustyai-garak-lls-provider-dsp-rhel9" \
+      description="TrustyAI Garak Llama Stack Provider for DSP" \
+      summary="odh-trustyai-garak-lls-provider-dsp" \
+      maintainer="['managed-open-data-hub@redhat.com']" \
+      io.openshift.expose-services="" \
+      io.k8s.display-name="odh-trustyai-garak-lls-provider-dsp" \
+      io.k8s.description="odh-trustyai-garak-lls-provider-dsp" \
+      com.redhat.license_terms="https://www.redhat.com/licenses/Red_Hat_Standard_EULA_20191108.pdf"

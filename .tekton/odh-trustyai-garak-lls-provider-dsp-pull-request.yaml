@@ -42,8 +42,10 @@ spec:
       [{
         "type": "pip", 
         "path": ".", 
-        "requirements_files": ["requirements-x86_64.txt","requirements-aarch64.txt","requirements-s390x.txt","requirements-ppc64le.txt"], 
-        "binary": {"packages": ":all:"}
+        "requirements_files": ["requirements-x86_64.txt"], 
+        "binary": {
+          arch: "x86_64,aarch64,s390x,ppc64le"
+        }
       },
       {"type":"rpm"}]
   - name: build-source-image

@@ -44,7 +44,7 @@ spec:
         "path": ".", 
         "requirements_files": ["requirements-x86_64.txt"], 
         "binary": {
-          arch: "x86_64,aarch64,s390x,ppc64le"
+          "arch": "x86_64,aarch64,s390x,ppc64le"
         }
       },
       {"type":"rpm"}]

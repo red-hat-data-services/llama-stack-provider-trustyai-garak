@@ -29,7 +29,7 @@ RUN if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ]; then \
     fi
 
 # Install the package itself (--no-deps since dependencies already installed)
-RUN pip install --no-cache-dir --no-deps -e ".[remote]"
+RUN pip install --no-cache-dir --no-deps -e ".[inline]"
 
 # Set XDG environment variables to use /tmp (always writable) for garak to write to
 ENV XDG_CACHE_HOME=/tmp/.cache

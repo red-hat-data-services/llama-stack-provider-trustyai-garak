@@ -11,14 +11,14 @@ RUN dnf install -y --setopt install_weak_deps=0 --nodocs \
 
 COPY . .
 
-# Build argument to specify architecture
-ARG TARGETARCH=x86_64
+# # Build argument to specify architecture
+# ARG TARGETARCH=x86_64
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements-${TARGETARCH}.txt;
+# # Install dependencies
+# RUN pip install --no-cache-dir -r requirements-${TARGETARCH}.txt;
 
-# Install the package itself (--no-deps since dependencies already installed)
-RUN pip install --no-cache-dir --no-deps -e ".[remote]"
+# # Install the package itself (--no-deps since dependencies already installed)
+RUN pip install --no-cache-dir -e ".[inline]"
 
 # Set XDG environment variables to use /tmp (always writable) for garak to write to
 ENV XDG_CACHE_HOME=/tmp/.cache

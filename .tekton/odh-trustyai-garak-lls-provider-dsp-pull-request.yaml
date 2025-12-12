@@ -42,9 +42,15 @@ spec:
       [{
         "type": "pip", 
         "path": ".", 
-        "requirements_files": ["requirements-x86_64.txt", "requirements-aarch64.txt", "requirements-s390x.txt", "requirements-ppc64le.txt"]
+        "requirements_files": ["requirements-x86_64.txt", "requirements-aarch64.txt", "requirements-s390x.txt", "requirements-ppc64le.txt"],
+        "binary": {
+          "packages": "jiter",
+          "arch": "x86_64,aarch64,s390x,ppc64le"
+        }
       },
-      {"type":"rpm"}]
+      {
+        "type":"rpm"
+      }]
   - name: build-source-image
     value: true
   - name: build-image-index

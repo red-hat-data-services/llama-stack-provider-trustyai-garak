@@ -1956,8 +1956,8 @@ nvidia-nvtx-cu12==12.8.90 \
     --hash=sha256:619c8304aedc69f02ea82dd244541a83c3d9d40993381b3b590f1adaed3db41e \
     --hash=sha256:d7ad891da111ebafbf7e015d34879f7112832fc239ff0d7d776b6cb685274615
     # via torch
-nvidia-riva-client==2.16.0 \
-    --hash=sha256:99ef37b8f487d75a70c053736848221e09b728e5c910fb476333d375bd4347a3
+nvidia-riva-client==2.23.0 \
+    --hash=sha256:2fc82a53ec3ac94fa68146acf122de11c65c1a52e6eea2da04bb907e6f18b30f
     # via garak
 oauthlib==3.3.1 \
     --hash=sha256:0f0f8aa759826a193cf66c12ea1af1637f87b9b4622d46e866952bb022e538c9 \

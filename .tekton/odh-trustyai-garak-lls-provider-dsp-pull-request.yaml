@@ -50,6 +50,17 @@ spec:
         }
       },
       {
+        "type": "pip", 
+        "path": ".", 
+        "requirements_files": ["requirements-s390x.txt", "requirements-ppc64le.txt"],
+        "binary": { 
+          "packages": ":all:",
+          "arch": "s390x,ppc64le",
+          "os": ":all:",
+          "py_impl": ":all:"
+        }
+      },
+      {
         "type":"rpm"
       }]
   - name: build-source-image

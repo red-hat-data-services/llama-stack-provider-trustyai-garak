@@ -42,9 +42,9 @@ spec:
       [{
         "type": "pip", 
         "path": ".", 
-        "requirements_files": ["requirements-x86_64.txt", "requirements-aarch64.txt", "requirements-s390x.txt", "requirements-ppc64le.txt"],
+        "requirements_files": ["requirements-x86_64.txt", "requirements-aarch64.txt"],
         "binary": { 
-          "arch": ":all:",
+          "arch": "x86_64,aarch64",
           "os": ":all:",
           "py_impl": ":all:"
         }
@@ -54,7 +54,6 @@ spec:
         "path": ".", 
         "requirements_files": ["requirements-s390x.txt", "requirements-ppc64le.txt"],
         "binary": { 
-          "packages": ":all:",
           "arch": "s390x,ppc64le",
           "os": ":all:",
           "py_impl": ":all:"

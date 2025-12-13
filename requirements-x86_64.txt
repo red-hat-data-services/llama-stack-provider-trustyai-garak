@@ -583,9 +583,9 @@ eval-type-backport==0.3.0 \
     --hash=sha256:1638210401e184ff17f877e9a2fa076b60b5838790f4532a21761cc2be67aea1 \
     --hash=sha256:975a10a0fe333c8b6260d7fdb637698c9a16c3a9e3b6eb943fee6a6f67a37fe8
     # via mistralai
-fastapi==0.123.0 \
-    --hash=sha256:1410678b3c44418245eec85088b15140d894074b86e66061017e2b492c09b138 \
-    --hash=sha256:cb56e69e874afa897bd3416c8a3dbfdae1730d0a308d4c63303f3f4b44136ae4
+fastapi==0.124.4 \
+    --hash=sha256:0e9422e8d6b797515f33f500309f6e1c98ee4e85563ba0f2debb282df6343763 \
+    --hash=sha256:6d1e703698443ccb89e50abe4893f3c84d9d6689c0cf1ca4fad6d3c15cf69f15
     # via
     #   fschat
     #   llama-stack

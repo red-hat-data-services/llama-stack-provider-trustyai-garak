@@ -1483,9 +1483,9 @@ latex2mathml==3.78.1 \
     --hash=sha256:f089b6d75e85b937f99693c93e8c16c0804008672c3dd2a3d25affd36f238100 \
     --hash=sha256:f941db80bf41db33f31df87b304e8b588f8166b813b0257c11c98f7a9d0aac71
     # via markdown2
-litellm==1.80.0 \
-    --hash=sha256:eeac733eb6b226f9e5fb020f72fe13a32b3354b001dc62bcf1bc4d9b526d6231 \
-    --hash=sha256:fd0009758f4772257048d74bf79bb64318859adb4ea49a8b66fdbc718cd80b6e
+litellm==1.80.10 \
+    --hash=sha256:4a4aff7558945c2f7e5c6523e67c1b5525a46b10b0e1ad6b8f847cb13b16779e \
+    --hash=sha256:9b3e561efaba0eb1291cb1555d3dcb7283cf7f3cb65aadbcdb42e2a8765898c8
     # via garak
 llama-stack==0.3.3 \
     --hash=sha256:77ed9b1af8c6217d985afc64a4ef7faa1aa8e063e84e040b75eb7a3e5c79e1a3 \

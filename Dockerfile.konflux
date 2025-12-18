@@ -16,8 +16,10 @@ ARG TARGETARCH=x86_64
 
 # Install dependencies
 RUN echo "Installing $TARGETARCH dependencies ..." && \
-    if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ] || [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
-        pip install --no-cache-dir -r .konflux/x86_64/requirements.txt; \
+    if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ]; then \
+        pip install --no-cache-dir -r requirements-x86_64.txt; \
+    elif [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
+        pip install --no-cache-dir -r requirements-aarch64.txt; \
     elif [ "$TARGETARCH" = "s390x" ] || [ "$TARGETARCH" = "ppc64le" ]; then \
 	dnf install -y gcc ninja-build \
          && pip install --no-cache-dir -r .konflux/${TARGETARCH}/requirements.txt; \

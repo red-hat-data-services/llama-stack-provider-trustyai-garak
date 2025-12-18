@@ -42,8 +42,8 @@ spec:
       [
       {
         "type": "pip", 
-        "path": ".konflux/x86_64", 
-        "requirements_files": ["requirements.txt"],
+        "path": ".", 
+        "requirements_files": ["requirements-x86_64.txt"],
         "requirements_build_files": ["requirements-build.txt"],
         "binary": { 
           "arch": "x86_64,aarch64"

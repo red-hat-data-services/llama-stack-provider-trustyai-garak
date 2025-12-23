@@ -855,9 +855,9 @@ greenlet==3.2.4 \
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   sqlalchemy
-grpc-google-iam-v1==0.14.2 \
-    --hash=sha256:a3171468459770907926d56a440b2bb643eec1d7ba215f48f3ecece42b4d8351 \
-    --hash=sha256:b3e1fc387a1a329e41672197d0ace9de22c78dd7d215048c4c78712073f7bd20
+grpc-google-iam-v1==0.14.3 \
+    --hash=sha256:7a7f697e017a067206a3dfef44e4c634a34d3dee135fe7d7a4613fe3e59217e6 \
+    --hash=sha256:879ac4ef33136c5491a6300e27575a9ec760f6cdf9a2518798c1b8977a5dc389
     # via google-cloud-translate
 grpcio==1.74.0 \
     --hash=sha256:0f87bddd6e27fc776aacf7ebfec367b6d49cad0455123951e4488ea99d9b9b8f \

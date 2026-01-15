@@ -923,9 +923,9 @@ google-cloud-storage==3.6.0 \
     --hash=sha256:29cc6b9a6c0fc9cdad071e375d540a5a50fbc9a7fad8300fa02fb904f6fe2ca2 \
     --hash=sha256:5decbdddd63b7d1fc3e266a393ad6453d2e27d172bd982b1e2f15481668db097
     # via kfp
-google-cloud-translate==3.23.0 \
-    --hash=sha256:1bc0df04eb60257be17b0dd2a4e24aab93e021d075631007a3975a54431cdb56 \
-    --hash=sha256:28a31230de80a0fef87ad4fc63ea37d926ee8659f72d55b9d709e908f01395a8
+google-cloud-translate==3.24.0 \
+    --hash=sha256:2f3b8b90f8cdaf63a435d18e63b21c3650de31fc4f858623f2d0d69be0cd3e9a \
+    --hash=sha256:a4000f01ab51ff790913c3f40425e118e2632e7cd1589ae0401d19e6b355aedb
     # via garak
 google-crc32c==1.7.1 \
     --hash=sha256:0f99eaa09a9a7e642a61e06742856eec8b19fc0037832e03f941fe7cf0c8e4db \

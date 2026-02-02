@@ -739,9 +739,9 @@ google-cloud-core==2.4.3 \
     # via
     #   google-cloud-storage
     #   google-cloud-translate
-google-cloud-storage==3.3.1 \
-    --hash=sha256:60f291b0881e5c72919b156d1ee276d1b69a2538fcdc35f4e87559ae11678f77 \
-    --hash=sha256:8cace9359b85f315f21868cf771143d6dbb47dcc5a3a9317c8207accc4d10fd3
+google-cloud-storage==3.9.0 \
+    --hash=sha256:2dce75a9e8b3387078cbbdad44757d410ecdb916101f8ba308abf202b6968066 \
+    --hash=sha256:f2d8ca7db2f652be757e92573b2196e10fbc09649b5c016f8b422ad593c641cc
     # via kfp
 google-cloud-translate==3.21.1 \
     --hash=sha256:760f25e1b979fea6a59dca44ffc8a8dc708693c50ae37a39568ff1284c534be2 \

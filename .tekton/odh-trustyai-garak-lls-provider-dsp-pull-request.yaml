@@ -51,7 +51,7 @@ spec:
       },
       {
         "type": "pip", 
-        "path": ".konflx/aarch64", 
+        "path": ".konflux/aarch64", 
         "requirements_files": ["requirements-aarch64.txt"],
         "requirements_build_files": ["requirements-build.txt"],
         "binary": { 

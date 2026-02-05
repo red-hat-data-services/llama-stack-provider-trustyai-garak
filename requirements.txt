@@ -1238,9 +1238,9 @@ llama-api-client==0.3.0 \
     --hash=sha256:0b823b4541b0522de31124bd09a7ba7358598aa3fb17e20ad08cbdc78f4a8408 \
     --hash=sha256:4355379f5c870aaaacc1af6ae3f0115e74bd3ee560531c6d48b483d41a281a43
     # via llama-stack
-llama-stack==0.2.18 \
-    --hash=sha256:0ea6e150140047568e45f98100027a79e20340711e5feff083d9b9dfe42d2605 \
-    --hash=sha256:3383fb4da1cc6e77a58ae425ef49ce470bca784ca85051dd6b2b70966f936bea
+llama-stack==0.5.0 \
+    --hash=sha256:a1bb2aacf61c293693e9d1986a173cd5088c3ee7269d9fd1f584bbca98e98f40 \
+    --hash=sha256:ec3b0455eaa5b24fa53c1b789c18ff8d14580109c7f4ccb64da069b25d0ccde9
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 llama-stack-client==0.2.21 \
     --hash=sha256:adba82fdf18ab3b8ac218cedba4927bd5d26c23c2318e75c8763a44bb6b40693 \

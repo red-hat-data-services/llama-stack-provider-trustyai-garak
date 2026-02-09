@@ -607,9 +607,9 @@ pycparser==2.23 \
     --hash=sha256:78816d4f24add8f10a06d6f05b4d424ad9e96cfebf68a4ddc99c65c0720d00c2 \
     --hash=sha256:e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934
     # via cffi
-pyproject-metadata==0.10.0 \
-    --hash=sha256:7f5bd0ef398b60169556cb17ea261d715caf7f8561238151f51b2305084ba8d4 \
-    --hash=sha256:b1e439a9f7560f9792ee5975dcf5e89d2510b1fc84a922d7e5d665aa9102d966
+pyproject-metadata==0.11.0 \
+    --hash=sha256:85bbecca8694e2c00f63b492c96921d6c228454057c88e7c352b2077fcaa4096 \
+    --hash=sha256:c72fa49418bb7c5a10f25e050c418009898d1c051721d19f98a6fb6da59a66cf
     # via meson-python
 scikit-build-core==0.11.6 \
     --hash=sha256:5982ccd839735be99cfd3b92a8847c6c196692f476c215da84b79d2ad12f9f1b \

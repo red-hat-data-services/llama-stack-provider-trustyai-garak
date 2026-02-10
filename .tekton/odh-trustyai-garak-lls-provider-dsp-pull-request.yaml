@@ -17,6 +17,9 @@ metadata:
   name: odh-trustyai-garak-lls-provider-dsp-on-pull-request
   namespace: rhoai-tenant
 spec:
+  timeouts:
+    tasks: 2h
+    pipeline: 4h
   params:
   - name: git-url
     value: '{{source_url}}'

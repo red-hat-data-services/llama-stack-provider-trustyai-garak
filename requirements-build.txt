@@ -127,6 +127,10 @@ cython==3.2.4 \
     #   pandas
     #   pyarrow
     #   pyyaml
+distro==1.9.0 \
+    --hash=sha256:2fa77c6fd8940f116ee1d6b94a2f90b13b5ea8d019b98bc8bafdcabcdd9bdbed \
+    --hash=sha256:7bffd925d65168f85027d8da9af6bddab658135b840670a223589bc0c8ef02b2
+    # via scikit-build
 expandvars==1.1.2 \
     --hash=sha256:6c5822b7b756a99a356b915dd1267f52ab8a4efaa135963bd7f4bd5d368f71d7 \
     --hash=sha256:d1652fe4e61914f5b88ada93aaedb396446f55ae4621de45c8cb9f66e5712526
@@ -166,6 +170,7 @@ hatch-fancy-pypi-readme==25.1.0 \
     #   llama-stack-client
     #   openai
     #   pydantic
+    #   scikit-build
 hatch-vcs==0.5.0 \
     --hash=sha256:0395fa126940340215090c344a2bf4e2a77bcbe7daab16f41b37b98c95809ff9 \
     --hash=sha256:b49677dbdc597460cc22d01b27ab3696f5e16a21ecf2700fb01bc28e1f2a04a7
@@ -178,6 +183,7 @@ hatch-vcs==0.5.0 \
     #   jsonschema-specifications
     #   ollama
     #   referencing
+    #   scikit-build
     #   scikit-build-core
     #   termcolor
     #   urllib3
@@ -225,6 +231,7 @@ hatchling==1.28.0 \
     #   pydantic
     #   pygments
     #   referencing
+    #   scikit-build
     #   scikit-build-core
     #   starlette
     #   termcolor
@@ -411,9 +418,9 @@ pycparser==3.0 \
     --hash=sha256:600f49d217304a5902ac3c37e1281c9fe94e4d0489de643a9504c5cdfdfc6b29 \
     --hash=sha256:b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992
     # via cffi
-pyproject-metadata==0.10.0 \
-    --hash=sha256:7f5bd0ef398b60169556cb17ea261d715caf7f8561238151f51b2305084ba8d4 \
-    --hash=sha256:b1e439a9f7560f9792ee5975dcf5e89d2510b1fc84a922d7e5d665aa9102d966
+pyproject-metadata==0.11.0 \
+    --hash=sha256:85bbecca8694e2c00f63b492c96921d6c228454057c88e7c352b2077fcaa4096 \
+    --hash=sha256:c72fa49418bb7c5a10f25e050c418009898d1c051721d19f98a6fb6da59a66cf
     # via meson-python
 scikit-build-core==0.11.6 \
     --hash=sha256:5982ccd839735be99cfd3b92a8847c6c196692f476c215da84b79d2ad12f9f1b \
@@ -421,6 +428,10 @@ scikit-build-core==0.11.6 \
     # via
     #   pybind11
     #   rapidfuzz
+scikit-build==0.18.1 \
+    --hash=sha256:a4152ac5a084d499c28a7797be0628d8366c336e2fb0e1a063eb32e55efcb8e7 \
+    --hash=sha256:a6860e300f6807e76f21854163bdb9db16afc74eadf34bd6a9947d3fdfcd725a
+    # via patchelf
 semantic-version==2.10.0 \
     --hash=sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c \
     --hash=sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177
@@ -445,6 +456,7 @@ setuptools-scm==9.2.2 \
     #   hatch-vcs
     #   importlib-metadata
     #   llama-stack-api
+    #   patchelf
     #   pluggy
     #   pyarrow
     #   setuptools-rust
@@ -482,6 +494,7 @@ wheel==0.46.3 \
     #   maturin
     #   meson
     #   pandas
+    #   patchelf
     #   pycparser
     #   python-dateutil
     #   replicate
@@ -494,12 +507,6 @@ wheel==0.46.3 \
     #   zope-interface
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==80.10.2 \
-    --hash=sha256:8b0e9d10c784bf7d262c4e5ec5d4ec94127ce206e8738f29a437945fbc219b70 \
-    --hash=sha256:95b30ddfb717250edb492926c92b5221f7ef3fbcc2b07579bcd4a27da21d0173
-    # via
-    #   python-dateutil
-    #   setuptools-scm
 setuptools==80.9.0 \
     --hash=sha256:062d34222ad13e0cc312a4c02d73f059e86a4acbfbdea8f8f76b28c99f306922 \
     --hash=sha256:f36b47402ecde768dbfafc46e8e4207b4360c654f1f3bb84475f0a28628fb19c
@@ -536,6 +543,7 @@ setuptools==80.9.0 \
     #   multidict
     #   multiprocess
     #   networkx
+    #   patchelf
     #   pathspec
     #   pillow
     #   pluggy
@@ -572,3 +580,9 @@ setuptools==80.9.0 \
     #   zipp
     #   zope-interface
     #   zstandard
+setuptools==82.0.0 \
+    --hash=sha256:22e0a2d69474c6ae4feb01951cb69d515ed23728cf96d05513d36e42b62b37cb \
+    --hash=sha256:70b18734b607bd1da571d097d236cfcfacaf01de45717d59e6e04b96877532e0
+    # via
+    #   python-dateutil
+    #   setuptools-scm

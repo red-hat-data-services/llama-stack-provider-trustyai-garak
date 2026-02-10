@@ -1453,9 +1453,9 @@ kubernetes==30.1.0 \
     --hash=sha256:41e4c77af9f28e7a6c314e3bd06a8c6229ddd787cad684e0ab9f69b498e98ebc \
     --hash=sha256:e212e8b7579031dd2e512168b617373bc1e03888d41ac4e04039240a292d478d
     # via kfp
-langchain==0.3.27 \
-    --hash=sha256:7b20c4f338826acb148d885b20a73a16e410ede9ee4f19bb02011852d5f98798 \
-    --hash=sha256:aa6f1e6274ff055d0fd36254176770f356ed0a8994297d1df47df341953cec62
+langchain==1.2.10 \
+    --hash=sha256:bdcd7218d9c79a413cf15e106e4eb94408ac0963df9333ccd095b9ed43bf3be7 \
+    --hash=sha256:e07a377204451fffaed88276b8193e894893b1003e25c5bca6539288ccca3698
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   garak

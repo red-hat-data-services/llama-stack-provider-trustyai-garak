@@ -40,6 +40,8 @@ spec:
     value: .
   - name: hermetic
     value: true
+  - name: prefetch-mode
+    value: permissive
   - name: prefetch-input
     value: |
       [

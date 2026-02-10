@@ -35,7 +35,7 @@ where = ["src"]
 
 [project.optional-dependencies]
 inline = [
-    "langchain==0.3.27",  # latest langchain breaks garak, so must be '>=0.3.25,<1.0.0'
+    "langchain==1.2.10",  # latest langchain breaks garak, so must be '>=0.3.25,<1.0.0'
     "garak==0.12.0",
 ]
 dev = ["pytest", "pytest-cov",  "pytest-asyncio", "black", "isort"]

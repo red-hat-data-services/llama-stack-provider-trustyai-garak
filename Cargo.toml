@@ -14,3 +14,7 @@ rustc-hash = "2"
 bstr = "1.5.0"
 hashbrown = "0.12.3"
 lazy_static = "1.4.0"
+
+[dependencies.pyo3]
+version = "0.17.1"
+features = ["extension-module", "abi3-py37"]

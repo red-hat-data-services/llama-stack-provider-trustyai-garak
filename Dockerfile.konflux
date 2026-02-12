@@ -28,19 +28,8 @@ RUN echo "Installing $TARGETARCH dependencies ..." && \
             > "$CARGO_HOME/config.toml"; \
         export CARGO_NET_OFFLINE=true; \
         echo "Using prefetched cargo deps from /cachi2/output/deps/cargo"; \
-    elif [ -f /cachi2/output/deps/cargo-home/config.toml ]; then \
-        export CARGO_HOME=/cachi2/output/deps/cargo-home; \
-        export CARGO_NET_OFFLINE=true; \
-        echo "Using prefetched cargo deps from $CARGO_HOME"; \
     fi && \
     echo "Debug: CARGO_HOME=${CARGO_HOME:-<unset>} CARGO_NET_OFFLINE=${CARGO_NET_OFFLINE:-<unset>}" && \
-    ls -la /cachi2/output/deps || true && \
-    if [ -d /cachi2/output/deps/cargo ]; then ls -la /cachi2/output/deps/cargo | head -n 80; fi && \
-    if [ -n "${CARGO_HOME:-}" ]; then ls -la "$CARGO_HOME"; fi && \
-    if [ -n "${CARGO_HOME:-}" ] && [ -f "$CARGO_HOME/config.toml" ]; then \
-        echo "Debug: cargo config present at $CARGO_HOME/config.toml"; \
-        sed -n "1,120p" "$CARGO_HOME/config.toml"; \
-    fi && \
     if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ]; then \
         pip install --no-cache-dir -r requirements-x86_64.txt; \
     elif [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \

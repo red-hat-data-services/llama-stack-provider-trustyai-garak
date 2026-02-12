@@ -27,7 +27,7 @@ repository = "https://github.com/trustyai-explainability/llama-stack-provider-tr
 [build-system]
 requires = [
     "setuptools==80.9.0",
-    "patchelf>=0.11.0", # for building numpy from source on s390x
+    "patchelf>=0.11.0; platform_machine == 's390x'",
 ]
 build-backend = "setuptools.build_meta"
 

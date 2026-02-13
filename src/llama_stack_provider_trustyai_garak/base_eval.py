@@ -13,7 +13,9 @@ from .compat import (
     Job,
     JobStatus,
     Safety,
-    Shields
+    Shields,
+    GetBenchmarkRequest,
+    RetrieveFileContentRequest,
 )
 from typing import Dict, Optional, Set, List, Any, Union
 import logging
@@ -168,7 +170,7 @@ class GarakEvalBase(Eval, BenchmarksProtocolPrivate):
         Returns:
             Benchmark object if found, None otherwise
         """
-        return await self.benchmarks_api.get_benchmark(benchmark_id)
+        return await self.benchmarks_api.get_benchmark(GetBenchmarkRequest(benchmark_id=benchmark_id))
 
     async def register_benchmark(self, benchmark: Benchmark) -> None:
         """Register a benchmark by checking if it's a pre-defined scan profile or compliance framework.
@@ -569,7 +571,10 @@ class GarakEvalBase(Eval, BenchmarksProtocolPrivate):
             cmd.extend(["--taxonomy", benchmark_metadata["taxonomy"]])
         
         if "generate_autodan" in benchmark_metadata:
-            cmd.extend(["--generate_autodan", benchmark_metadata["generate_autodan"]])
+            logger.warning(
+                "Deprecated benchmark metadata key 'generate_autodan' is present but no longer supported. "
+                "Please remove it from the benchmark metadata; it is being ignored."
+            )
     
         # Add probes
         probes = scan_profile_config["probes"]
@@ -670,7 +675,7 @@ class GarakEvalBase(Eval, BenchmarksProtocolPrivate):
         elif job.status == JobStatus.completed:
             if self._job_metadata[job_id].get(f"{prefix}scan_result.json"):
                 scan_result_file_id: str = self._job_metadata[job_id].get(f"{prefix}scan_result.json", "")
-                scan_result = await self.file_api.openai_retrieve_file_content(scan_result_file_id)
+                scan_result = await self.file_api.openai_retrieve_file_content(RetrieveFileContentRequest(file_id=scan_result_file_id))
                 return EvaluateResponse(**json.loads(scan_result.body.decode("utf-8")))
             else:
                 logger.error(f"No {prefix}scan_result.json file found for job {job_id}")

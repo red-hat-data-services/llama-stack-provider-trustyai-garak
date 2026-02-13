@@ -1,0 +1,8 @@
+[source.crates-io]
+replace-with = "local"
+
+[source.local]
+# This tells cargo to look for a directory named 'deps/cargo'
+# relative to where the build is running. This is the standard
+# location for hermeto/cachi2 vendored Rust crates.
+directory = "deps/cargo"

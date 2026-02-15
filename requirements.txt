@@ -1206,9 +1206,9 @@ langchain==0.3.27 \
     --hash=sha256:7b20c4f338826acb148d885b20a73a16e410ede9ee4f19bb02011852d5f98798 \
     --hash=sha256:aa6f1e6274ff055d0fd36254176770f356ed0a8994297d1df47df341953cec62
     # via garak
-langchain-core==0.3.76 \
-    --hash=sha256:46e0eb48c7ac532432d51f8ca1ece1804c82afe9ae3dcf027b867edadf82b3ec \
-    --hash=sha256:71136a122dd1abae2c289c5809d035cf12b5f2bb682d8a4c1078cd94feae7419
+langchain-core==1.2.13 \
+    --hash=sha256:b31823e28d3eff1e237096d0bd3bf80c6f9624eb471a9496dbfbd427779f8d82 \
+    --hash=sha256:d2773d0d0130a356378db9a858cfeef64c3d64bc03722f1d4d6c40eb46fdf01b
     # via
     #   langchain
     #   langchain-text-splitters

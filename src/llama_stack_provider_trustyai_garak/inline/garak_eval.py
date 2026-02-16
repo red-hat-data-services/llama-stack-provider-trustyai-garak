@@ -4,7 +4,9 @@ from ..compat import (
     ProviderSpec, 
     Api, 
     OpenAIFilePurpose, 
-    OpenAIFileObject, Job, JobStatus, ScoringResult
+    OpenAIFileObject, Job, JobStatus, ScoringResult,
+    UploadFileRequest,
+    RetrieveFileContentRequest,
 )
 from fastapi import UploadFile
 from typing import List, Dict, Optional, Any, Union
@@ -159,7 +161,7 @@ class GarakInlineEvalAdapter(GarakEvalBase):
                 # convert report to avid report
                 report_file = scan_report_prefix.with_suffix(".report.jsonl")
                 try:
-                    from ..avid_report import Report
+                    from garak.report import Report
                     
                     if not report_file.exists():
                         logger.error(f"Report file not found: {report_file}")
@@ -274,7 +276,7 @@ class GarakInlineEvalAdapter(GarakEvalBase):
                 upload_file: OpenAIFileObject = await self.file_api.openai_upload_file(
                     # file: The File object (not file name) to be uploaded.
                     file=UploadFile(file=f, filename=file.name), 
-                    purpose=purpose
+                    request=UploadFileRequest(purpose=purpose)
                 )
                 return upload_file
         else:
@@ -289,7 +291,7 @@ class GarakInlineEvalAdapter(GarakEvalBase):
         Returns:
             Tuple of (generations, score_rows_by_probe)
         """
-        report_content = await self.file_api.openai_retrieve_file_content(report_file_id)
+        report_content = await self.file_api.openai_retrieve_file_content(RetrieveFileContentRequest(file_id=report_file_id))
         if not report_content:
             return [], {}
         
@@ -306,7 +308,7 @@ class GarakInlineEvalAdapter(GarakEvalBase):
         if not avid_file_id:
             return {}
         
-        avid_content = await self.file_api.openai_retrieve_file_content(avid_file_id)
+        avid_content = await self.file_api.openai_retrieve_file_content(request=RetrieveFileContentRequest(file_id=avid_file_id))
         if not avid_content:
             return {}
         

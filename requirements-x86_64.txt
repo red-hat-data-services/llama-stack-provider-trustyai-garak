@@ -1951,13 +1951,16 @@ pandas==2.3.3 \
     # via
     #   datasets
     #   llama-stack-client
-patchelf==0.11.0.0 \
-    --hash=sha256:1f0ea2011767972fe0cd3f19f7fa5c3abd7b6cafec845880b9e42aadba592434 \
-    --hash=sha256:6e9642831fd9aa24e4ca56397c942186fb3213f604505138ec3db1cf620cce38 \
-    --hash=sha256:8621dc43986ec445b5d0fb5cc464f26ed39b25a151220a47abc18da53be65304 \
-    --hash=sha256:cc005f6cf75485a7efaac52ed408cd7b72786d00a986d5abe7cba1eac94a5d6f \
-    --hash=sha256:d60432dbaddc3b23cee676d9ffa8a7b0a9e29887bff9491d16bda21ba7391f6f \
-    --hash=sha256:f0378bf05a7fd1a9c344166cc75995379208e85895e7ccef057a95d5d332e996
+patchelf==0.17.2.4 \
+    --hash=sha256:09fd848d625a165fc7b7e07745508c24077129b019c4415a882938781d43adf8 \
+    --hash=sha256:2931a1b5b85f3549661898af7bf746afbda7903c7c9a967cfc998a3563f84fad \
+    --hash=sha256:343bb1b94e959f9070ca9607453b04390e36bbaa33c88640b989cefad0aa049e \
+    --hash=sha256:680a266a70f60a7a4f4c448482c5bdba80cc8e6bb155a49dcc24238ba49927b0 \
+    --hash=sha256:7076d9e127230982e20a81a6e2358d3343004667ba510d9f822d4fdee29b0d71 \
+    --hash=sha256:970ee5cd8af33e5ea2099510b2f9013fa1b8d5cd763bf3fd3961281c18101a09 \
+    --hash=sha256:ae44cb3c857d50f54b99e5697aa978726ada33a8a6129d4b8b7ffd28b996652d \
+    --hash=sha256:d842b51f0401460f3b1f3a3a67d2c266a8f515a5adfbfa6e7b656cb3ac2ed8bc \
+    --hash=sha256:d9b35ebfada70c02679ad036407d9724ffe1255122ba4ac5e4be5868618a5689
     # via llama-stack-provider-trustyai-garak (pyproject.toml::build-system.requires)
 pillow==12.0.0 \
     --hash=sha256:0869154a2d0546545cde61d1789a6524319fc1897d9ee31218eae7a60ccc5643 \

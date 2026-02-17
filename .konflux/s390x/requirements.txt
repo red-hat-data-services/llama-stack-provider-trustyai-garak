@@ -1533,9 +1533,9 @@ openai==2.16.0 \
     #   garak
     #   litellm
     #   llama-stack-api
-opentelemetry-api==1.38.0 \
-    --hash=sha256:2891b0197f47124454ab9f0cf58f3be33faca394457ac3e09daba13ff50aa582 \
-    --hash=sha256:f4c193b5e8acb0912b06ac5b16321908dd0843d75049c091487322284a3eea12
+opentelemetry-api==1.39.1 \
+    --hash=sha256:2edd8463432a7f8443edce90972169b195e7d6a05500cd29e6d13898187c9950 \
+    --hash=sha256:fbde8c80e1b937a2c61f20347e91c0c18a1940cecf012d62e65a7caf08967c9c
     # via
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-sdk
@@ -1544,13 +1544,13 @@ opentelemetry-exporter-otlp-proto-common==1.39.1 \
     --hash=sha256:08f8a5862d64cc3435105686d0216c1365dc5701f86844a8cd56597d0c764fde \
     --hash=sha256:763370d4737a59741c89a67b50f9e39271639ee4afc999dadfe768541c027464
     # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-http==1.38.0 \
-    --hash=sha256:84b937305edfc563f08ec69b9cb2298be8188371217e867c1854d77198d0825b \
-    --hash=sha256:f16bd44baf15cbe07633c5112ffc68229d0edbeac7b37610be0b2def4e21e90b
+opentelemetry-exporter-otlp-proto-http==1.39.1 \
+    --hash=sha256:31bdab9745c709ce90a49a0624c2bd445d31a28ba34275951a6a362d16a0b9cb \
+    --hash=sha256:d9f5207183dd752a412c4cd564ca8875ececba13be6e9c6c370ffb752fd59985
     # via llama-stack-api
-opentelemetry-proto==1.38.0 \
-    --hash=sha256:88b161e89d9d372ce723da289b7da74c3a8354a8e5359992be813942969ed468 \
-    --hash=sha256:b6ebe54d3217c42e45462e2a1ae28c3e2bf2ec5a5645236a490f55f45f1a0a18
+opentelemetry-proto==1.39.1 \
+    --hash=sha256:22cdc78efd3b3765d09e68bfbd010d4fc254c9818afd0b6b423387d9dee46007 \
+    --hash=sha256:6c8e05144fc0d3ed4d22c2289c6b126e03bcd0e6a7da0f16cedd2e1c2772e2c8
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-http

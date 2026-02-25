@@ -953,8 +953,8 @@ kfp-pipeline-spec==2.15.2 \
     --hash=sha256:a5979dd74d9bd02c7614bc372d58ab26929aa6677cd460b61f73a316cf7e04b4 \
     --hash=sha256:b906cca1400ca097967a6e66a10799dcf17703052264e4b0093bcb0e7f4ed380
     # via kfp
-kfp-server-api==2.15.2 \
-    --hash=sha256:e24493de35f56712bf0c9cdd3ce8df9b0c4f472a6f3b7111ee387b9f467c5c0e
+kfp-server-api==2.16.0 \
+    --hash=sha256:32243e9eed9a386110e0363cbdc88b026f177bd5a1a53b63684bc0a47eb665a3
     # via
     #   kfp
     #   llama-stack-provider-trustyai-garak (pyproject.toml)

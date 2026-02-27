@@ -3364,9 +3364,9 @@ starlette==0.50.0 \
     # via
     #   fastapi
     #   llama-stack
-stdlibs==2025.10.28 \
-    --hash=sha256:18db81f45f7783ddf86b80771e061782c70e2f4a8642843b3c80b42cd774b24f \
-    --hash=sha256:fc25a3608c417c7fecec06736a2671adaceafc9f20c3f536d967e894a998afea
+stdlibs==2026.2.26 \
+    --hash=sha256:10f911bdd8d3e45b452cc187b3527e6f9d288c8a943c5f973da94c71b2757d5b \
+    --hash=sha256:3257486216eac5ac627a3a4c5665802aca72fe7fc9e4ab1f232b1fb47bfd3db6
     # via garak
 svgwrite==1.4.3 \
     --hash=sha256:a8fbdfd4443302a6619a7f76bc937fc683daf2628d9b737c891ec08b8ce524c3 \

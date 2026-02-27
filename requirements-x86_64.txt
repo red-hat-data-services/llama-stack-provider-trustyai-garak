@@ -3062,9 +3062,9 @@ starlette==0.50.0 \
     --hash=sha256:9e5391843ec9b6e472eed1365a78c8098cfceb7a74bfd4d6b1c0c0095efb3bca \
     --hash=sha256:a2a17b22203254bcbc2e1f926d2d55f3f9497f769416b3190768befe598fa3ca
     # via fastapi
-stdlibs==2025.10.28 \
-    --hash=sha256:18db81f45f7783ddf86b80771e061782c70e2f4a8642843b3c80b42cd774b24f \
-    --hash=sha256:fc25a3608c417c7fecec06736a2671adaceafc9f20c3f536d967e894a998afea
+stdlibs==2026.2.26 \
+    --hash=sha256:10f911bdd8d3e45b452cc187b3527e6f9d288c8a943c5f973da94c71b2757d5b \
+    --hash=sha256:3257486216eac5ac627a3a4c5665802aca72fe7fc9e4ab1f232b1fb47bfd3db6
     # via garak
 sympy==1.14.0 \
     --hash=sha256:d3d3fe8df1e5a0b42f0e7bdf50541697dbe7d23746e894990c030e2b05e72517 \

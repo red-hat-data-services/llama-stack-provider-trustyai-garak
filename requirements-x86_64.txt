@@ -220,9 +220,9 @@ attrs==25.4.0 \
     #   aiohttp
     #   jsonschema
     #   referencing
-boto3==1.42.12 \
-    --hash=sha256:649b134d25b278c24fcc8b3f94519de3884283b7848dc32f42b0ffdd9d19ce99 \
-    --hash=sha256:8112e1beb5978bb455ea4b41a9ef26fc408f6340d8ff69ef93dded4f80fd53e9
+boto3==1.42.59 \
+    --hash=sha256:6c4a14a4eb37b58a9048901bdeefbe1c529638b73e8f55413319a25f010ca211 \
+    --hash=sha256:7a66e3e8e2087ea4403e135e9de592e6d63fc9a91080d8dac415bb74df873a72
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 botocore==1.42.12 \
     --hash=sha256:1f9f63c3d6bb1f768519da30d6018706443c5d8af5472274d183a4945f3d81f8 \

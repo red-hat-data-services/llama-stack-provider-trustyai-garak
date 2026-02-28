@@ -178,9 +178,9 @@ base2048==0.1.3 \
     --hash=sha256:ad23081619ae06cd7de156252303a865e571bf0527f18272bedaad0f9d431164 \
     --hash=sha256:d1aefd5ee3bee6a6999e38fc01e6ec9cf788d72a5df28b54d8656e51b4a24a9b
     # via garak
-boto3==1.40.27 \
-    --hash=sha256:397d8cde7924f03b25eb553d5ed69293697dbfa1ca29b07369b3fa2df8318eca \
-    --hash=sha256:bf1e0f5aa79dbeedff14926dc2eb1b57bc119fa9015a190a24b6cd5bf9a60e9a
+boto3==1.42.59 \
+    --hash=sha256:6c4a14a4eb37b58a9048901bdeefbe1c529638b73e8f55413319a25f010ca211 \
+    --hash=sha256:7a66e3e8e2087ea4403e135e9de592e6d63fc9a91080d8dac415bb74df873a72
     # via
     #   garak
     #   llama-stack-provider-trustyai-garak (pyproject.toml)

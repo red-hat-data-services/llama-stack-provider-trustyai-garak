@@ -452,9 +452,9 @@ cryptography==45.0.7 \
     --hash=sha256:f5414a788ecc6ee6bc58560e85ca624258a55ca434884445440a810796ea0e0b \
     --hash=sha256:fa26fa54c0a9384c27fcdc905a2fb7d60ac6e47d14bc2692145f2b3b1e2cfdbd
     # via python-jose
-datasets==4.0.0 \
-    --hash=sha256:7ef95e62025fd122882dbce6cb904c8cd3fbc829de6669a5eb939c77d50e203d \
-    --hash=sha256:9657e7140a9050db13443ba21cb5de185af8af944479b00e7ff1e00a61c8dbf1
+datasets==4.6.1 \
+    --hash=sha256:140ce500bc41939ff6ce995702d66b1f4b2ee7f117bb9b07512fab6804d4070a \
+    --hash=sha256:f53228e6dadc9f837037b1bf3051d7d8c054abbb3eb29f1f022926e08090e0da
     # via garak
 datetime==5.5 \
     --hash=sha256:0abf6c51cb4ba7cee775ca46ccc727f3afdde463be28dbbe8803631fefd4a120 \

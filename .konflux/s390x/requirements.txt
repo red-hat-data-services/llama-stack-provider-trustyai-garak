@@ -224,9 +224,9 @@ boto3==1.42.12 \
     --hash=sha256:649b134d25b278c24fcc8b3f94519de3884283b7848dc32f42b0ffdd9d19ce99 \
     --hash=sha256:8112e1beb5978bb455ea4b41a9ef26fc408f6340d8ff69ef93dded4f80fd53e9
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
-botocore==1.42.12 \
-    --hash=sha256:1f9f63c3d6bb1f768519da30d6018706443c5d8af5472274d183a4945f3d81f8 \
-    --hash=sha256:4f163880350f6d831857ce5d023875b7c6534be862e5affd9fcf82b8d1ab3537
+botocore==1.42.59 \
+    --hash=sha256:5314f19e1da8fc0ebc41bdb8bbe17c9a7397d87f4d887076ac8bdef972a34138 \
+    --hash=sha256:d2f2ff7ecc31e86ef46b5daee112cfbca052c13801285fb23af909f7bff5b657
     # via
     #   boto3
     #   s3transfer

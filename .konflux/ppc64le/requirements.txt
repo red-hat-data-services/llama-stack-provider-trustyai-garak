@@ -2977,9 +2977,9 @@ transformers==5.0.0 \
     --hash=sha256:587086f249ce64c817213cf36afdb318d087f790723e9b3d4500b97832afd52d \
     --hash=sha256:5f5634efed6cf76ad068cc5834c7adbc32db78bbd6211fb70df2325a9c37dec8
     # via garak
-typer-slim==0.21.1 \
-    --hash=sha256:6e6c31047f171ac93cc5a973c9e617dbc5ab2bddc4d0a3135dc161b4e2020e0d \
-    --hash=sha256:73495dd08c2d0940d611c5a8c04e91c2a0a98600cbd4ee19192255a233b6dbfd
+typer-slim==0.24.0 \
+    --hash=sha256:d5d7ee1ee2834d5020c7c616ed5e0d0f29b9a4b1dd283bdebae198ec09778d0e \
+    --hash=sha256:f0ed36127183f52ae6ced2ecb2521789995992c521a46083bfcdbb652d22ad34
     # via
     #   huggingface-hub
     #   transformers

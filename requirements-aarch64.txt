@@ -522,9 +522,9 @@ docstring-parser==0.17.0 \
     --hash=sha256:583de4a309722b3315439bb31d64ba3eebada841f2e2cee23b99df001434c912 \
     --hash=sha256:cf2569abd23dce8099b300f9b4fa8191e9582dda731fd533daf54c4551658708
     # via kfp
-fastapi==0.125.0 \
-    --hash=sha256:16b532691a33e2c5dee1dac32feb31dc6eb41a3dd4ff29a95f9487cb21c054c0 \
-    --hash=sha256:2570ec4f3aecf5cca8f0428aed2398b774fcdfee6c2116f86e80513f2f86a7a1
+fastapi==0.135.1 \
+    --hash=sha256:46e2fc5745924b7c840f71ddd277382af29ce1cdb7d5eab5bf697e3fb9999c9e \
+    --hash=sha256:d04115b508d936d254cea545b7312ecaa58a7b3a0f84952535b4c9afae7668cd
     # via llama-stack
 fire==0.7.1 \
     --hash=sha256:3b208f05c736de98fb343310d090dcc4d8c78b2a89ea4f32b837c586270a9cbf \

@@ -160,9 +160,9 @@ attrs==25.4.0 \
     #   cmd2
     #   jsonschema
     #   referencing
-avidtools==0.1.2 \
-    --hash=sha256:a1c4805f6529f370ba3ff2a9281cfed5a36475123165f196294134a42fe567b8 \
-    --hash=sha256:d98b57fa452bc93c1a43842f131c39389e11c7c2684f305e0bc552c8d10bece6
+avidtools==0.2.1 \
+    --hash=sha256:322aa4a803bbe11a64e7090fbf54e0a2faec91b57f74cbf2033534816d93e11b \
+    --hash=sha256:ad8900ffe61f161ad2fd64b1fa35160ac5c38e9d3768ca0c88675778adca7f83
     # via garak
 backoff==2.2.1 \
     --hash=sha256:03f829f5bb1923180821643f8753b0502c3b682293992485b0eef2807afa5cba \

@@ -428,9 +428,9 @@ scikit-build-core==0.11.6 \
     # via
     #   pybind11
     #   rapidfuzz
-scikit-build==0.18.1 \
-    --hash=sha256:a4152ac5a084d499c28a7797be0628d8366c336e2fb0e1a063eb32e55efcb8e7 \
-    --hash=sha256:a6860e300f6807e76f21854163bdb9db16afc74eadf34bd6a9947d3fdfcd725a
+scikit-build==0.19.0 \
+    --hash=sha256:46e1b2d71343d14e4c07d7e60902e673c78defb9a2c282b70ad80fb8502ade2e \
+    --hash=sha256:956d1a179917e3994cb425662bb9e0ec052ef497995ce8e3f15b4030e02c5b94
     # via patchelf
 semantic-version==2.10.0 \
     --hash=sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c \

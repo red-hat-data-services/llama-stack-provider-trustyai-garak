@@ -33,7 +33,7 @@ spec:
   - name: output-image
     value: quay.io/rhoai/odh-trustyai-garak-lls-provider-dsp-rhel9:{{target_branch}}
   - name: rhoai-version
-    value: "3.3.0"
+    value: "3.3.1"
   - name: dockerfile
     value: Dockerfile.konflux
   - name: path-context
@@ -48,8 +48,6 @@ spec:
     - linux/s390x
   - name: hermetic
     value: true
-  - name: prefetch-mode
-    value: "permissive"
   - name: prefetch-input
     value: |
       [

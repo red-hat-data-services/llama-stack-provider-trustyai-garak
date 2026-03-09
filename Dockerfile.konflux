@@ -9,8 +9,9 @@ USER root
 COPY pyproject.toml .
 COPY src src
 
-# Install the package itself
-RUN uv pip install --no-cache ".[inline]"
+# Install the package itself using prefetched dependencies from cachi2
+RUN if [ -f /cachi2/cachi2.env ]; then . /cachi2/cachi2.env; fi && \
+    uv pip install --no-cache ".[inline]"
 
 # Set XDG environment variables to use /tmp (always writable) for garak to write to
 ENV XDG_CACHE_HOME=/tmp/.cache

@@ -38,6 +38,8 @@ spec:
     value: quay.io/rhoai/pull-request-pipelines:odh-trustyai-garak-lls-provider-dsp-{{revision}}
   - name: dockerfile
     value: Dockerfile.konflux
+  - name: build-args-file
+    value: konflux/cpu-ubi9.conf
   - name: path-context
     value: .
   - name: hermetic

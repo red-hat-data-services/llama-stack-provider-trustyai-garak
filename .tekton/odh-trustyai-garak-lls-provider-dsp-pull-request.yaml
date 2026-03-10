@@ -43,17 +43,18 @@ spec:
     - name: path-context
       value: .
     - name: hermetic
-      value: false
-    # - name: prefetch-mode
-    #   value: permissive
-    # - name: prefetch-input
-    #   value: |
-    #     [
-    #     {
-    #       "type": "pip",
-    #       "path": "."
-    #     }
-    #     ]
+      value: true
+    - name: prefetch-mode
+      value: permissive
+    - name: prefetch-input
+      value: |
+        [
+        {
+          "type": "pip",
+          "path": ".",
+          "requirements_files": ["hermetic-test-reqs.txt"]
+        }
+        ]
     - name: build-source-image
       value: true
     - name: build-image-index

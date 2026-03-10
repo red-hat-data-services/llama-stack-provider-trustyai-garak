@@ -8,6 +8,7 @@ USER root
 
 COPY pyproject.toml .
 COPY src src
+COPY hermetic-test-reqs.txt .
 
 # # Install the package itself using prefetched dependencies from cachi2
 # RUN if [ -f /cachi2/cachi2.env ]; then . /cachi2/cachi2.env; fi && \

@@ -53,7 +53,9 @@ spec:
           "type": "pip",
           "path": ".",
           "requirements_files": ["hermetic-test-reqs.txt"],
-          "binary":{}
+          "binary":{
+            "arch": "x86_64,aarch64,ppc64le,s390x"
+          }
         }
         ]
     - name: build-source-image

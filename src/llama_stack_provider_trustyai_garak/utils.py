@@ -2,6 +2,7 @@ from typing import Union
 import httpx
 import os
 from pathlib import Path
+from .constants import XDG_CACHE_HOME, XDG_DATA_HOME, XDG_CONFIG_HOME
 
 
 def _ensure_xdg_vars() -> None:
@@ -17,9 +18,9 @@ def _ensure_xdg_vars() -> None:
     """
     # Default to /tmp subdirectories (always writable)
     xdg_defaults = {
-        "XDG_CACHE_HOME": "/tmp/.cache",
-        "XDG_DATA_HOME": "/tmp/.local/share",
-        "XDG_CONFIG_HOME": "/tmp/.config",
+        "XDG_CACHE_HOME": XDG_CACHE_HOME,
+        "XDG_DATA_HOME": XDG_DATA_HOME,
+        "XDG_CONFIG_HOME": XDG_CONFIG_HOME,
     }
     
     for var, default_path in xdg_defaults.items():
@@ -50,8 +51,8 @@ def get_scan_base_dir() -> Path:
     if scan_dir := os.environ.get("GARAK_SCAN_DIR"):
         return Path(scan_dir)
     
-    # Use XDG_CACHE_HOME/llama_stack_garak_scans
-    return Path(os.environ["XDG_CACHE_HOME"]) / "llama_stack_garak_scans"
+    # Use XDG_CACHE_HOME/trustyai_garak_scans
+    return Path(os.environ["XDG_CACHE_HOME"]) / "trustyai_garak_scans"
 
 
 def get_http_client_with_tls(tls_verify: Union[bool, str] = True) -> httpx.Client:

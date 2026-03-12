@@ -15,22 +15,25 @@ COPY . .
 # Build argument to specify architecture
 ARG TARGETARCH=x86_64
 
-# Install dependencies
-RUN if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ]; then \
-        echo "Installing x86_64 dependencies ..."; \
-        pip install --no-cache-dir -r requirements-x86_64.txt; \
-    elif [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
-        echo "Installing ARM64 dependencies ..."; \
-        pip install --no-cache-dir -r requirements-aarch64.txt; \
-    else \
-        echo "ERROR: Unsupported architecture: $TARGETARCH"; \
-        exit 1; \
-    fi
+# # Install dependencies
+# RUN if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ]; then \
+#         echo "Installing x86_64 dependencies ..."; \
+#         pip install --no-cache-dir -r requirements-x86_64.txt; \
+#     elif [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
+#         echo "Installing ARM64 dependencies ..."; \
+#         pip install --no-cache-dir -r requirements-aarch64.txt; \
+#     else \
+#         echo "ERROR: Unsupported architecture: $TARGETARCH"; \
+#         exit 1; \
+#     fi
 
-# Install the package itself (--no-deps since dependencies already installed)
+# Install cpu torch to reduce image size
+RUN pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+# Install the package itself
 # Use [inline] to get garak dependency
-RUN pip install --no-cache-dir --no-deps -e ".[inline]"
-
+RUN pip install --no-cache-dir ".[inline]"
+RUN pip install --no-cache-dir -r requirements-inline-extra.txt
 # Set XDG environment variables to use /tmp (always writable) for garak to write to
 ENV XDG_CACHE_HOME=/tmp/.cache
 ENV XDG_DATA_HOME=/tmp/.local/share

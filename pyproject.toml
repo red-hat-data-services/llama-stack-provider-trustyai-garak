@@ -1,6 +1,6 @@
 [project]
 name = "llama-stack-provider-trustyai-garak"
-version = "0.2.0"
+version = "0.3.0"
 description = "Out-Of-Tree Llama Stack provider for Garak Red-teaming"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -11,13 +11,18 @@ authors = [
 ]
 keywords = ["llama-stack", "garak", "red-teaming", "security", "ai-safety"]
 dependencies = [
-    "llama-stack-client>=0.5.0",
-    "llama-stack-api>=0.5.0",
+    "llama-stack-client>=0.5.0,<0.6.0",
+    "llama-stack-api>=0.5.0,<0.6.0",
     # Remote execution dependencies
     "kfp>=2.14.6",
     "kfp-kubernetes>=2.14.6",
     "kfp-server-api>=2.14.6",
     "boto3>=1.35.88",
+    # eval-hub integration
+    "eval-hub-sdk[adapter]>=0.1.2",
+    "pandas>=2.3.3",
+    "Jinja2>=3.1.6",
+    # "pytest>=9.0.2", # included in 'dev' extra
 ]
 
 [project.urls]
@@ -31,17 +36,23 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"llama_stack_provider_trustyai_garak" = ["resources/*"]
+
 [project.optional-dependencies]
 inline = [
     "pyasn1==0.6.2", # trivy high vul fix
     "protobuf==6.33.5", # trivy high vul fix
-    "garak==0.14.0",
+    "nest_asyncio>=1.6.0",
+    "garak>=0.14.0"
 ]
+# For intents, install:
+#   pip install -r requirements-inline-extra.txt
 dev = ["pytest", "pytest-cov",  "pytest-asyncio", "black", "isort"]
-server = ["llama-stack>=0.5.0"]
+server = ["llama-stack>=0.5.0,<0.6.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
-python_paths = ["src"]
+pythonpath = ["src"]
 addopts = "-v"

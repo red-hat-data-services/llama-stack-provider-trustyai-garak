@@ -89,7 +89,13 @@ class GarakInlineEvalAdapter(GarakEvalBase):
         benchmark_id = request.benchmark_id
         benchmark_config: BenchmarkConfig = request.benchmark_config
         
-        await self._validate_run_eval_request(benchmark_id, benchmark_config)
+        _, provider_params = await self._validate_run_eval_request(benchmark_id, benchmark_config)
+        if provider_params.get("art_intents", False):
+            from ..errors import GarakValidationError
+            raise GarakValidationError(
+                "Intents benchmarks are not supported in inline mode. "
+                "Use the remote (KFP) provider for intents benchmarks."
+            )
         
         job_id = self._get_job_id()
         job = Job(
@@ -317,8 +323,8 @@ class GarakInlineEvalAdapter(GarakEvalBase):
         
         report_str = report_content.body.decode("utf-8")
         
-        # Use shared parsing utility
-        return parse_generations_from_report_content(report_str, eval_threshold)
+        generations, score_rows_by_probe, _ = parse_generations_from_report_content(report_str, eval_threshold)
+        return generations, score_rows_by_probe
 
     async def _parse_digest_from_report(self, report_file_id: str) -> Dict[str, Any]:
         """Parse digest entry from report.jsonl.

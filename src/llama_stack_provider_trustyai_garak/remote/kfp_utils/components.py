@@ -1,3 +1,13 @@
+"""Llama Stack KFP pipeline components.
+
+Six-step pipeline mirroring the EvalHub KFP pipeline, using the
+Llama Stack Files API for I/O and shared ``core.pipeline_steps``
+for business logic.
+
+Steps: validate -> resolve_taxonomy -> sdg_generate -> prepare_prompts
+       -> garak_scan -> parse_results
+"""
+
 from kfp import dsl
 from typing import NamedTuple, List, Dict
 import os
@@ -20,15 +30,13 @@ logger.setLevel(logging.INFO)
 
 def get_base_image() -> str:
     """Get base image from env, fallback to k8s ConfigMap, fallback to default image.
-    
+
     This function is called at module import time, so it must handle cases where
     kubernetes config is not available (e.g., in tests or non-k8s environments).
     """
-    # Check environment variable first (highest priority)
     if (base_image := os.environ.get("KUBEFLOW_GARAK_BASE_IMAGE")) is not None:
         return base_image
 
-    # Try to load from kubernetes ConfigMap
     try:
         _load_kube_config()
         api = client.CoreV1Api()
@@ -51,7 +59,6 @@ def get_base_image() -> str:
             except Exception as e:
                 logger.warning(f"Warning: Could not read from ConfigMap: {e}")
         else:
-            # None of the candidate namespaces had the required ConfigMap/key
             logger.debug(
                 f"ConfigMap '{GARAK_PROVIDER_IMAGE_CONFIGMAP_NAME}' with key "
                 f"'{GARAK_PROVIDER_IMAGE_CONFIGMAP_KEY}' not found in any of the namespaces: "
@@ -59,225 +66,427 @@ def get_base_image() -> str:
             )
             return DEFAULT_GARAK_PROVIDER_IMAGE
     except Exception as e:
-        # Kubernetes config not available (e.g., in tests or non-k8s environment)
         logger.debug(f"Kubernetes config not available: {e}. Using default image.")
         return DEFAULT_GARAK_PROVIDER_IMAGE
 
-# Component 1: Validation Step
+
+# ---------------------------------------------------------------------------
+# Helper: parse verify_ssl string from pipeline param
+# ---------------------------------------------------------------------------
+
+def _parse_verify_ssl(verify_ssl: str):
+    """Convert pipeline string param to bool or cert path."""
+    if verify_ssl.lower() in ("true", "1", "yes", "on"):
+        return True
+    if verify_ssl.lower() in ("false", "0", "no", "off"):
+        return False
+    return verify_ssl
+
+
+# ---------------------------------------------------------------------------
+# Component 1: Validation
+# ---------------------------------------------------------------------------
+
 @dsl.component(
     base_image=get_base_image(),
     install_kfp_package=False,  # All dependencies pre-installed in base image
     packages_to_install=[]  # No additional packages needed
 )
-def validate_inputs(
+def validate(
     command: str,
     llama_stack_url: str,
-    verify_ssl: str
-) -> NamedTuple('outputs', [
-    ('is_valid', bool),
-    ('validation_errors', List[str])
-]):
-    """Validate inputs before running expensive scan"""
+    verify_ssl: str,
+) -> NamedTuple("Outputs", [("valid", bool)]):
+    """Pre-flight validation: garak, config JSON, flags, Llama Stack connectivity."""
+    import logging
+    from collections import namedtuple
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    log = logging.getLogger("validate")
+
+    from llama_stack_provider_trustyai_garak.core.pipeline_steps import validate_scan_config
+    from llama_stack_provider_trustyai_garak.errors import GarakValidationError
+
+    validate_scan_config(command)
+    log.info("Core config validation passed")
+
+    # Llama Stack connectivity check
+    from llama_stack_client import LlamaStackClient
+    from llama_stack_provider_trustyai_garak.utils import get_http_client_with_tls
+
+    if verify_ssl.lower() in ("true", "1", "yes", "on"):
+        parsed_ssl = True
+    elif verify_ssl.lower() in ("false", "0", "no", "off"):
+        parsed_ssl = False
+    else:
+        parsed_ssl = verify_ssl
+
+    try:
+        ls_client = LlamaStackClient(
+            base_url=llama_stack_url,
+            http_client=get_http_client_with_tls(parsed_ssl),
+        )
+        ls_client.files.list(limit=1)
+        log.info("Llama Stack Files API is reachable")
+    except Exception as exc:
+        raise GarakValidationError(
+            f"Cannot connect to Llama Stack at {llama_stack_url}: {exc}"
+        ) from exc
+    finally:
+        try:
+            ls_client.close()
+        except Exception:
+            pass
+
+    log.info("All pre-flight checks passed")
+    Outputs = namedtuple("Outputs", ["valid"])
+    return Outputs(valid=True)
+
+
+# ---------------------------------------------------------------------------
+# Component 2: Resolve taxonomy
+# ---------------------------------------------------------------------------
+
+@dsl.component(
+    base_image=get_base_image(),
+    install_kfp_package=False,
+    packages_to_install=[],
+)
+def resolve_taxonomy(
+    art_intents: bool,
+    policy_file_id: str,
+    policy_format: str,
+    llama_stack_url: str,
+    verify_ssl: str,
+    taxonomy_dataset: dsl.Output[dsl.Dataset],
+):
+    """Resolve taxonomy: custom from Files API or built-in BASE_TAXONOMY."""
+    import logging
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    log = logging.getLogger("resolve_taxonomy")
+
+    from llama_stack_provider_trustyai_garak.core.pipeline_steps import resolve_taxonomy_data
+
+    if not art_intents:
+        log.info("Non-intents scan — writing empty taxonomy marker")
+        with open(taxonomy_dataset.path, "w") as f:
+            f.write("")
+        return
+
+    policy_content = None
+    if policy_file_id and policy_file_id.strip():
+        from llama_stack_client import LlamaStackClient
+        from llama_stack_provider_trustyai_garak.utils import get_http_client_with_tls
+
+        if verify_ssl.lower() in ("true", "1", "yes", "on"):
+            parsed_ssl = True
+        elif verify_ssl.lower() in ("false", "0", "no", "off"):
+            parsed_ssl = False
+        else:
+            parsed_ssl = verify_ssl
+
+        log.info("Fetching policy taxonomy (file_id=%s)", policy_file_id)
+        ls_client = LlamaStackClient(
+            base_url=llama_stack_url,
+            http_client=get_http_client_with_tls(parsed_ssl),
+        )
+        try:
+            raw = ls_client.files.content(policy_file_id)
+            policy_content = raw if isinstance(raw, bytes) else str(raw).encode("utf-8")
+        finally:
+            try:
+                ls_client.close()
+            except Exception:
+                pass
+
+    taxonomy_df = resolve_taxonomy_data(policy_content, format=policy_format)
+    taxonomy_df.to_csv(taxonomy_dataset.path, index=False)
+    log.info("Wrote taxonomy (%d entries) to artifact", len(taxonomy_df))
+
+
+# ---------------------------------------------------------------------------
+# Component 3: SDG generation
+# ---------------------------------------------------------------------------
+
+@dsl.component(
+    base_image=get_base_image(),
+    install_kfp_package=False,
+    packages_to_install=[],
+)
+def sdg_generate(
+    art_intents: bool,
+    intents_file_id: str,
+    sdg_model: str,
+    sdg_api_base: str,
+    sdg_flow_id: str,
+    taxonomy_dataset: dsl.Input[dsl.Dataset],
+    sdg_dataset: dsl.Output[dsl.Dataset],
+):
+    """Run SDG on taxonomy to produce raw prompts, or emit empty marker.
+
+    No API key parameter — Llama Stack models handle their own auth
+    at the server level.  ``run_sdg_generation`` falls back to
+    ``resolve_api_key("sdg")`` which returns ``"DUMMY"`` when no
+    Secret is injected.
+    """
+    import logging
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    log = logging.getLogger("sdg_generate")
+
+    if not art_intents:
+        log.info("Non-intents scan — writing empty dataset marker")
+        with open(sdg_dataset.path, "w") as f:
+            f.write("")
+        return
+
+    if intents_file_id and intents_file_id.strip():
+        log.info("Bypass mode (intents_file_id set) — SDG not needed")
+        with open(sdg_dataset.path, "w") as f:
+            f.write("")
+        return
+
+    import pandas as pd
+    from llama_stack_provider_trustyai_garak.core.pipeline_steps import run_sdg_generation
+
+    taxonomy = pd.read_csv(taxonomy_dataset.path)
+    log.info("Read taxonomy: %d entries", len(taxonomy))
+
+    raw_df = run_sdg_generation(
+        taxonomy_df=taxonomy,
+        sdg_model=sdg_model,
+        sdg_api_base=sdg_api_base,
+        sdg_flow_id=sdg_flow_id,
+    )
+    raw_df.to_csv(sdg_dataset.path, index=False)
+    log.info("Wrote %d raw SDG rows to artifact", len(raw_df))
+
+
+# ---------------------------------------------------------------------------
+# Component 4: Prepare prompts (normalise + persist artifacts)
+# ---------------------------------------------------------------------------
+
+@dsl.component(
+    base_image=get_base_image(),
+    install_kfp_package=False,
+    packages_to_install=[],
+)
+def prepare_prompts(
+    art_intents: bool,
+    job_id: str,
+    intents_file_id: str,
+    intents_format: str,
+    llama_stack_url: str,
+    verify_ssl: str,
+    sdg_dataset: dsl.Input[dsl.Dataset],
+    prompts_dataset: dsl.Output[dsl.Dataset],
+):
+    """Normalise raw prompts and upload raw/normalised artifacts to Files API."""
+    import logging
+    import os
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    log = logging.getLogger("prepare_prompts")
+
+    if not art_intents:
+        log.info("Non-intents scan — passing through empty marker")
+        with open(prompts_dataset.path, "w") as f:
+            f.write("")
+        return
 
     from llama_stack_client import LlamaStackClient
     from llama_stack_provider_trustyai_garak.utils import get_http_client_with_tls
-    from llama_stack_provider_trustyai_garak.errors import GarakValidationError
-    import json
+    from llama_stack_provider_trustyai_garak.core.pipeline_steps import normalize_prompts
 
-    validation_errors = []
-    
-    # Validate Llama Stack connectivity
-    try:
-        client = LlamaStackClient(base_url=llama_stack_url,
-                                  http_client=get_http_client_with_tls(verify_ssl))
-        # Test connection
-        client.files.list(limit=1)
-    except Exception as e:
-        validation_errors.append(f"Cannot connect to Llama Stack: {str(e)}")
-    finally:
-        if client:
-            try:
-                client.close()
-            except Exception as e:
-                logger.warning(f"Error closing client: {e}")
-    
-    # Check garak is installed
-    try:
-        import garak
-    except ImportError as e:
-        validation_errors.append(f"Garak is not installed. Please install it using 'pip install garak': {e}")
-        raise e
+    if verify_ssl.lower() in ("true", "1", "yes", "on"):
+        parsed_ssl = True
+    elif verify_ssl.lower() in ("false", "0", "no", "off"):
+        parsed_ssl = False
+    else:
+        parsed_ssl = verify_ssl
 
-    # Validate command
-    try:
-        _ = json.loads(command)
-    except json.JSONDecodeError as e:
-        validation_errors.append(f"Invalid command: {e}")
-        raise e
-    
-    # Check for dangerous flags
-    dangerous_flags = ['--rm', '--force', '--no-limit']
-    for flag in dangerous_flags:
-        if flag in command:
-            validation_errors.append(f"Dangerous flag detected: {flag}")
-    
-    if len(validation_errors) > 0:
-        raise GarakValidationError("\n".join(validation_errors))
-    
-    return (
-        len(validation_errors) == 0,
-        validation_errors
+    ls_client = LlamaStackClient(
+        base_url=llama_stack_url,
+        http_client=get_http_client_with_tls(parsed_ssl),
     )
 
-# Component 2: Garak Scan
+    try:
+        raw_content: str | None = None
+
+        # Bypass SDG: fetch user's pre-generated dataset from Files API
+        if intents_file_id and intents_file_id.strip():
+            log.info("Bypass mode — fetching intents dataset (file_id=%s)", intents_file_id)
+            raw_bytes = ls_client.files.content(intents_file_id)
+            raw_content = raw_bytes.decode("utf-8") if isinstance(raw_bytes, bytes) else str(raw_bytes)
+
+        # SDG ran: read the raw artifact
+        elif os.path.getsize(sdg_dataset.path) > 0:
+            with open(sdg_dataset.path) as f:
+                raw_content = f.read()
+            log.info("Read raw SDG output from artifact (%d bytes)", len(raw_content))
+        else:
+            log.warning("No SDG output and no intents_file_id — writing empty marker")
+            with open(prompts_dataset.path, "w") as f:
+                f.write("")
+            return
+
+        # Upload raw dataset
+        raw_filename = f"{job_id}_sdg_raw_output.csv"
+        uploaded = ls_client.files.create(
+            file=(raw_filename, raw_content.encode("utf-8")),
+            purpose="assistants",
+        )
+        log.info("Uploaded raw output: %s (ID: %s)", raw_filename, uploaded.id)
+
+        # Normalise
+        fmt = intents_format if (intents_file_id and intents_file_id.strip()) else "csv"
+        normalized_df = normalize_prompts(raw_content, format=fmt)
+        normalized_df.to_csv(prompts_dataset.path, index=False)
+
+        # Upload normalised dataset
+        norm_filename = f"{job_id}_sdg_normalized_output.csv"
+        with open(prompts_dataset.path, "rb") as nf:
+            uploaded_norm = ls_client.files.create(
+                file=(norm_filename, nf.read()),
+                purpose="assistants",
+            )
+        log.info("Uploaded normalised output: %s (ID: %s)", norm_filename, uploaded_norm.id)
+
+    finally:
+        try:
+            ls_client.close()
+        except Exception:
+            pass
+
+
+# ---------------------------------------------------------------------------
+# Component 5: Garak scan
+# ---------------------------------------------------------------------------
+
 @dsl.component(
     base_image=get_base_image(),
-    install_kfp_package=False,  # All dependencies pre-installed in base image
-    packages_to_install=[]  # No additional packages needed
+    install_kfp_package=False,
+    packages_to_install=[],
 )
 def garak_scan(
     command: str,
     llama_stack_url: str,
     job_id: str,
-    max_retries: int,
     timeout_seconds: int,
-    verify_ssl: str
-) -> NamedTuple('outputs', [
-    ('exit_code', int),
-    ('success', bool),
-    ('file_id_mapping', Dict[str, str])
+    verify_ssl: str,
+    prompts_dataset: dsl.Input[dsl.Dataset],
+) -> NamedTuple("Outputs", [
+    ("exit_code", int),
+    ("success", bool),
+    ("file_id_mapping", Dict[str, str]),
 ]):
-    """Actual Garak Scan"""
-    import subprocess
-    import time
-    import os
-    import signal
+    """Run Garak scan via core runner and upload outputs to Files API."""
     import json
-    from llama_stack_client import LlamaStackClient
     import logging
-    from llama_stack_provider_trustyai_garak.utils import get_http_client_with_tls, get_scan_base_dir
+    import tempfile
+    from collections import namedtuple
+    from pathlib import Path
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    log = logging.getLogger("garak_scan")
 
-    # Setup directories using shared XDG-based scan directory (automatically uses /tmp/.cache)
-    scan_dir = get_scan_base_dir()
-    scan_dir.mkdir(exist_ok=True, parents=True)
-    logger.info(f"Scan directory: {scan_dir}")
-    
-    scan_log_file = scan_dir / f"{job_id}_scan.log"
-    scan_report_prefix = scan_dir / f"{job_id}_scan"
+    from llama_stack_client import LlamaStackClient
+    from llama_stack_provider_trustyai_garak.utils import get_http_client_with_tls
+    from llama_stack_provider_trustyai_garak.core.pipeline_steps import (
+        setup_and_run_garak,
+        redact_api_keys,
+    )
 
-    scan_cmd_config_file = scan_dir / f"config.json"
-    scan_cmd_config = json.loads(command)
-    scan_cmd_config['reporting']['report_prefix'] = str(scan_report_prefix)
-    with open(scan_cmd_config_file, 'w') as f:
-        json.dump(scan_cmd_config, f)
-    
-    command = ['garak', '--config', str(scan_cmd_config_file)]
-    env = os.environ.copy()
-    env["GARAK_LOG_FILE"] = str(scan_log_file)
-    
-    file_id_mapping = {}
-    client = None
-    
-    ## TODO: why not use dsl.PipelineTask.set_retry()..?
-    for attempt in range(max_retries):
-        
+    scan_dir = Path(tempfile.mkdtemp(prefix="garak-scan-"))
+
+    prompts_path = Path(prompts_dataset.path)
+    has_prompts = prompts_path.exists() and prompts_path.stat().st_size > 0
+
+    result = setup_and_run_garak(
+        config_json=command,
+        prompts_csv_path=prompts_path if has_prompts else None,
+        scan_dir=scan_dir,
+        timeout_seconds=timeout_seconds,
+    )
+
+    # Redact api_key values from config.json before uploading to Files API
+    config_file = scan_dir / "config.json"
+    if config_file.exists():
         try:
-            logger.info(f"Starting Garak scan (attempt {attempt + 1}/{max_retries})")
+            cfg = json.loads(config_file.read_text())
+            config_file.write_text(json.dumps(redact_api_keys(cfg), indent=1))
+            log.info("Redacted api_key values from config.json before upload")
+        except Exception as exc:
+            log.warning("Could not redact config.json: %s", exc)
 
-            process = subprocess.Popen(
-                command,
-                stdout=None,  # (show progress in KFP pod logs)
-                stderr=None,  # (show progress in KFP pod logs)
-                env=env,
-                preexec_fn=os.setsid  # Create new process group
-            )
-            
-            try:
-                # Wait for completion
-                process.wait(timeout=timeout_seconds)
-                
-            except subprocess.TimeoutExpired:
-                logger.error(f"Garak scan timed out after {timeout_seconds} seconds")
-                # Kill the entire process group
-                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    # process is still running, kill it with SIGKILL
-                    logger.warning("Process did not terminate gracefully, forcing kill")
-                    os.killpg(os.getpgid(process.pid), signal.SIGKILL)
-                    process.wait()
-                raise
-            
-            
-            if process.returncode != 0:
-                logger.error(f"Garak scan failed with exit code {process.returncode}")
-                raise subprocess.CalledProcessError(
-                    process.returncode, command
-                )
-            
-            logger.info("Garak scan completed successfully")
-            
-            # create avid report file
-            report_file = scan_report_prefix.with_suffix(".report.jsonl")
-            try:
-                from garak.report import Report
-                
-                if not report_file.exists():
-                    logger.error(f"Report file not found: {report_file}")
-                else:
-                    report = Report(str(report_file)).load().get_evaluations()
-                    report.export()  # this will create a new file - scan_report_prefix.with_suffix(".avid.jsonl")
-                    logger.info("Successfully converted report to AVID format")
-                    
-            except FileNotFoundError as e:
-                logger.error(f"Report file not found during AVID conversion: {e}")
-            except PermissionError as e:
-                logger.error(f"Permission denied reading report file: {e}")
-            except (json.JSONDecodeError, ValueError) as e:
-                logger.error(f"Failed to parse report file: {e}", exc_info=True)
-            except ImportError as e:
-                logger.error(f"Failed to import AVID report module: {e}")
-            except Exception as e:
-                logger.error(f"Unexpected error converting report to AVID format: {e}", exc_info=True)
+    # Upload scan outputs to Files API
+    if verify_ssl.lower() in ("true", "1", "yes", "on"):
+        parsed_ssl = True
+    elif verify_ssl.lower() in ("false", "0", "no", "off"):
+        parsed_ssl = False
+    else:
+        parsed_ssl = verify_ssl
 
-            # Upload files to llama stack
-            client = LlamaStackClient(base_url=llama_stack_url,
-                                      http_client=get_http_client_with_tls(verify_ssl))
-            
-            for file_path in scan_dir.glob('*'):
-                if file_path.is_file():
-                    with open(file_path, 'rb') as f:
-                        uploaded_file = client.files.create(
-                            file=f, 
-                            purpose='assistants'
-                        )
-                        file_id_mapping[uploaded_file.filename] = uploaded_file.id
-                            
-            
-            return (0, True, file_id_mapping)
-            
-        except Exception as e:
-            if attempt < max_retries - 1:
-                wait_time = min(5 * (2 ** attempt), 60)  # Exponential backoff
-                logger.error(f"Error: {e}", exc_info=True)
-                logger.error(f"Attempt {attempt + 1} failed, retrying in {wait_time}s...")
-                time.sleep(wait_time)
-            else:
-                raise e
-        finally:
-            if client:
-                try:
-                    client.close()
-                except Exception as e:
-                    logger.warning(f"Error closing client: {e}")
+    ls_client = LlamaStackClient(
+        base_url=llama_stack_url,
+        http_client=get_http_client_with_tls(parsed_ssl),
+    )
 
-    return (-1, False, file_id_mapping)
+    file_id_mapping: dict[str, str] = {}
+    try:
+        for file_path in scan_dir.rglob("*"):
+            if file_path.is_file():
+                upload_name = f"{job_id}_{file_path.name}" if not file_path.name.startswith(job_id) else file_path.name
+                with open(file_path, "rb") as f:
+                    uploaded = ls_client.files.create(
+                        file=(upload_name, f.read()),
+                        purpose="assistants",
+                    )
+                    file_id_mapping[uploaded.filename] = uploaded.id
 
-# Component 3: Results Parser
+        # Upload raw mapping early as safety net
+        raw_mapping_filename = f"{job_id}_mapping_raw.json"
+        raw_mapping_content = json.dumps(file_id_mapping).encode("utf-8")
+        ls_client.files.create(
+            file=(raw_mapping_filename, raw_mapping_content),
+            purpose="batch",
+        )
+        log.info("Uploaded raw mapping: %s (%d files)", raw_mapping_filename, len(file_id_mapping))
+
+    finally:
+        try:
+            ls_client.close()
+        except Exception:
+            pass
+
+    Outputs = namedtuple("Outputs", ["exit_code", "success", "file_id_mapping"])
+    return Outputs(
+        exit_code=result.returncode,
+        success=result.success,
+        file_id_mapping=file_id_mapping,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Component 6: Parse results
+# ---------------------------------------------------------------------------
+
 @dsl.component(
     base_image=get_base_image(),
     install_kfp_package=False,  # All dependencies pre-installed in base image
@@ -289,156 +498,142 @@ def parse_results(
     eval_threshold: float,
     job_id: str,
     verify_ssl: str,
+    art_intents: bool,
     summary_metrics: dsl.Output[dsl.Metrics],
-    html_report: dsl.Output[dsl.HTML]
+    html_report: dsl.Output[dsl.HTML],
 ):
-    """Parse Garak scan results using shared result_utils.
-    
-    Uploads file_id_mapping with predictable filename pattern: {job_id}_mapping.json
-    Server retrieves it by searching Files API for this filename.
-    """
-    import os
+    """Parse scan results, build EvaluateResponse, log KFP metrics, upload artifacts."""
     import json
+    import logging
+    from pathlib import Path
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+    log = logging.getLogger("parse_results")
+
     from llama_stack_client import LlamaStackClient
     from llama_stack_provider_trustyai_garak.compat import ScoringResult, EvaluateResponse
     from llama_stack_provider_trustyai_garak.errors import GarakValidationError
-    from llama_stack_provider_trustyai_garak import result_utils
-    import logging
     from llama_stack_provider_trustyai_garak.utils import get_http_client_with_tls, get_scan_base_dir
+    from llama_stack_provider_trustyai_garak.core.pipeline_steps import (
+        parse_and_build_results,
+        log_kfp_metrics,
+    )
+    from llama_stack_provider_trustyai_garak import result_utils
 
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
-
-    # Parse verify_ssl string back to bool or keep as path
     if verify_ssl.lower() in ("true", "1", "yes", "on"):
-        parsed_verify_ssl = True
+        parsed_ssl = True
     elif verify_ssl.lower() in ("false", "0", "no", "off"):
-        parsed_verify_ssl = False
+        parsed_ssl = False
     else:
-        # It's a path to a certificate file
-        parsed_verify_ssl = verify_ssl
+        parsed_ssl = verify_ssl
 
-    client = LlamaStackClient(base_url=llama_stack_url,
-                              http_client=get_http_client_with_tls(parsed_verify_ssl))
-    
-    # Get report files
-    report_file_id = file_id_mapping.get(f"{job_id}_scan.report.jsonl", "")
-    avid_file_id = file_id_mapping.get(f"{job_id}_scan.avid.jsonl", "")
-    
-    if not report_file_id:
-        raise GarakValidationError("No report file found")
-    
-    # Fetch content
-    logger.info(f"Fetching report.jsonl (ID: {report_file_id})...")
-    report_content = client.files.content(report_file_id)
-    
-    avid_content = ""
-    if avid_file_id:
-        logger.info(f"Fetching avid.jsonl (ID: {avid_file_id})...")
-        avid_content = client.files.content(avid_file_id)
-    else:
-        logger.warning("No AVID report - will not have taxonomy info")
-    
-    # Parse using shared utilities
-    logger.debug("Parsing generations from report.jsonl...")
-    generations, score_rows_by_probe = result_utils.parse_generations_from_report_content(
-        report_content, eval_threshold
+    ls_client = LlamaStackClient(
+        base_url=llama_stack_url,
+        http_client=get_http_client_with_tls(parsed_ssl),
     )
-    logger.info(f"Parsed {len(generations)} attempts")
-    
-    logger.debug("Parsing aggregated info from AVID report...")
-    aggregated_by_probe = result_utils.parse_aggregated_from_avid_content(avid_content)
-    logger.info(f"Parsed {len(aggregated_by_probe)} probe summaries")
-    
-    logger.debug("Parsing digest from report.jsonl...")
-    digest = result_utils.parse_digest_from_report_content(report_content)
-    logger.info(f"Digest parsed: {bool(digest)}")
-    
-    logger.debug("Combining results...")
-    result_dict = result_utils.combine_parsed_results(
-        generations,
-        score_rows_by_probe,
-        aggregated_by_probe,
-        eval_threshold,
-        digest
-    )
-    
-    # Convert to EvaluateResponse
-    scores_with_scoring_result = {
-        probe_name: ScoringResult(
-            score_rows=score_data["score_rows"],
-            aggregated_results=score_data["aggregated_results"]
-        )
-        for probe_name, score_data in result_dict["scores"].items()
-    }
-    
-    scan_result = EvaluateResponse(
-        generations=result_dict["generations"],
-        scores=scores_with_scoring_result
-    ).model_dump()
-    
-    # Save file using shared XDG-based directory
-    logger.info("Saving scan result...")
-    scan_dir = get_scan_base_dir()
-    scan_dir.mkdir(exist_ok=True, parents=True)
-    scan_result_file = scan_dir / f"{job_id}_scan_result.json"
-    with open(scan_result_file, 'w') as f:
-        json.dump(scan_result, f)
-    
-    with open(scan_result_file, 'rb') as result_file:
-        uploaded_file = client.files.create(
-            file=result_file,
-            purpose='assistants'
-        )
-        file_id_mapping[uploaded_file.filename] = uploaded_file.id
-    
-    logger.info(f"Updated file_id_mapping: {file_id_mapping}")
 
-    # Upload file_id_mapping to Files API with predictable filename
-    # Server will retrieve by searching for this filename pattern
-    mapping_filename = f"{job_id}_mapping.json"
-    mapping_file_path = scan_dir / mapping_filename
-    with open(mapping_file_path, 'w') as f:
-        json.dump(file_id_mapping, f)
-    
-    logger.info(f"Uploading file_id_mapping to Files API as '{mapping_filename}'...")
-    with open(mapping_file_path, 'rb') as f:
-        mapping_file = client.files.create(
-            file=f,
-            purpose='batch'
-        )
-        logger.info(f"File mapping uploaded: {mapping_file.filename} (ID: {mapping_file.id})")
-    
-    # combine scores of all probes into a single metric to log
-    scoring_result_overall = scores_with_scoring_result.get("_overall")
-    if scoring_result_overall:
-        overall_metrics = scoring_result_overall.aggregated_results
-    else:
-        overall_metrics = {}
-    log_metrics = {
-        "total_attempts": overall_metrics.get("total_attempts", 0),
-        "vulnerable_responses": overall_metrics.get("vulnerable_responses", 0),
-        "attack_success_rate": overall_metrics.get("attack_success_rate", 0),
-    }
-    if overall_metrics.get("tbsa"):
-        log_metrics["tbsa"] = overall_metrics["tbsa"]
-    if log_metrics["total_attempts"] > 0:
-        for key, value in log_metrics.items():
-            summary_metrics.log_metric(key, value)
+    def _content_to_str(content) -> str:
+        return content.decode("utf-8") if isinstance(content, bytes) else str(content)
 
-    html_report_id = file_id_mapping.get(f"{job_id}_scan.report.html")
-    if html_report_id:
-        html_content = client.files.content(html_report_id)
-        if html_content:
-            with open(html_report.path, 'w') as f:
-                f.write(html_content)
+    try:
+        # Fetch report files
+        report_file_id = file_id_mapping.get(f"{job_id}_scan.report.jsonl", "")
+        avid_file_id = file_id_mapping.get(f"{job_id}_scan.avid.jsonl", "")
+
+        if not report_file_id:
+            raise GarakValidationError("No report file found in file_id_mapping")
+
+        log.info("Fetching report.jsonl (ID: %s)", report_file_id)
+        report_content = _content_to_str(ls_client.files.content(report_file_id))
+
+        avid_content = ""
+        if avid_file_id:
+            log.info("Fetching avid.jsonl (ID: %s)", avid_file_id)
+            avid_content = _content_to_str(ls_client.files.content(avid_file_id))
+
+        # Parse using core function
+        result_dict = parse_and_build_results(
+            report_content=report_content,
+            avid_content=avid_content,
+            art_intents=art_intents,
+            eval_threshold=eval_threshold,
+        )
+
+        # Build EvaluateResponse
+        scores_with_sr = {
+            probe_name: ScoringResult(
+                score_rows=score_data["score_rows"],
+                aggregated_results=score_data["aggregated_results"],
+            )
+            for probe_name, score_data in result_dict["scores"].items()
+        }
+        scan_result = EvaluateResponse(
+            generations=result_dict["generations"],
+            scores=scores_with_sr,
+        ).model_dump()
+
+        # Save and upload EvaluateResponse
+        scan_dir = get_scan_base_dir()
+        scan_dir.mkdir(exist_ok=True, parents=True)
+
+        result_filename = f"{job_id}_scan_result.json"
+        result_path = scan_dir / result_filename
+        result_path.write_text(json.dumps(scan_result))
+
+        with open(result_path, "rb") as rf:
+            uploaded = ls_client.files.create(
+                file=(result_filename, rf.read()),
+                purpose="assistants",
+            )
+            file_id_mapping[uploaded.filename] = uploaded.id
+        log.info("Uploaded scan result: %s (ID: %s)", result_filename, uploaded.id)
+
+        # Upload intents HTML if applicable
+        if art_intents:
+            html_filename = f"{job_id}_scan.intents.html"
+            html_content = result_utils.generate_art_report(report_content)
+            uploaded_html = ls_client.files.create(
+                file=(html_filename, html_content.encode("utf-8")),
+                purpose="assistants",
+            )
+            file_id_mapping[uploaded_html.filename] = uploaded_html.id
+            log.info("Uploaded intents HTML: %s (ID: %s)", html_filename, uploaded_html.id)
+
+        # Upload final file_id_mapping
+        mapping_filename = f"{job_id}_mapping.json"
+        mapping_content = json.dumps(file_id_mapping).encode("utf-8")
+        mapping_uploaded = ls_client.files.create(
+            file=(mapping_filename, mapping_content),
+            purpose="batch",
+        )
+        log.info("Uploaded mapping: %s (ID: %s)", mapping_filename, mapping_uploaded.id)
+
+        # Log KFP metrics
+        log_kfp_metrics(summary_metrics, result_dict, art_intents)
+
+        # Write HTML report to KFP artifact
+        html_output_content = None
+        if art_intents:
+            html_report_id = file_id_mapping.get(f"{job_id}_scan.intents.html")
+            if html_report_id:
+                html_output_content = _content_to_str(ls_client.files.content(html_report_id))
         else:
-            logger.warning("No HTML content found")
-    else:
-        logger.warning("No HTML report ID found")
-    
-    if client:
+            html_report_id = file_id_mapping.get(f"{job_id}_scan.report.html")
+            if html_report_id:
+                html_output_content = _content_to_str(ls_client.files.content(html_report_id))
+
+        if html_output_content:
+            with open(html_report.path, "w") as hf:
+                hf.write(html_output_content)
+        else:
+            with open(html_report.path, "w") as hf:
+                hf.write("<html><body><p>No HTML report available.</p></body></html>")
+
+    finally:
         try:
-            client.close()
-        except Exception as e:
-            logger.warning(f"Error closing client: {e}")
+            ls_client.close()
+        except Exception:
+            pass

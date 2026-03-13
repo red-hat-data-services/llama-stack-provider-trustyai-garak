@@ -186,20 +186,29 @@ class GarakRemoteEvalAdapter(GarakEvalBase):
                 raise GarakConfigError("llama_stack_url cannot be empty after normalization")
 
             from .kfp_utils.pipeline import garak_scan_pipeline
-            
+            from ..core.pipeline_steps import redact_api_keys
+
             self._ensure_kfp_client()
+
+            sanitised_config = redact_api_keys(cmd_config)
             
             run = self.kfp_client.create_run_from_pipeline_func(
                 garak_scan_pipeline,
                 arguments={
-                    "command": json.dumps(cmd_config),
+                    "command": json.dumps(sanitised_config),
                     "llama_stack_url": llama_stack_url,
                     "job_id": job_id,
                     "eval_threshold": float(garak_config.run.eval_threshold),
                     "timeout_seconds": int(timeout),
-                    "max_retries": int(provider_params.get("max_retries", 3)),
-                    "use_gpu": provider_params.get("use_gpu", False),
                     "verify_ssl": str(self._verify_ssl),
+                    "art_intents": provider_params.get("art_intents", False),
+                    "policy_file_id": provider_params.get("policy_file_id", ""),
+                    "policy_format": provider_params.get("policy_format", "csv"),
+                    "intents_file_id": provider_params.get("intents_file_id", ""),
+                    "intents_format": provider_params.get("intents_format", "csv"),
+                    "sdg_model": provider_params.get("sdg_model", ""),
+                    "sdg_api_base": provider_params.get("sdg_api_base", ""),
+                    "sdg_flow_id": provider_params.get("sdg_flow_id", ""),
                 },
                 run_name=f"garak-{benchmark_id.split('::')[-1]}-{job_id.removeprefix(JOB_ID_PREFIX)}",
                 namespace=self._config.kubeflow_config.namespace,
@@ -279,9 +288,11 @@ class GarakRemoteEvalAdapter(GarakEvalBase):
 
                     if job.status == JobStatus.completed:
                         # Retrieve file_id_mapping from Files API using predictable filename
+                        # Two-phase mapping: parse_results uploads enriched {job_id}_mapping.json,
+                        # garak_scan uploads raw {job_id}_mapping_raw.json as fallback
                         try:
-                            # The KFP pod uploads mapping with filename: {job_id}_mapping.json
                             mapping_filename = f"{job_id}_mapping.json"
+                            raw_mapping_filename = f"{job_id}_mapping_raw.json"
                             
                             logger.debug(f"Searching for mapping file: {mapping_filename}")
                             
@@ -290,10 +301,15 @@ class GarakRemoteEvalAdapter(GarakEvalBase):
                                 files_list = await self.file_api.openai_list_files(ListFilesRequest(purpose=OpenAIFilePurpose.BATCH))
                                 
                                 for file_obj in files_list.data:
-                                    if hasattr(file_obj, 'filename') and file_obj.filename == mapping_filename:
+                                    if not hasattr(file_obj, 'filename'):
+                                        continue
+                                    if file_obj.filename == mapping_filename:
                                         self._job_metadata[job_id]['mapping_file_id'] = file_obj.id
-                                        logger.debug(f"Found mapping file: {mapping_filename} (ID: {file_obj.id})")
+                                        logger.debug(f"Found enriched mapping: {mapping_filename} (ID: {file_obj.id})")
                                         break
+                                    elif file_obj.filename == raw_mapping_filename:
+                                        self._job_metadata[job_id]['mapping_file_id'] = file_obj.id
+                                        logger.debug(f"Found raw mapping (fallback): {raw_mapping_filename} (ID: {file_obj.id})")
                             
                             if mapping_file_id := self._job_metadata[job_id].get('mapping_file_id'):
                                 # Retrieve the mapping file via Files API
@@ -313,7 +329,7 @@ class GarakRemoteEvalAdapter(GarakEvalBase):
                                     logger.warning(f"Empty mapping file content for file ID: {mapping_file_id}")
                             else:
                                 logger.warning(
-                                    f"Could not find mapping file '{mapping_filename}' in Files API. "
+                                    f"Could not find mapping file '{mapping_filename}' or '{raw_mapping_filename}' in Files API. "
                                     f"This might be expected if the pipeline is still running or failed."
                                 )
                                 

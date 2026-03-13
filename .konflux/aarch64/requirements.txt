@@ -1152,9 +1152,9 @@ langchain==1.2.7 \
     --hash=sha256:1d643c8ca569bcde2470b853807f74f0768b3982d25d66d57db21a166aabda72 \
     --hash=sha256:ba40e8d5b069a22f7085f54f405973da3d87cfdebf116282e77c692271432ecb
     # via garak
-langchain-core==1.2.7 \
-    --hash=sha256:452f4fef7a3d883357b22600788d37e3d8854ef29da345b7ac7099f33c31828b \
-    --hash=sha256:e1460639f96c352b4a41c375f25aeb8d16ffc1769499fb1c20503aad59305ced
+langchain-core==1.2.19 \
+    --hash=sha256:6e74cb0fb443a8046ee298c05c99b67abe54cc57fcbc6d1cd3b0f2485ee47574 \
+    --hash=sha256:87fa82c3eb4cc3d7a65f574cb447b5df09ec2131c8c2a0a02d4737ad02685438
     # via
     #   langchain
     #   langgraph

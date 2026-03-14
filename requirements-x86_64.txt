@@ -1969,9 +1969,9 @@ ollama==0.6.1 \
     --hash=sha256:478c67546836430034b415ed64fa890fd3d1ff91781a9d548b3325274e69d7c6 \
     --hash=sha256:fc4c984b345735c5486faeee67d8a265214a31cbb828167782dc642ce0a2bf8c
     # via garak
-openai==1.109.1 \
-    --hash=sha256:6bcaf57086cf59159b8e27447e4e7dd019db5d29a438072fbd49c290c7e65315 \
-    --hash=sha256:d173ed8dbca665892a6db099b4a2dfac624f94d20a93f46eb0b56aae940ed869
+openai==2.28.0 \
+    --hash=sha256:79aa5c45dba7fef84085701c235cf13ba88485e1ef4f8dfcedc44fc2a698fc1d \
+    --hash=sha256:bb7fdff384d2a787fa82e8822d1dd3c02e8cf901d60f1df523b7da03cbb6d48d
     # via
     #   garak
     #   litellm

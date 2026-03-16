@@ -3636,9 +3636,9 @@ urllib3==2.5.0 \
     #   kubernetes
     #   nemollm
     #   requests
-uvicorn==0.38.0 \
-    --hash=sha256:48c0afd214ceb59340075b4a052ea1ee91c16fbc2a9b1469cca0e54566977b02 \
-    --hash=sha256:fd97093bdd120a2609fc0d3afe931d4d4ad688b6e75f0f929fde1bc36fe0e91d
+uvicorn==0.42.0 \
+    --hash=sha256:96c30f5c7abe6f74ae8900a70e92b85ad6613b745d4879eb9b16ccad15645359 \
+    --hash=sha256:9b1f190ce15a2dd22e7758651d9b6d12df09a13d51ba5bf4fc33c383a48e1775
     # via
     #   fschat
     #   llama-stack

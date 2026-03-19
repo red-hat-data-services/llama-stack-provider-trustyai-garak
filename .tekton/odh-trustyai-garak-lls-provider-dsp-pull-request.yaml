@@ -43,21 +43,21 @@ spec:
     - name: path-context
       value: .
     - name: hermetic
-      value: true
-    - name: prefetch-mode
-      value: permissive
-    - name: prefetch-input
-      value: |
-        [
-        {
-          "type": "pip",
-          "path": ".",
-          "requirements_files": ["hermetic-test-reqs.txt"],
-          "binary":{
-            "arch": "x86_64,aarch64,ppc64le,s390x"
-          }
-        }
-        ]
+      value: false
+    # - name: prefetch-mode
+    #   value: permissive
+    # - name: prefetch-input
+    #   value: |
+    #     [
+    #     {
+    #       "type": "pip",
+    #       "path": ".",
+    #       "requirements_files": ["hermetic-test-reqs.txt"],
+    #       "binary":{
+    #         "arch": "x86_64,aarch64,ppc64le,s390x"
+    #       }
+    #     }
+    #     ]
     - name: build-source-image
       value: true
     - name: build-image-index

@@ -36,7 +36,8 @@ where = ["src"]
 
 [project.optional-dependencies]
 inline = [
-    "garak==0.14.0",
+    "garak>=0.14.1+rhaiv.4",
+    "sdg_hub>=0.8.8"
 ]
 dev = ["pytest", "pytest-cov",  "pytest-asyncio", "black", "isort"]
 server = ["llama-stack>=0.5.0"]

@@ -323,6 +323,7 @@ click==8.1.8 \
     #   litellm
     #   llama-stack-client
     #   nltk
+    #   olot
     #   typer-slim
 click-option-group==0.5.7 \
     --hash=sha256:8dc780be038712fc12c9fecb3db4fe49e0d0723f9c171d7cda85c20369be693c \
@@ -371,6 +372,10 @@ docstring-parser==0.17.0 \
 ecoji==0.1.1 \
     --hash=sha256:9665b2545d73ea0b4e0c9897cc6575df8ae7dc3946a82ac9d62db2f147139a9c
     # via garak
+eval-hub-sdk==0.1.2 \
+    --hash=sha256:127018308b0f0156c268af09511b346c94939daacb98db28ff91d083d63799c7 \
+    --hash=sha256:e96655c50bc7e77ba520905b83ad5356d6e909a1a95421d9607e926e1267c083
+    # via llama-stack-provider-trustyai-garak (pyproject.toml)
 eval-type-backport==0.3.0 \
     --hash=sha256:1638210401e184ff17f877e9a2fa076b60b5838790f4532a21761cc2be67aea1 \
     --hash=sha256:975a10a0fe333c8b6260d7fdb637698c9a16c3a9e3b6eb943fee6a6f67a37fe8
@@ -946,6 +951,7 @@ httpx==0.28.1 \
     --hash=sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad
     # via
     #   cohere
+    #   eval-hub-sdk
     #   huggingface-hub
     #   langgraph-sdk
     #   langsmith
@@ -976,12 +982,14 @@ importlib-metadata==6.11.0 \
     --hash=sha256:1231cf92d825c9e03cfc4da076a16de6422c863558229ea0b22b675657463443 \
     --hash=sha256:f0afba6205ad8f8947c7d338b5342d5db2afbfd82f9cbef7879a9539cc12eb9b
     # via
+    #   eval-hub-sdk
     #   litellm
     #   opentelemetry-api
 jinja2==3.1.6 \
     --hash=sha256:0137fb05990d35f1275a587e9aee6d56da821fc83491a0fb838183be43f66d6d \
     --hash=sha256:85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67
     # via
+    #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   litellm
     #   torch
 jiter==0.12.0 \
@@ -1121,6 +1129,7 @@ jsonschema==4.25.1 \
     # via
     #   litellm
     #   llama-stack-api
+    #   oras
 jsonschema-specifications==2025.9.1 \
     --hash=sha256:98802fee3a11ee76ecaca44429fda8a41bff98b00a0f2838151b113f210cc6fe \
     --hash=sha256:b540987f239e745613c7a9176f3edb72b832a4ac465cf02712288397832b5e8d
@@ -1190,13 +1199,13 @@ litellm==1.80.0 \
     --hash=sha256:eeac733eb6b226f9e5fb020f72fe13a32b3354b001dc62bcf1bc4d9b526d6231 \
     --hash=sha256:fd0009758f4772257048d74bf79bb64318859adb4ea49a8b66fdbc718cd80b6e
     # via garak
-llama-stack-api==0.5.0 \
-    --hash=sha256:51074ec06ab87ece7e9461bf47d878b25eb232b2a009749314e2b8a5a5d83ca0 \
-    --hash=sha256:dfd4ffff70207c49c8e734b503b42bc41860d271e7fe8745a26a41a4d4419ff8
+llama-stack-api==0.6.0 \
+    --hash=sha256:b99a03aba3659736b6b540c9e5e674b1daac2bf5eeb2a68795113d62b8250672 \
+    --hash=sha256:f0f3a1a6239a5d3b8c7ef02cefdf817c96c6461dcd8a82c1689ac67ec3107270
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
-llama-stack-client==0.5.0 \
-    --hash=sha256:5e7272c7fb58cd169985191c42af78dc6c4d212b7050949b063788bfb9e7ed36 \
-    --hash=sha256:e005ae9d975cda30b3b86261057f228d700107e263e12b796b920cd1fb9ba968
+llama-stack-client==0.6.0 \
+    --hash=sha256:3290aac36dcafbd1bc0baaf995522e2037f57056672b5a1516af112a4210f3ea \
+    --hash=sha256:7e514a6ffd92f237aceb062dadc4db44e24a3cd9c4ea35e25173d1e0739beb8e
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 lorem==0.1.1 \
     --hash=sha256:785f4109a241fc2891e59705e85d065f6e6d3ed6ad91750a8cb54d4f3e59d934 \
@@ -1484,6 +1493,10 @@ mypy-extensions==1.1.0 \
 nemollm==0.3.5 \
     --hash=sha256:de3962d82d557ce5f3d773144361b897a181028b8e1bbdf94804eff865eead88
     # via garak
+nest-asyncio==1.6.0 \
+    --hash=sha256:6f172d5449aca15afd6c646851f4e31e02c598d553a667e38cafa997cfec55fe \
+    --hash=sha256:87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c
+    # via llama-stack-provider-trustyai-garak (pyproject.toml)
 networkx==3.6 \
     --hash=sha256:285276002ad1f7f7da0f7b42f004bcba70d381e936559166363707fdad3d72ad \
     --hash=sha256:cdb395b105806062473d3be36458d8f1459a4e4b98e236a66c3a48996e07684f
@@ -1587,6 +1600,10 @@ ollama==0.6.1 \
     --hash=sha256:478c67546836430034b415ed64fa890fd3d1ff91781a9d548b3325274e69d7c6 \
     --hash=sha256:fc4c984b345735c5486faeee67d8a265214a31cbb828167782dc642ce0a2bf8c
     # via garak
+olot==0.1.16 \
+    --hash=sha256:5baaaeb8ee4a688cb096e8149467fabc730bf5ed15fab1051fa90b09132eb0db \
+    --hash=sha256:c040065744ede4d0f128dc362fad9115c6664a9bbc97e8859eab399a2bd52144
+    # via eval-hub-sdk
 openai==2.16.0 \
     --hash=sha256:42eaa22ca0d8ded4367a77374104d7a2feafee5bd60a107c3c11b5243a11cd12 \
     --hash=sha256:5f46643a8f42899a84e80c38838135d7038e7718333ce61396994f887b09a59b
@@ -1625,6 +1642,10 @@ opentelemetry-semantic-conventions==0.59b0 \
     --hash=sha256:35d3b8833ef97d614136e253c1da9342b4c3c083bbaf29ce31d572a1c3825eed \
     --hash=sha256:7a6db3f30d70202d5bf9fa4b69bc866ca6a30437287de6c510fb594878aed6b0
     # via opentelemetry-sdk
+oras==0.2.42 \
+    --hash=sha256:51d17088e5dffdeb585dd930bdccb4329762bef4af3f18600392ebae525a9231 \
+    --hash=sha256:d1e2184d42ce99258bd0ad56d932b0f4fce289bccf1b5094436a29579f385728
+    # via eval-hub-sdk
 orjson==3.11.4 \
     --hash=sha256:01ee5487fefee21e6910da4c2ee9eef005bee568a0879834df86f888d2ffbdd9 \
     --hash=sha256:03bfa548cf35e3f8b3a96c4e8e41f753c686ff3d8e182ce275b1751deddab58c \
@@ -1835,6 +1856,7 @@ pandas==2.3.3 \
     --hash=sha256:f086f6fe114e19d92014a1966f43a3e62285109afe874f067f5abbdcbb10e59c \
     --hash=sha256:f8bfc0e12dc78f777f323f55c58649591b2cd0c43534e8355c51d3fede5f4dee
     # via
+    #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   datasets
     #   llama-stack-client
 pillow==12.0.0 \
@@ -2188,6 +2210,7 @@ pydantic==2.12.5 \
     # via
     #   avidtools
     #   cohere
+    #   eval-hub-sdk
     #   fastapi
     #   langchain
     #   langchain-core
@@ -2198,7 +2221,9 @@ pydantic==2.12.5 \
     #   llama-stack-client
     #   mistralai
     #   ollama
+    #   olot
     #   openai
+    #   pydantic-settings
     #   replicate
 pydantic-core==2.41.5 \
     --hash=sha256:0177272f88ab8312479336e1d777f6b124537d47f2123f89cb37e0accea97f90 \
@@ -2325,6 +2350,10 @@ pydantic-core==2.41.5 \
     # via
     #   cohere
     #   pydantic
+pydantic-settings==2.13.1 \
+    --hash=sha256:b4c11847b15237fb0171e1462bf540e294affb9b86db4d9aa5c01730bdbe4025 \
+    --hash=sha256:d56fd801823dbeae7f0975e1f8c8e25c258eb75d278ea7abb5d9cebb01b56237
+    # via eval-hub-sdk
 pygments==2.19.2 \
     --hash=sha256:636cb2477cec7f8952536970bc533bc43743542f70392ae026374600add5b887 \
     --hash=sha256:86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b
@@ -2350,7 +2379,9 @@ python-dateutil==2.9.0.post0 \
 python-dotenv==1.2.1 \
     --hash=sha256:42667e897e16ab0d66954af0e60a9caa94f0fd4ecf3aaf6d2d260eec1aa36ad6 \
     --hash=sha256:b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61
-    # via litellm
+    # via
+    #   litellm
+    #   pydantic-settings
 python-magic==0.4.27 \
     --hash=sha256:c1ba14b08e4a5f5c31a302b7721239695b2f0f058d125bd5ce1ee36b9d9d3c3b \
     --hash=sha256:c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3
@@ -2673,6 +2704,7 @@ requests==2.32.5 \
     #   llama-stack-client
     #   nvdlib
     #   opentelemetry-exporter-otlp-proto-http
+    #   oras
     #   requests-futures
     #   requests-oauthlib
     #   requests-toolbelt
@@ -3187,7 +3219,9 @@ typing-inspect==0.9.0 \
 typing-inspection==0.4.2 \
     --hash=sha256:4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7 \
     --hash=sha256:ba561c48a67c5958007083d386c3295464928b01faa735ab8547c5692e87f464
-    # via pydantic
+    # via
+    #   pydantic
+    #   pydantic-settings
 tzdata==2025.2 \
     --hash=sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8 \
     --hash=sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9

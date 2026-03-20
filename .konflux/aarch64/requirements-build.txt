@@ -194,9 +194,9 @@ hatchling==1.26.3 \
     #   hatch-fancy-pypi-readme
     #   llama-stack-client
     #   openai
-hatchling==1.28.0 \
-    --hash=sha256:4d50b02aece6892b8cd0b3ce6c82cb218594d3ec5836dbde75bf41a21ab004c8 \
-    --hash=sha256:dc48722b68b3f4bbfa3ff618ca07cdea6750e7d03481289ffa8be1521d18a961
+hatchling==1.29.0 \
+    --hash=sha256:50af9343281f34785fab12da82e445ed987a6efb34fd8c2fc0f6e6630dbcc1b0 \
+    --hash=sha256:793c31816d952cee405b83488ce001c719f325d9cda69f1fc4cd750527640ea6
     # via
     #   annotated-types
     #   attrs
@@ -229,6 +229,7 @@ hatchling==1.28.0 \
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     #   pydantic
+    #   pydantic-settings
     #   pygments
     #   referencing
     #   scikit-build
@@ -406,6 +407,7 @@ poetry-core==2.3.1 \
     #   deepl
     #   litellm
     #   mistralai
+    #   olot
     #   pkgconfig
     #   rich
     #   rsa
@@ -456,7 +458,7 @@ setuptools-scm==9.2.2 \
     #   hatch-vcs
     #   importlib-metadata
     #   llama-stack-api
-    #   patchelf
+    #   nest-asyncio
     #   pluggy
     #   pyarrow
     #   setuptools-rust
@@ -485,6 +487,7 @@ wheel==0.46.3 \
     #   cachetools
     #   cmd2
     #   datetime
+    #   eval-hub-sdk
     #   eval-type-backport
     #   fastavro
     #   fire
@@ -493,6 +496,7 @@ wheel==0.46.3 \
     #   litellm
     #   maturin
     #   meson
+    #   nest-asyncio
     #   pandas
     #   patchelf
     #   pycparser
@@ -523,6 +527,7 @@ setuptools==80.9.0 \
     #   datetime
     #   dill
     #   distro
+    #   eval-hub-sdk
     #   eval-type-backport
     #   fastavro
     #   fire
@@ -542,6 +547,7 @@ setuptools==80.9.0 \
     #   mpmath
     #   multidict
     #   multiprocess
+    #   nest-asyncio
     #   networkx
     #   patchelf
     #   pathspec

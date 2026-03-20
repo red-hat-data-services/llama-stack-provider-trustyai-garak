@@ -6,7 +6,7 @@ All Tekton file updates **must be made in the `konflux-central` repository**.
 
 ## ✅ How to Make Changes
 
-To modify the pipelines for `llama-stack-provider-trustyai-garak` in the `rhoai-3.4-ea.2` release:
+To modify the pipelines for `llama-stack-provider-trustyai-garak` in the `main` branch:
 
 - Clone the [`konflux-central`](https://github.com/red-hat-data-services/konflux-central) repository.
 
@@ -15,10 +15,10 @@ git clone git@github.com:red-hat-data-services/konflux-central.git
 cd konflux-central
 ```
 
-- Check out the release branch
+- Check out the branch
 
 ```bash
-git checkout rhoai-3.4-ea.2
+git checkout main
 ```
 
 - Navigate to the Tekton files for your component(s).
@@ -32,8 +32,8 @@ cd pipelineruns/llama-stack-provider-trustyai-garak/.tekton
 - Commit and push your changes.
 
 ```bash
-git commit -am "Update pipelinerun for llama-stack-provider-trustyai-garak (rhoai-3.4-ea.2)"
-git push origin rhoai-3.4-ea.2
+git commit -am "Update pipelinerun for llama-stack-provider-trustyai-garak (main)"
+git push origin main
 ```
 
 - Once pushed, automation will automatically sync your updates to the corresponding component repository.

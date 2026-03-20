@@ -32,7 +32,6 @@ repository = "https://github.com/trustyai-explainability/llama-stack-provider-tr
 [build-system]
 requires = [
     "setuptools>=80.9.0",
-    "patchelf>=0.11.0; platform_machine == 's390x'",
 ]
 build-backend = "setuptools.build_meta"
 
@@ -44,10 +43,9 @@ where = ["src"]
 
 [project.optional-dependencies]
 inline = [
-    "pyasn1==0.6.2", # trivy high vul fix
-    "protobuf==6.33.5", # trivy high vul fix
     "nest_asyncio>=1.6.0",
-    "garak>=0.14.0"
+    "garak==0.14.1+rhaiv.5",
+    "sdg_hub>=0.8.8"
 ]
 # For intents, install:
 #   pip install -r requirements-inline-extra.txt

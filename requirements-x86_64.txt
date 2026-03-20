@@ -1473,9 +1473,9 @@ langdetect==1.0.9 \
     --hash=sha256:7cbc0746252f19e76f77c0b1690aadf01963be835ef0cd4b56dddf2a8f1dfc2a \
     --hash=sha256:cbc1fef89f8d062739774bd51eda3da3274006b3661d199c2655f6b3f6d605a0
     # via garak
-langsmith==0.4.49 \
-    --hash=sha256:4a16ef6f3a9b20c5471884991a12ff37d81f2c13a50660cfe27fa79a7ca2c1b0 \
-    --hash=sha256:95f84edcd8e74ed658e4a3eb7355b530f35cb08a9a8865dbfde6740e4b18323c
+langsmith==0.7.22 \
+    --hash=sha256:35bfe795d648b069958280760564632fd28ebc9921c04f3e209c0db6a6c7dc04 \
+    --hash=sha256:6e9d5148314d74e86748cb9d3898632cad0320c9323d95f70f969e5bc078eee4
     # via
     #   langchain
     #   langchain-core

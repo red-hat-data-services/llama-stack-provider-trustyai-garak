@@ -42,7 +42,7 @@ boto3==1.42.72
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   garak
-botocore==1.42.72
+botocore==1.42.73
     # via
     #   boto3
     #   s3transfer

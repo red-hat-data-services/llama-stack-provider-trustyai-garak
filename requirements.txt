@@ -38,11 +38,11 @@ backoff==2.2.1
     # via garak
 base2048==0.1.3
     # via garak
-boto3==1.42.72
+boto3==1.42.73
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   garak
-botocore==1.42.72
+botocore==1.42.73
     # via
     #   boto3
     #   s3transfer
@@ -106,7 +106,7 @@ eval-hub-sdk==0.1.2
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 eval-type-backport==0.3.1
     # via mistralai
-fastapi==0.135.1
+fastapi==0.135.2
     # via llama-stack-api
 fastavro==1.12.1
     # via cohere
@@ -128,7 +128,7 @@ fsspec==2026.2.0
     #   torch
 ftfy==6.3.1
     # via garak
-garak==0.14.1+rhaiv.5
+garak==0.14.1+rhaiv.6
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 google-api-core==2.30.0
     # via
@@ -154,7 +154,7 @@ google-cloud-core==2.5.0
     # via
     #   google-cloud-storage
     #   google-cloud-translate
-google-cloud-storage==3.10.0
+google-cloud-storage==3.10.1
     # via kfp
 google-cloud-translate==3.24.0
     # via garak
@@ -216,7 +216,7 @@ httpx==0.28.1
     #   sdg-hub
 httpx-sse==0.4.3
     # via mcp
-huggingface-hub==1.7.1
+huggingface-hub==1.7.2
     # via
     #   accelerate
     #   datasets
@@ -254,7 +254,7 @@ jsonpath-ng==1.8.0
     # via garak
 jsonpath-python==1.1.5
     # via mistralai
-jsonpointer==3.0.0
+jsonpointer==3.1.0
     # via jsonpatch
 jsonschema==4.26.0
     # via
@@ -578,7 +578,7 @@ sniffio==1.3.1
     #   openai
 sse-starlette==3.3.3
     # via mcp
-starlette==0.52.1
+starlette==1.0.0
     # via
     #   fastapi
     #   mcp

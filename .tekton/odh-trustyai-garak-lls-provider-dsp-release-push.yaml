@@ -11,7 +11,7 @@ metadata:
       == "main"
   creationTimestamp: null
   labels:
-    appstudio.openshift.io/application: opendatahub-release
+    appstudio.openshift.io/application: opendatahub-builds
     appstudio.openshift.io/component: odh-trustyai-garak-lls-provider-dsp-ci
     pipelines.appstudio.openshift.io/type: build
   name: odh-trustyai-garak-lls-provider-dsp-ci-on-push

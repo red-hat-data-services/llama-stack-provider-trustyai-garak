@@ -396,7 +396,7 @@ packaging==26.0
     #   langsmith
     #   replicate
     #   transformers
-pandas==3.0.1
+pandas==3.0.2
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   datasets

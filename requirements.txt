@@ -304,7 +304,7 @@ litellm==1.75.8
     # via
     #   garak
     #   sdg-hub
-llama-stack-api==0.6.0
+llama-stack-api==0.7.1
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 llama-stack-client==0.6.0
     # via llama-stack-provider-trustyai-garak (pyproject.toml)

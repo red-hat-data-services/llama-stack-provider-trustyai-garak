@@ -884,9 +884,9 @@ garak==0.12.0 \
     --hash=sha256:c41aa11751469217cc8adcbee49a232956b609f1055a29c56ccb161f345130d2 \
     --hash=sha256:f1a7e72177eb2d9c84bde2ea658ad53a0648168fb725888a1d33181a97109818
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
-google-api-core==2.28.1 \
-    --hash=sha256:2b405df02d68e68ce0fbc138559e6036559e685159d148ae5861013dc201baf8 \
-    --hash=sha256:4021b0f8ceb77a6fb4de6fde4502cecab45062e66ff4f2895169e0b35bc9466c
+google-api-core==2.30.3 \
+    --hash=sha256:a85761ba72c444dad5d611c2220633480b2b6be2521eca69cca2dbb3ffd6bfe8 \
+    --hash=sha256:e601a37f148585319b26db36e219df68c5d07b6382cff2d580e83404e44d641b
     # via
     #   google-api-python-client
     #   google-cloud-core

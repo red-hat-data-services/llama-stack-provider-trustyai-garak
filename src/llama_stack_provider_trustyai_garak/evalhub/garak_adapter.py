@@ -70,6 +70,7 @@ from ..constants import (
     DEFAULT_SDG_MAX_CONCURRENCY,
     DEFAULT_SDG_NUM_SAMPLES,
     DEFAULT_SDG_MAX_TOKENS,
+    TARGET_DEFAULT_PARAMETERS,
 )
 
 logger = logging.getLogger(__name__)
@@ -917,7 +918,11 @@ class GarakAdapter(FrameworkAdapter):
                 profile.get("name"),
             )
 
-        model_params = benchmark_config.get("model_parameters") or {}
+        if hasattr(config.model, "parameters"):
+            model_params = config.model.parameters
+        else:
+            model_params = benchmark_config.get("model_parameters")
+
         model_type = benchmark_config.get("model_type", DEFAULT_MODEL_TYPE)
         # set generators if not already set by user (because there's a eval-hub config.model for this)
         if model_type == DEFAULT_MODEL_TYPE and not garak_config.plugins.generators:
@@ -933,7 +938,7 @@ class GarakAdapter(FrameworkAdapter):
                 model_endpoint=self._normalize_url(config.model.url),
                 model_name=config.model.name,
                 api_key=api_key,
-                extra_params=model_params,
+                extra_params=model_params or TARGET_DEFAULT_PARAMETERS,
             )
 
         garak_config.plugins.target_type = model_type
@@ -970,8 +975,23 @@ class GarakAdapter(FrameworkAdapter):
         }
 
         if art_intents:
-            sdg_params = self._apply_intents_model_config(garak_config, benchmark_config, profile)
+            sdg_params, attacker_info = self._apply_intents_model_config(garak_config, benchmark_config, profile)
             intents_params.update(sdg_params)
+
+            from ..core.pipeline_steps import build_translation_langproviders
+
+            resolved_probe_spec = garak_config.plugins.probe_spec or ""
+            if isinstance(resolved_probe_spec, list):
+                resolved_probe_spec = ",".join(resolved_probe_spec)
+
+            langproviders = build_translation_langproviders(
+                benchmark_config,
+                attacker_url=attacker_info.get("url", ""),
+                attacker_name=attacker_info.get("name", ""),
+                probe_spec=resolved_probe_spec,
+            )
+            if langproviders is not None:
+                garak_config.run.langproviders = langproviders
 
         return garak_config.to_dict(exclude_none=True), profile, intents_params
 
@@ -984,7 +1004,7 @@ class GarakAdapter(FrameworkAdapter):
         garak_config: GarakCommandConfig,
         benchmark_config: dict,
         profile: dict,
-    ) -> dict[str, Any]:
+    ) -> tuple[dict[str, Any], dict[str, str]]:
         """Configure judge/attacker/evaluator/SDG models from ``intents_models``.
 
         Users provide per-role model endpoints in ``benchmark_config``:
@@ -1022,9 +1042,9 @@ class GarakAdapter(FrameworkAdapter):
         ``core.pipeline_steps._resolve_config_api_keys``.
 
         Returns:
-            Dict with SDG-related keys (``sdg_model``, ``sdg_api_base``)
-            extracted from the ``sdg`` role, or empty strings if SDG is
-            not configured.
+            Tuple of (sdg_params, attacker_info) where sdg_params contains
+            SDG-related keys and attacker_info contains the resolved
+            attacker ``url`` and ``name`` (used for translation fallback).
         """
         intents_models = benchmark_config.get("intents_models", {})
         if not isinstance(intents_models, dict):
@@ -1049,7 +1069,8 @@ class GarakAdapter(FrameworkAdapter):
                     "override. API keys will be resolved by "
                     "_resolve_config_api_keys in the KFP pod."
                 )
-                return self._extract_sdg_params(sdg_cfg, benchmark_config, profile)
+                preconfigured_attacker = self._extract_preconfigured_attacker(garak_config.plugins)
+                return self._extract_sdg_params(sdg_cfg, benchmark_config, profile), preconfigured_attacker
 
             raise ValueError(
                 "Intents benchmark requires model configuration for "
@@ -1122,7 +1143,8 @@ class GarakAdapter(FrameworkAdapter):
 
                 plugins.probes["tap"]["TAPIntent"] = tap_cfg
 
-        return self._extract_sdg_params(sdg_cfg, benchmark_config, profile)
+        attacker_info = {"url": attacker_url, "name": attacker_name}
+        return self._extract_sdg_params(sdg_cfg, benchmark_config, profile), attacker_info
 
     @staticmethod
     def _models_preconfigured_in_garak_config(plugins: Any) -> bool:
@@ -1149,6 +1171,18 @@ class GarakAdapter(FrameworkAdapter):
                     return False
 
         return True
+
+    @staticmethod
+    def _extract_preconfigured_attacker(plugins: Any) -> dict[str, str]:
+        """Extract attacker url/name from pre-configured garak_config plugins."""
+        probes = plugins.probes or {}
+        tap_cfg = probes.get("tap", {}).get("TAPIntent")
+        if tap_cfg and isinstance(tap_cfg, dict):
+            return {
+                "url": tap_cfg.get("attack_model_config", {}).get("uri", ""),
+                "name": tap_cfg.get("attack_model_name", ""),
+            }
+        return {"url": "", "name": ""}
 
     @staticmethod
     def _extract_sdg_params(

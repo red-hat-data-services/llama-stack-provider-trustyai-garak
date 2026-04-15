@@ -1226,9 +1226,9 @@ langsmith==0.4.27 \
     # via
     #   langchain
     #   langchain-core
-latex2mathml==3.78.1 \
-    --hash=sha256:f089b6d75e85b937f99693c93e8c16c0804008672c3dd2a3d25affd36f238100 \
-    --hash=sha256:f941db80bf41db33f31df87b304e8b588f8166b813b0257c11c98f7a9d0aac71
+latex2mathml==3.81.0 \
+    --hash=sha256:4b959cdc3cac8686bc0e3e5aece8127dfb1b81ca1241bed8e00ef31b82bb4022 \
+    --hash=sha256:d317710393fe20579aea39cfe8928fa2ad9b8780896e585326c75e89c1d1d1a4
     # via markdown2
 litellm==1.77.0 \
     --hash=sha256:40c3ad4b4ef8eab109e04e71b62b9eab659d7af763d9e62d1a3a770ca25468ac \

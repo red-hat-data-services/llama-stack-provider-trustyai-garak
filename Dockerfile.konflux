@@ -31,6 +31,9 @@ RUN echo "Installing $TARGETARCH dependencies ..." && \
 # Install the package itself (--no-deps since dependencies already installed)
 RUN pip install --no-cache-dir --no-deps -e ".[inline]"
 
+# Uninstall patchelf (build time dependency) to fix FIPS compliance issue
+RUN pip uninstall -y patchelf
+
 # Set XDG environment variables to use /tmp (always writable) for garak to write to
 ENV XDG_CACHE_HOME=/tmp/.cache
 ENV XDG_DATA_HOME=/tmp/.local/share

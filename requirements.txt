@@ -540,7 +540,7 @@ requests-toolbelt==1.0.0
     # via
     #   kfp
     #   langsmith
-rich==14.3.3
+rich==15.0.0
     # via
     #   llama-stack-client
     #   sdg-hub

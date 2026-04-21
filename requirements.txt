@@ -216,7 +216,7 @@ httpx==0.28.1
     #   sdg-hub
 httpx-sse==0.4.3
     # via mcp
-huggingface-hub==1.7.2
+huggingface-hub==1.10.2
     # via
     #   accelerate
     #   datasets

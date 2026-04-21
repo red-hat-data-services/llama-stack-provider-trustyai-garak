@@ -110,7 +110,7 @@ fastapi==0.135.2
     # via llama-stack-api
 fastavro==1.12.1
     # via cohere
-filelock==3.25.2
+filelock==3.28.0
     # via
     #   datasets
     #   huggingface-hub

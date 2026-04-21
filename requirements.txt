@@ -490,7 +490,7 @@ python-dotenv==1.2.2
     #   sdg-hub
 python-magic==0.4.27
     # via garak
-python-multipart==0.0.22
+python-multipart==0.0.26
     # via mcp
 pytz==2026.1.post1
     # via datetime

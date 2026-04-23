@@ -150,7 +150,7 @@ google-auth==2.49.1
     #   kfp
 google-auth-httplib2==0.3.0
     # via google-api-python-client
-google-cloud-core==2.5.0
+google-cloud-core==2.5.1
     # via
     #   google-cloud-storage
     #   google-cloud-translate

@@ -278,7 +278,7 @@ kfp-server-api==2.16.0
     #   kfp
 kubernetes==35.0.0
     # via kfp
-langchain==1.2.13
+langchain==1.2.15
     # via garak
 langchain-core==1.2.20
     # via

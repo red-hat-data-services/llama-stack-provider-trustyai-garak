@@ -679,7 +679,7 @@ uuid-utils==0.14.1
     # via
     #   langchain-core
     #   langsmith
-uvicorn==0.42.0
+uvicorn==0.44.0
     # via mcp
 wcwidth==0.6.0
     # via

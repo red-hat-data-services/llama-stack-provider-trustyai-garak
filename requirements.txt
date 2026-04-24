@@ -320,7 +320,7 @@ mcp==1.26.0
     # via sdg-hub
 mdurl==0.1.2
     # via markdown-it-py
-mistralai==1.5.2
+mistralai==2.3.2
     # via garak
 mpmath==1.3.0
     # via sympy

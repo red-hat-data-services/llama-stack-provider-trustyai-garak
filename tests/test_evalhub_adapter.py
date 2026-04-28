@@ -1806,6 +1806,62 @@ class TestTranslationLangproviders:
 
         assert "langproviders" not in config_dict.get("run", {})
 
+    def test_list_probe_spec_with_translation_injects_langproviders(self, monkeypatch, tmp_path):
+        """When probe_spec is a list containing TranslationIntent, langproviders are injected."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="list-probe-with-trans-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={
+                **_INTENTS_MODELS_ALL_ROLES,
+                "garak_config": {
+                    "plugins": {
+                        "probe_spec": ["spo.SPOIntent", "multilingual.TranslationIntent", "tap.TAPIntent"],
+                    }
+                },
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        langproviders = config_dict["run"]["langproviders"]
+        assert len(langproviders) == 2
+        assert langproviders[0]["model_type"] == "llm.LLMTranslator"
+
+    def test_list_probe_spec_without_translation_skips_langproviders(self, monkeypatch, tmp_path):
+        """When probe_spec is a list without TranslationIntent, langproviders are not set."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="list-probe-no-trans-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={
+                **_INTENTS_MODELS_ALL_ROLES,
+                "garak_config": {
+                    "plugins": {
+                        "probe_spec": ["spo.SPOIntent", "tap.TAPIntent"],
+                    }
+                },
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        assert "langproviders" not in config_dict.get("run", {})
+
     def test_intents_profile_no_hardcoded_hf_langproviders(self, monkeypatch, tmp_path):
         """The intents profile should no longer contain hardcoded HF langproviders."""
         from llama_stack_provider_trustyai_garak.core.config_resolution import resolve_scan_profile

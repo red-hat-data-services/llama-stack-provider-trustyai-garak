@@ -988,9 +988,9 @@ httpx==0.28.1 \
     #   ollama
     #   openai
     #   replicate
-huggingface-hub==1.4.0 \
-    --hash=sha256:49d380ffddb31d9d4b6acc0792691f8fa077e1ed51980ed42c7abca62ec1b3b6 \
-    --hash=sha256:dd8ca29409be10f544b624265f7ffe13a1a5c3f049f493b5dc9816ef3c6bd57b
+huggingface-hub==1.13.0 \
+    --hash=sha256:e942cb50d6a08dd5306688b1ac05bda157fd2fcc88b63dae405f7bd0d3234005 \
+    --hash=sha256:f6df2dac5abe82ce2fe05873d10d5ff47bc677d616a2f521f4ee26db9415d9d0
     # via
     #   accelerate
     #   datasets

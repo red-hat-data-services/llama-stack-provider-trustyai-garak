@@ -893,9 +893,9 @@ google-api-core==2.28.1 \
     #   google-cloud-storage
     #   google-cloud-translate
     #   kfp
-google-api-python-client==2.187.0 \
-    --hash=sha256:d8d0f6d85d7d1d10bdab32e642312ed572bdc98919f72f831b44b9a9cebba32f \
-    --hash=sha256:e98e8e8f49e1b5048c2f8276473d6485febc76c9c47892a8b4d1afa2c9ec8278
+google-api-python-client==2.195.0 \
+    --hash=sha256:753e62057f23049a89534bea0162b60fe391b85fb86d80bcdf884d05ec91c5bf \
+    --hash=sha256:c72cf2661c3addf01c880ce60541e83e1df354644b874f7f9d8d5ed2070446ae
     # via garak
 google-auth==2.43.0 \
     --hash=sha256:88228eee5fc21b62a1b5fe773ca15e67778cb07dc8363adcb4a8827b52d81483 \

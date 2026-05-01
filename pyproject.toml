@@ -38,7 +38,7 @@ where = ["src"]
 inline = [
     "pyasn1==0.6.2", # trivy high vul fix
     "protobuf==6.33.5", # trivy high vul fix
-    "garak==0.14.0",
+    "garak==0.15.0",
 ]
 dev = ["pytest", "pytest-cov",  "pytest-asyncio", "black", "isort"]
 server = ["llama-stack>=0.5.0"]

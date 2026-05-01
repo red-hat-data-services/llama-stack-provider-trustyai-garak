@@ -44,7 +44,7 @@ where = ["src"]
 [project.optional-dependencies]
 inline = [
     "nest_asyncio>=1.6.0",
-    "garak==0.14.1+rhaiv.5",
+    "garak==0.15.0",
     "sdg_hub>=0.8.8"
 ]
 # For intents, install:

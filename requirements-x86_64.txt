@@ -3279,9 +3279,9 @@ typer-slim==0.21.1 \
     # via
     #   huggingface-hub
     #   transformers
-types-requests==2.32.4.20260107 \
-    --hash=sha256:018a11ac158f801bfa84857ddec1650750e393df8a004a8a9ae2a9bec6fcb24f \
-    --hash=sha256:b703fe72f8ce5b31ef031264fe9395cac8f46a04661a79f7ed31a80fb308730d
+types-requests==2.33.0.20260503 \
+    --hash=sha256:02aaa7e3577a13471715bb1bddb693cc985ea514f754b503bf033e6a09a3e528 \
+    --hash=sha256:9721b2d9dbee7131f2fb39f20f0ebb1999c18cef4b512c9a7932f3722de7c5f4
     # via cohere
 typing-extensions==4.15.0 \
     --hash=sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466 \

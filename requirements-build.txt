@@ -583,9 +583,9 @@ pluggy==1.6.0 \
     --hash=sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3 \
     --hash=sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746
     # via hatchling
-poetry-core==2.2.1 \
-    --hash=sha256:97e50d8593c8729d3f49364b428583e044087ee3def1e010c6496db76bd65ac5 \
-    --hash=sha256:bdfce710edc10bfcf9ab35041605c480829be4ab23f5bc01202cfe5db8f125ab
+poetry-core==2.4.0 \
+    --hash=sha256:4305848477da00272bebd3f615bbec87f64bd117cdb858ab660b626a06a9d96c \
+    --hash=sha256:4e8c7496cf797998ffc493f2e23eba4b038c894c08eadacdcdf688945de6b43a
     # via
     #   aiohappyeyeballs
     #   backoff

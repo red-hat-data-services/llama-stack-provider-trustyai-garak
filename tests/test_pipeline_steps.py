@@ -293,6 +293,225 @@ class TestResolveConfigApiKeys:
         assert config["plugins"]["probes"]["tap"]["TAPIntent"]["attack_model_config"]["api_key"] == "universal-key"
         assert config["plugins"]["probes"]["tap"]["TAPIntent"]["evaluator_model_config"]["api_key"] == "universal-key"
 
+    def test_langproviders_resolved_with_translation_role(self, monkeypatch):
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import _resolve_config_api_keys
+
+        monkeypatch.setenv("TRANSLATION_API_KEY", "trans-key")
+        monkeypatch.delenv("API_KEY", raising=False)
+
+        config = {
+            "run": {
+                "langproviders": [
+                    {
+                        "language": "zh,en",
+                        "model_type": "llm.LLMTranslator",
+                        "uri": "http://translator:8000/v1",
+                        "model_name": "trans-model",
+                        "api_key": "__FROM_ENV__",
+                    },
+                    {
+                        "language": "en,zh",
+                        "model_type": "llm.LLMTranslator",
+                        "uri": "http://translator:8000/v1",
+                        "model_name": "trans-model",
+                        "api_key": "__FROM_ENV__",
+                    },
+                ]
+            },
+            "plugins": {},
+        }
+        _resolve_config_api_keys(config)
+        for lp in config["run"]["langproviders"]:
+            assert lp["api_key"] == "trans-key"
+
+    def test_langproviders_fallback_to_generic_key(self, monkeypatch):
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import _resolve_config_api_keys
+
+        monkeypatch.delenv("TRANSLATION_API_KEY", raising=False)
+        monkeypatch.setenv("API_KEY", "generic-key")
+
+        config = {
+            "run": {
+                "langproviders": [
+                    {
+                        "language": "zh,en",
+                        "model_type": "llm.LLMTranslator",
+                        "api_key": "__FROM_ENV__",
+                    },
+                ]
+            },
+            "plugins": {},
+        }
+        _resolve_config_api_keys(config)
+        assert config["run"]["langproviders"][0]["api_key"] == "generic-key"
+
+    def test_hf_langproviders_untouched(self, monkeypatch):
+        """HF langproviders have no api_key field; resolution should not crash."""
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import _resolve_config_api_keys
+
+        config = {
+            "run": {
+                "langproviders": [
+                    {
+                        "language": "zh,en",
+                        "model_type": "local.LocalHFTranslator",
+                        "model_name": "Helsinki-NLP/opus-mt-zh-en",
+                    },
+                ]
+            },
+            "plugins": {},
+        }
+        _resolve_config_api_keys(config)
+        assert "api_key" not in config["run"]["langproviders"][0]
+
+
+class TestBuildTranslationLangproviders:
+    """Tests for build_translation_langproviders in core/pipeline_steps."""
+
+    _TRANSLATION_PROBE_SPEC = "spo.SPOIntent,spo.SPOIntentUserAugmented,multilingual.TranslationIntent,tap.TAPIntent"
+
+    def test_default_uses_attacker_llm(self):
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={},
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec=self._TRANSLATION_PROBE_SPEC,
+        )
+        assert result is not None
+        assert len(result) == 2
+        assert result[0]["model_type"] == "llm.LLMTranslator"
+        assert result[0]["uri"] == "http://attacker:9000/v1"
+        assert result[0]["model_name"] == "atk-model"
+        assert result[0]["api_key"] == "__FROM_ENV__"
+        assert result[1]["language"] == "en,zh"
+
+    def test_dedicated_translation_model(self):
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={
+                "intents_models": {
+                    "translation": {"url": "http://trans:7000/v1", "name": "trans-model"},
+                }
+            },
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec=self._TRANSLATION_PROBE_SPEC,
+        )
+        assert result is not None
+        assert len(result) == 2
+        assert result[0]["model_type"] == "llm.LLMTranslator"
+        assert result[0]["uri"] == "http://trans:7000/v1"
+        assert result[0]["model_name"] == "trans-model"
+
+    def test_translation_use_hf_flag(self):
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={"translation_use_hf": True},
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec=self._TRANSLATION_PROBE_SPEC,
+        )
+        assert result is not None
+        assert len(result) == 2
+        assert result[0]["model_type"] == "local.LocalHFTranslator"
+        assert result[0]["model_name"] == "Helsinki-NLP/opus-mt-zh-en"
+        assert "api_key" not in result[0]
+
+    def test_no_attacker_falls_back_to_hf(self):
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={},
+            attacker_url="",
+            attacker_name="",
+            probe_spec=self._TRANSLATION_PROBE_SPEC,
+        )
+        assert result is not None
+        assert len(result) == 2
+        assert result[0]["model_type"] == "local.LocalHFTranslator"
+
+    def test_hf_flag_takes_priority_over_dedicated(self):
+        """translation_use_hf=True should override intents_models.translation."""
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={
+                "translation_use_hf": True,
+                "intents_models": {
+                    "translation": {"url": "http://trans:7000/v1", "name": "trans-model"},
+                },
+            },
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec=self._TRANSLATION_PROBE_SPEC,
+        )
+        assert result is not None
+        assert result[0]["model_type"] == "local.LocalHFTranslator"
+
+    def test_dedicated_takes_priority_over_attacker(self):
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={
+                "intents_models": {
+                    "translation": {"url": "http://trans:7000/v1", "name": "trans-model"},
+                },
+            },
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec=self._TRANSLATION_PROBE_SPEC,
+        )
+        assert result is not None
+        assert result[0]["uri"] == "http://trans:7000/v1"
+        assert result[0]["model_name"] == "trans-model"
+
+    def test_translation_url_only_falls_to_attacker(self):
+        """translation with url but no name should not be used."""
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={
+                "intents_models": {
+                    "translation": {"url": "http://trans:7000/v1"},
+                },
+            },
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec=self._TRANSLATION_PROBE_SPEC,
+        )
+        assert result is not None
+        assert result[0]["uri"] == "http://attacker:9000/v1"
+        assert result[0]["model_name"] == "atk-model"
+
+    def test_returns_none_when_no_translation_probe(self):
+        """When probe_spec doesn't include TranslationIntent, return None."""
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={},
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec="spo.SPOIntent,tap.TAPIntent",
+        )
+        assert result is None
+
+    def test_empty_probe_spec_still_resolves(self):
+        """Empty probe_spec (unknown probes) should still resolve langproviders."""
+        from llama_stack_provider_trustyai_garak.core.pipeline_steps import build_translation_langproviders
+
+        result = build_translation_langproviders(
+            benchmark_config={},
+            attacker_url="http://attacker:9000/v1",
+            attacker_name="atk-model",
+            probe_spec="",
+        )
+        assert result is not None
+        assert result[0]["model_type"] == "llm.LLMTranslator"
+
 
 class TestValidateScanConfig:
     @patch.dict("sys.modules", {"garak": types.ModuleType("garak")})

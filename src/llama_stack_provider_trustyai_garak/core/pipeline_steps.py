@@ -183,12 +183,115 @@ def _resolve_config_api_keys(config: dict) -> None:
                     child_role = "ATTACKER"
                 elif key == "evaluator_model_config":
                     child_role = "EVALUATOR"
+                elif key == "langproviders" and isinstance(val, list):
+                    for entry in val:
+                        _walk(entry, "TRANSLATION")
+                    continue
                 _walk(val, child_role)
         elif isinstance(obj, list):
             for item in obj:
                 _walk(item, role)
 
     _walk(config, "TARGET")
+
+
+# ---------------------------------------------------------------------------
+# Translation langprovider configuration
+# ---------------------------------------------------------------------------
+
+_HF_LANGPROVIDERS = [
+    {
+        "language": "zh,en",
+        "model_type": "local.LocalHFTranslator",
+        "model_name": "Helsinki-NLP/opus-mt-zh-en",
+    },
+    {
+        "language": "en,zh",
+        "model_type": "local.LocalHFTranslator",
+        "model_name": "Helsinki-NLP/opus-mt-en-zh",
+    },
+]
+
+
+def _build_llm_langproviders(url: str, name: str) -> list[dict[str, str]]:
+    """Build ``llm.LLMTranslator`` langprovider entries for zh/en pair."""
+    return [
+        {
+            "language": "zh,en",
+            "model_type": "llm.LLMTranslator",
+            "uri": url,
+            "model_name": name,
+            "api_key": "__FROM_ENV__",
+        },
+        {
+            "language": "en,zh",
+            "model_type": "llm.LLMTranslator",
+            "uri": url,
+            "model_name": name,
+            "api_key": "__FROM_ENV__",
+        },
+    ]
+
+
+_TRANSLATION_PROBE = "TranslationIntent"
+
+
+def _probe_spec_includes_translation(probe_spec: str) -> bool:
+    """Return True if *probe_spec* contains the TranslationIntent probe."""
+    return _TRANSLATION_PROBE in probe_spec
+
+
+def build_translation_langproviders(
+    benchmark_config: dict[str, Any],
+    attacker_url: str = "",
+    attacker_name: str = "",
+    probe_spec: str = "",
+) -> list[dict[str, str]] | None:
+    """Resolve langproviders for the ``multilingual.TranslationIntent`` probe.
+
+    Returns ``None`` when *probe_spec* does not include
+    ``TranslationIntent``, so the caller can skip setting langproviders
+    entirely (other probes don't need them).
+
+    Resolution order (when TranslationIntent **is** present):
+
+    1. ``translation_use_hf=True`` in *benchmark_config* -- use HuggingFace
+       ``local.LocalHFTranslator`` models (Helsinki-NLP).
+    2. ``intents_models.translation`` has ``url`` + ``name`` -- use a
+       dedicated LLM endpoint via ``llm.LLMTranslator``.
+    3. *attacker_url* / *attacker_name* available (from the resolved
+       attacker model) -- reuse the attacker LLM for translation.
+    4. Fallback to HF models (safety net when no LLM is available).
+
+    API keys for LLM translators use the ``__FROM_ENV__`` placeholder
+    and are resolved at pod level by :func:`_resolve_config_api_keys`
+    with role ``TRANSLATION``.
+    """
+    if probe_spec and not _probe_spec_includes_translation(probe_spec):
+        logger.info("TranslationIntent not in probe_spec — skipping langproviders")
+        return None
+
+    from ..utils import as_bool
+
+    if as_bool(benchmark_config.get("translation_use_hf", False)):
+        logger.info("Translation mode: HF (translation_use_hf=True)")
+        return list(_HF_LANGPROVIDERS)
+
+    intents_models = benchmark_config.get("intents_models", {})
+    if not isinstance(intents_models, dict):
+        intents_models = {}
+    translation_cfg = intents_models.get("translation") or {}
+
+    if translation_cfg.get("url") and translation_cfg.get("name"):
+        logger.info("Translation mode: dedicated LLM (%s)", translation_cfg["name"])
+        return _build_llm_langproviders(translation_cfg["url"], translation_cfg["name"])
+
+    if attacker_url and attacker_name:
+        logger.info("Translation mode: attacker LLM (%s)", attacker_name)
+        return _build_llm_langproviders(attacker_url, attacker_name)
+
+    logger.info("Translation mode: HF fallback (no LLM available)")
+    return list(_HF_LANGPROVIDERS)
 
 
 # ---------------------------------------------------------------------------

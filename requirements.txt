@@ -106,7 +106,7 @@ eval-hub-sdk==0.1.2
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 eval-type-backport==0.3.1
     # via mistralai
-fastapi==0.135.1
+fastapi==0.136.1
     # via llama-stack-api
 fastavro==1.12.1
     # via cohere

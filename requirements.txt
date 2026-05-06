@@ -137,7 +137,7 @@ google-api-core==2.30.0
     #   google-cloud-storage
     #   google-cloud-translate
     #   kfp
-google-api-python-client==2.193.0
+google-api-python-client==2.195.0
     # via garak
 google-auth==2.49.1
     # via

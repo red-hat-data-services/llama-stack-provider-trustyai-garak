@@ -264,7 +264,7 @@ jsonschema==4.26.0
     #   oras
 jsonschema-specifications==2025.9.1
     # via jsonschema
-kfp==2.16.0
+kfp==2.16.1
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   kfp-kubernetes

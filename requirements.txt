@@ -351,7 +351,7 @@ nvidia-riva-client==2.16.0
     # via garak
 oauthlib==3.3.1
     # via requests-oauthlib
-ollama==0.6.1
+ollama==0.6.2
     # via garak
 olot==0.1.16
     # via eval-hub-sdk

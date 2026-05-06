@@ -108,7 +108,7 @@ eval-type-backport==0.3.1
     # via mistralai
 fastapi==0.135.1
     # via llama-stack-api
-fastavro==1.12.1
+fastavro==1.12.2
     # via cohere
 filelock==3.25.2
     # via

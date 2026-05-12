@@ -1577,6 +1577,301 @@ class TestBuildConfigIntentsOverrides:
         assert intents_params["sdg_api_base"] == "http://legacy-sdg:5000"
 
 
+class TestTargetDefaultParameters:
+    """Tests for TARGET_DEFAULT_PARAMETERS fallback (max_tokens=512)."""
+
+    def test_default_max_tokens_when_no_model_parameters(self, monkeypatch, tmp_path):
+        """When neither config.model.parameters nor benchmark_config model_parameters
+        are provided, the target generator should use TARGET_DEFAULT_PARAMETERS."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="no-params-job",
+            benchmark_id="trustyai_garak::quick",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://model:8000", name="my-llm"),
+            parameters={},
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        gen = config_dict["plugins"]["generators"]["openai"]["OpenAICompatible"]
+        assert gen["max_tokens"] == 512
+
+    def test_explicit_model_parameters_not_overwritten(self, monkeypatch, tmp_path):
+        """When config.model.parameters is set, those values are used as-is."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="explicit-params-job",
+            benchmark_id="trustyai_garak::quick",
+            benchmark_index=0,
+            model=SimpleNamespace(
+                url="http://model:8000",
+                name="my-llm",
+                parameters={"max_tokens": 1024, "temperature": 0.7},
+            ),
+            parameters={},
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        gen = config_dict["plugins"]["generators"]["openai"]["OpenAICompatible"]
+        assert gen["max_tokens"] == 1024
+        assert gen["temperature"] == 0.7
+
+    def test_benchmark_config_model_parameters_used(self, monkeypatch, tmp_path):
+        """When model has no parameters attr but benchmark_config has model_parameters,
+        those are used instead of the default."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="bench-params-job",
+            benchmark_id="trustyai_garak::quick",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://model:8000", name="my-llm"),
+            parameters={"model_parameters": {"max_tokens": 256}},
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        gen = config_dict["plugins"]["generators"]["openai"]["OpenAICompatible"]
+        assert gen["max_tokens"] == 256
+        assert "temperature" not in gen
+
+
+class TestTranslationLangproviders:
+    """Tests for translation langprovider resolution in _build_config_from_spec."""
+
+    def test_default_uses_attacker_llm(self, monkeypatch, tmp_path):
+        """Default: single-role intents_models -> attacker LLM reused for translation."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="trans-default-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={**_INTENTS_MODELS_SINGLE},
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        langproviders = config_dict["run"]["langproviders"]
+        assert len(langproviders) == 2
+        assert langproviders[0]["model_type"] == "llm.LLMTranslator"
+        assert langproviders[0]["uri"] == "http://judge:8000/v1"
+        assert langproviders[0]["model_name"] == "judge-model"
+        assert langproviders[0]["api_key"] == "__FROM_ENV__"
+        assert langproviders[1]["language"] == "en,zh"
+
+    def test_separate_attacker_used_for_translation(self, monkeypatch, tmp_path):
+        """When all 3 roles provided, attacker url/name are used for translation."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="trans-atk-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={**_INTENTS_MODELS_ALL_ROLES},
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        langproviders = config_dict["run"]["langproviders"]
+        assert langproviders[0]["model_type"] == "llm.LLMTranslator"
+        assert langproviders[0]["uri"] == "http://attacker:9000/v1"
+        assert langproviders[0]["model_name"] == "atk-model"
+
+    def test_dedicated_translation_model(self, monkeypatch, tmp_path):
+        """intents_models.translation takes priority over attacker."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="trans-dedicated-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={
+                "intents_models": {
+                    **_INTENTS_MODELS_ALL_ROLES["intents_models"],
+                    "translation": {"url": "http://translator:6000/v1", "name": "translator-llm"},
+                },
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        langproviders = config_dict["run"]["langproviders"]
+        assert langproviders[0]["model_type"] == "llm.LLMTranslator"
+        assert langproviders[0]["uri"] == "http://translator:6000/v1"
+        assert langproviders[0]["model_name"] == "translator-llm"
+
+    def test_translation_use_hf_flag(self, monkeypatch, tmp_path):
+        """translation_use_hf=True forces HF models even when attacker is available."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="trans-hf-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={
+                **_INTENTS_MODELS_ALL_ROLES,
+                "translation_use_hf": True,
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        langproviders = config_dict["run"]["langproviders"]
+        assert len(langproviders) == 2
+        assert langproviders[0]["model_type"] == "local.LocalHFTranslator"
+        assert langproviders[0]["model_name"] == "Helsinki-NLP/opus-mt-zh-en"
+        assert "api_key" not in langproviders[0]
+
+    def test_non_intents_profile_no_langproviders(self, monkeypatch, tmp_path):
+        """Non-intents profiles should not get langproviders injected."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="native-no-lp-job",
+            benchmark_id="trustyai_garak::quick",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://model:8000", name="my-llm"),
+            parameters={},
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        assert "langproviders" not in config_dict.get("run", {})
+
+    def test_no_langproviders_when_translation_probe_excluded(self, monkeypatch, tmp_path):
+        """When probe_spec overrides remove TranslationIntent, langproviders are not set."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="trans-excluded-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={
+                **_INTENTS_MODELS_ALL_ROLES,
+                "garak_config": {
+                    "plugins": {
+                        "probe_spec": "spo.SPOIntent,tap.TAPIntent",
+                    }
+                },
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        assert "langproviders" not in config_dict.get("run", {})
+
+    def test_list_probe_spec_with_translation_injects_langproviders(self, monkeypatch, tmp_path):
+        """When probe_spec is a list containing TranslationIntent, langproviders are injected."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="list-probe-with-trans-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={
+                **_INTENTS_MODELS_ALL_ROLES,
+                "garak_config": {
+                    "plugins": {
+                        "probe_spec": ["spo.SPOIntent", "multilingual.TranslationIntent", "tap.TAPIntent"],
+                    }
+                },
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        langproviders = config_dict["run"]["langproviders"]
+        assert len(langproviders) == 2
+        assert langproviders[0]["model_type"] == "llm.LLMTranslator"
+
+    def test_list_probe_spec_without_translation_skips_langproviders(self, monkeypatch, tmp_path):
+        """When probe_spec is a list without TranslationIntent, langproviders are not set."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="list-probe-no-trans-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://target:8000", name="target-llm"),
+            parameters={
+                **_INTENTS_MODELS_ALL_ROLES,
+                "garak_config": {
+                    "plugins": {
+                        "probe_spec": ["spo.SPOIntent", "tap.TAPIntent"],
+                    }
+                },
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        assert "langproviders" not in config_dict.get("run", {})
+
+    def test_intents_profile_no_hardcoded_hf_langproviders(self, monkeypatch, tmp_path):
+        """The intents profile should no longer contain hardcoded HF langproviders."""
+        from llama_stack_provider_trustyai_garak.core.config_resolution import resolve_scan_profile
+
+        profile = resolve_scan_profile("trustyai_garak::intents")
+        garak_config = profile.get("garak_config", {})
+        run_config = garak_config.get("run", {})
+        assert "langproviders" not in run_config
+
+
 class TestResolveIntentsApiKey:
     """Tests for _resolve_intents_api_key static method."""
 

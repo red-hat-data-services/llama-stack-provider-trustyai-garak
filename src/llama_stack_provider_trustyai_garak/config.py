@@ -292,18 +292,6 @@ class GarakScanConfig(BaseModel):
                 run=GarakRunConfig(
                     eval_threshold=0.5,
                     generations=2,
-                    langproviders=[
-                        {
-                            "language": "zh,en",
-                            "model_type": "local.LocalHFTranslator",
-                            "model_name": "Helsinki-NLP/opus-mt-zh-en",
-                        },
-                        {
-                            "language": "en,zh",
-                            "model_type": "local.LocalHFTranslator",
-                            "model_name": "Helsinki-NLP/opus-mt-en-zh",
-                        },
-                    ],
                 ),
                 plugins=GarakPluginsConfig(
                     detector_spec="judge.MulticlassJudge",  # We use the judge detector to pick up rejections

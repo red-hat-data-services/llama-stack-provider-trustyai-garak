@@ -14,6 +14,7 @@ DEFAULT_EVAL_THRESHOLD = 0.5
 # evalhub adapter
 EXECUTION_MODE_SIMPLE = "simple"
 EXECUTION_MODE_KFP = "kfp"
+TARGET_DEFAULT_PARAMETERS = {"max_tokens": 512}
 # XDG variables
 XDG_CACHE_HOME = "/tmp/.cache"
 XDG_DATA_HOME = "/tmp/.local/share"

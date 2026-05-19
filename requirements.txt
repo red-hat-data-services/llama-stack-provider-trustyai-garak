@@ -1652,30 +1652,30 @@ openai==1.99.9 \
     #   garak
     #   litellm
     #   llama-stack
-opentelemetry-api==1.37.0 \
-    --hash=sha256:540735b120355bd5112738ea53621f8d5edb35ebcd6fe21ada3ab1c61d1cd9a7 \
-    --hash=sha256:accf2024d3e89faec14302213bc39550ec0f4095d1cf5ca688e1bfb1c8612f47
+opentelemetry-api==1.42.0 \
+    --hash=sha256:558d88f88192a973579910ef6f2c13db47a268d5ec2e53e83e50e74a39a02922 \
+    --hash=sha256:ea84c893ad177791d138e0349d6ceebd8d3bf006440900400ce220008dafc372
     # via
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-opentelemetry-exporter-otlp-proto-common==1.37.0 \
-    --hash=sha256:53038428449c559b0c564b8d718df3314da387109c4d36bd1b94c9a641b0292e \
-    --hash=sha256:c87a1bdd9f41fdc408d9cc9367bb53f8d2602829659f2b90be9f9d79d0bfe62c
+opentelemetry-exporter-otlp-proto-common==1.42.0 \
+    --hash=sha256:92de67f096c9200770f16fbdb63b96fb6061d604b4bc266726d8355caeb864e8 \
+    --hash=sha256:c7a1a61f3a4c4dfa83127353edb1c75b873289d9ee42379db46eb835963b72e3
     # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-http==1.37.0 \
-    --hash=sha256:54c42b39945a6cc9d9a2a33decb876eabb9547e0dcb49df090122773447f1aef \
-    --hash=sha256:e52e8600f1720d6de298419a802108a8f5afa63c96809ff83becb03f874e44ac
+opentelemetry-exporter-otlp-proto-http==1.42.0 \
+    --hash=sha256:640013aacdbbe01bfb187c66dd331b24249517b7f36c0cd994ef75544d1dbd0b \
+    --hash=sha256:f2cb9ea5dfac29e91b7b04034ca5a4bfae14b51cb334172c5b42b86a48843324
     # via llama-stack
-opentelemetry-proto==1.37.0 \
-    --hash=sha256:30f5c494faf66f77faeaefa35ed4443c5edb3b0aa46dad073ed7210e1a789538 \
-    --hash=sha256:8ed8c066ae8828bbf0c39229979bdf583a126981142378a9cbe9d6fd5701c6e2
+opentelemetry-proto==1.42.0 \
+    --hash=sha256:2c0716a37e5c12efef37cbd01906d649b7fb85c85ac687518d0bd28527c6498e \
+    --hash=sha256:5d56a9067b631ea931a135d7b86428ae99649f591d4db69b9fc8c8e0465fce65
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.37.0 \
-    --hash=sha256:8f3c3c22063e52475c5dbced7209495c2c16723d016d39287dfc215d1771257c \
-    --hash=sha256:cc8e089c10953ded765b5ab5669b198bbe0af1b3f89f1007d19acd32dc46dda5
+opentelemetry-sdk==1.42.0 \
+    --hash=sha256:2479e462cc69357825c2c847ce4a601bc1b17e1279aa7f80d3490f0ae614d0e5 \
+    --hash=sha256:ec4a4f69e15220b3d7bccd93217aac745682bb6435b9381f7bb44cb7e07b4f2b
     # via
     #   llama-stack
     #   opentelemetry-exporter-otlp-proto-http

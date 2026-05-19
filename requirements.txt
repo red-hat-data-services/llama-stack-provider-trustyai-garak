@@ -272,7 +272,7 @@ kfp-kubernetes==2.16.0
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 kfp-pipeline-spec==2.16.0
     # via kfp
-kfp-server-api==2.16.0
+kfp-server-api==2.16.1
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   kfp

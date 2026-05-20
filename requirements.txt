@@ -72,7 +72,7 @@ click-option-group==0.5.7
     # via kfp
 cmd2==2.4.3
     # via garak
-cohere==5.20.7
+cohere==6.1.0
     # via garak
 colorama==0.4.6
     # via garak

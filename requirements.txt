@@ -606,7 +606,7 @@ tokenizers==0.22.2
     #   cohere
     #   litellm
     #   transformers
-tomli==2.4.0
+tomli==2.4.1
     # via wn
 torch==2.10.0
     # via

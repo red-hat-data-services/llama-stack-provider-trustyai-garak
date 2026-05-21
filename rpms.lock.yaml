@@ -4,27 +4,48 @@ lockfileVendor: redhat
 arches:
 - arch: aarch64
   packages:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/c/cargo-1.88.0-1.el9.aarch64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/a/annobin-12.98-2.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 7738248
-    checksum: sha256:db106a81f1e6afa16afc7a28d008f42784f6602bca19bd147cb046b5dacc11e5
+    size: 1120755
+    checksum: sha256:262aed79fa857210c9fee35c11b855f4f1d36341392a6942c124e0329fe7f8a4
+    name: annobin
+    evr: 12.98-2.el9
+    sourcerpm: annobin-12.98-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/c/cargo-1.92.0-1.el9.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 8530651
+    checksum: sha256:14ac2d264369b0ac4442d6b773224765413282ea996dac29cf576c176c8cdcba
     name: cargo
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-1.88.0-1.el9.aarch64.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/l/llvm-filesystem-21.1.8-2.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 28639155
-    checksum: sha256:ef479c53d6d2e75753f5d36661ec01746d70ad16dcbb82f51dc4296de8e32613
+    size: 20175
+    checksum: sha256:87b55002280f29f59e8452cf184307ce0ffcf613a8967f726cb5b3438ecbc70a
+    name: llvm-filesystem
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/l/llvm-libs-21.1.8-2.el9.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 31011258
+    checksum: sha256:47a47b60c922d628f7e0fa6c7e58484cd416221d6fbcd2b4708f5c901d6aecb4
+    name: llvm-libs
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-1.92.0-1.el9.aarch64.rpm
+    repoid: ubi-9-for-aarch64-appstream-rpms
+    size: 29421295
+    checksum: sha256:43a1b0f5168a39ceea3fd90d42b23bc05d006d639cd35cfdad82a4f94aa58453
     name: rust
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.aarch64.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/os/Packages/r/rust-std-static-1.92.0-1.el9.aarch64.rpm
     repoid: ubi-9-for-aarch64-appstream-rpms
-    size: 39777482
-    checksum: sha256:9431bb9d0a3dd5fbfe3bfef2c28ef5149c72173ad53b75b046e1f4dad9d9d48d
+    size: 41493155
+    checksum: sha256:3b3a70a8e11f53559c4b84927ebd0565a073052bac2c53edda6cb328bfb28090
     name: rust-std-static
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.aarch64.rpm
     repoid: codeready-builder-for-ubi-9-aarch64-rpms
     size: 146570
@@ -33,12 +54,24 @@ arches:
     evr: 1.10.2-6.el9
     sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
   source:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/a/annobin-12.98-2.el9.src.rpm
     repoid: ubi-9-for-aarch64-appstream-source-rpms
-    size: 284842616
-    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    size: 1017147
+    checksum: sha256:6724882369b201d4cc564b60c5c8271e30f3622488f27b844a2748a52da9287a
+    name: annobin
+    evr: 12.98-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/l/llvm-21.1.8-2.el9.src.rpm
+    repoid: ubi-9-for-aarch64-appstream-source-rpms
+    size: 159117579
+    checksum: sha256:874ba2fef672cefaf755ca1b7811bc69c98466039bf06f38009336f8d552d87a
+    name: llvm
+    evr: 21.1.8-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/appstream/source/SRPMS/Packages/r/rust-1.92.0-1.el9.src.rpm
+    repoid: ubi-9-for-aarch64-appstream-source-rpms
+    size: 273467363
+    checksum: sha256:ce5ba5cdce92a48756096032a97da81ea4e893dd546f2f149ea0f5755bfa9c7e
     name: rust
-    evr: 1.88.0-1.el9
+    evr: 1.92.0-1.el9
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/aarch64/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
     repoid: codeready-builder-for-ubi-9-aarch64-source-rpms
     size: 227908
@@ -48,27 +81,48 @@ arches:
   module_metadata: []
 - arch: ppc64le
   packages:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/c/cargo-1.88.0-1.el9.ppc64le.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/a/annobin-12.98-2.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 8432875
-    checksum: sha256:134bfbd26e53ff42298e65a0b4289982bd47fa1f87ad7ff223151522db928498
+    size: 1126819
+    checksum: sha256:42730aeb7c10f655d820481d2f2fbb5a0de2ed0db5430a084951ad4cfba5e3c3
+    name: annobin
+    evr: 12.98-2.el9
+    sourcerpm: annobin-12.98-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/c/cargo-1.92.0-1.el9.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 9266986
+    checksum: sha256:cc1c6813a0715bf1c69a23fac405648fa2184a5acda69400a32c2316b98fa449
     name: cargo
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-1.88.0-1.el9.ppc64le.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/l/llvm-filesystem-21.1.8-2.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 26079470
-    checksum: sha256:04628295d1af436836051479fc37da860b4baf5c310c61e8cbfe7cd874150bdb
+    size: 20200
+    checksum: sha256:7ff99271b8f63783fb4e87a8d5e3598003d6e57adfddde4cafa00a004461b8d3
+    name: llvm-filesystem
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/l/llvm-libs-21.1.8-2.el9.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 32177332
+    checksum: sha256:eb3f56ba5ab503916576404eba3d112f074833acddf97f13dae80c36fedf4ae4
+    name: llvm-libs
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-1.92.0-1.el9.ppc64le.rpm
+    repoid: ubi-9-for-ppc64le-appstream-rpms
+    size: 31685847
+    checksum: sha256:a5000bcbac21a39015c5e82612cae146e73d5508173cc7ea7a3b524d3d85a770
     name: rust
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.ppc64le.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/os/Packages/r/rust-std-static-1.92.0-1.el9.ppc64le.rpm
     repoid: ubi-9-for-ppc64le-appstream-rpms
-    size: 37564430
-    checksum: sha256:99facd93ed8575fcda613e4f4ee2317f4852ce4b3534f333b903864d5a4b9687
+    size: 39037990
+    checksum: sha256:664d152c7a36efe56571ed95afa722a6408e53f032bd4c219d60ef3520b9bf97
     name: rust-std-static
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.ppc64le.rpm
     repoid: codeready-builder-for-ubi-9-ppc64le-rpms
     size: 159924
@@ -77,12 +131,24 @@ arches:
     evr: 1.10.2-6.el9
     sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
   source:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/a/annobin-12.98-2.el9.src.rpm
     repoid: ubi-9-for-ppc64le-appstream-source-rpms
-    size: 284842616
-    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    size: 1017147
+    checksum: sha256:6724882369b201d4cc564b60c5c8271e30f3622488f27b844a2748a52da9287a
+    name: annobin
+    evr: 12.98-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/l/llvm-21.1.8-2.el9.src.rpm
+    repoid: ubi-9-for-ppc64le-appstream-source-rpms
+    size: 159117579
+    checksum: sha256:874ba2fef672cefaf755ca1b7811bc69c98466039bf06f38009336f8d552d87a
+    name: llvm
+    evr: 21.1.8-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/appstream/source/SRPMS/Packages/r/rust-1.92.0-1.el9.src.rpm
+    repoid: ubi-9-for-ppc64le-appstream-source-rpms
+    size: 273467363
+    checksum: sha256:ce5ba5cdce92a48756096032a97da81ea4e893dd546f2f149ea0f5755bfa9c7e
     name: rust
-    evr: 1.88.0-1.el9
+    evr: 1.92.0-1.el9
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/ppc64le/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
     repoid: codeready-builder-for-ubi-9-ppc64le-source-rpms
     size: 227908
@@ -92,27 +158,48 @@ arches:
   module_metadata: []
 - arch: s390x
   packages:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/c/cargo-1.88.0-1.el9.s390x.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/a/annobin-12.98-2.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 8685549
-    checksum: sha256:77bc5c4dedf9cce8a572ece13c36d28447efe294fae2c4befee87c6998da9808
+    size: 1120442
+    checksum: sha256:0fcac4e48c95b42a52d909cfb77991e6596549fc918d8a040e270299fbd5c459
+    name: annobin
+    evr: 12.98-2.el9
+    sourcerpm: annobin-12.98-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/c/cargo-1.92.0-1.el9.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 9514865
+    checksum: sha256:c4df518f9d3eba1a272a83b4cd8e3bd468a16ecd54d1a6254f63213b224e4eb5
     name: cargo
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-1.88.0-1.el9.s390x.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/l/llvm-filesystem-21.1.8-2.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 31184880
-    checksum: sha256:33536795f2f65b928b78a2c2238dadb5cec5df8234d17f3347b3112e2fe826fd
+    size: 20200
+    checksum: sha256:7f0a12372b87b0d82b7c4ac2a9e9acebc0f42cc184d579bb1469ecad209e12fb
+    name: llvm-filesystem
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/l/llvm-libs-21.1.8-2.el9.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 32803172
+    checksum: sha256:7e75d1517ff7f8916cb8832aa9ef632a2e4ec376b82f43c59a67ac839bf73fa5
+    name: llvm-libs
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-1.92.0-1.el9.s390x.rpm
+    repoid: ubi-9-for-s390x-appstream-rpms
+    size: 32021803
+    checksum: sha256:9040ef6ff3d6559661f638e1bae3d0a599d4af26e7819e454a56740407d70125
     name: rust
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.s390x.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/os/Packages/r/rust-std-static-1.92.0-1.el9.s390x.rpm
     repoid: ubi-9-for-s390x-appstream-rpms
-    size: 39210792
-    checksum: sha256:9f4514885ab9d25ccda42e076381cf44e2da05c15a3a032204fcbcb34783fa93
+    size: 41144130
+    checksum: sha256:f0f403046fb66ba3316c60407a7e2b4e9f93a530719c17c4f2bf3d1f8f11e967
     name: rust-std-static
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.s390x.rpm
     repoid: codeready-builder-for-ubi-9-s390x-rpms
     size: 148716
@@ -121,12 +208,24 @@ arches:
     evr: 1.10.2-6.el9
     sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
   source:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/a/annobin-12.98-2.el9.src.rpm
     repoid: ubi-9-for-s390x-appstream-source-rpms
-    size: 284842616
-    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    size: 1017147
+    checksum: sha256:6724882369b201d4cc564b60c5c8271e30f3622488f27b844a2748a52da9287a
+    name: annobin
+    evr: 12.98-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/l/llvm-21.1.8-2.el9.src.rpm
+    repoid: ubi-9-for-s390x-appstream-source-rpms
+    size: 159117579
+    checksum: sha256:874ba2fef672cefaf755ca1b7811bc69c98466039bf06f38009336f8d552d87a
+    name: llvm
+    evr: 21.1.8-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/appstream/source/SRPMS/Packages/r/rust-1.92.0-1.el9.src.rpm
+    repoid: ubi-9-for-s390x-appstream-source-rpms
+    size: 273467363
+    checksum: sha256:ce5ba5cdce92a48756096032a97da81ea4e893dd546f2f149ea0f5755bfa9c7e
     name: rust
-    evr: 1.88.0-1.el9
+    evr: 1.92.0-1.el9
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/s390x/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
     repoid: codeready-builder-for-ubi-9-s390x-source-rpms
     size: 227908
@@ -136,27 +235,48 @@ arches:
   module_metadata: []
 - arch: x86_64
   packages:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/c/cargo-1.88.0-1.el9.x86_64.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/a/annobin-12.98-2.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 8326606
-    checksum: sha256:8d5b570c23f08d8e619cd9d69f4e6a25572cc4df0747f9cdc8c531621ce45480
+    size: 1121890
+    checksum: sha256:a27f53f146f65d077290eccdd1a4fd58c2a761a31baad860aa4961961d52d509
+    name: annobin
+    evr: 12.98-2.el9
+    sourcerpm: annobin-12.98-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/c/cargo-1.92.0-1.el9.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 9100626
+    checksum: sha256:3c4afc2cb56734d01aaaaa8d0c317688f6fe143ad239079342f4fe9b631ded0f
     name: cargo
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-1.88.0-1.el9.x86_64.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/l/llvm-filesystem-21.1.8-2.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 30892199
-    checksum: sha256:d976ea2f80c38598484e6e6e5501bc92f8581b94227dd554e0492bf5d2234f04
+    size: 20224
+    checksum: sha256:b54fc55927e26da6954bbf9a396735a2a29383b15fe9e3d70b9d24cd90b1c500
+    name: llvm-filesystem
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/l/llvm-libs-21.1.8-2.el9.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 32586819
+    checksum: sha256:6c71c84a680f89a551b312eac90c9ae2899c3bdfaacdc809e39d7da968657d5a
+    name: llvm-libs
+    evr: 21.1.8-2.el9
+    sourcerpm: llvm-21.1.8-2.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-1.92.0-1.el9.x86_64.rpm
+    repoid: ubi-9-for-x86_64-appstream-rpms
+    size: 31511504
+    checksum: sha256:fbc70b11f38999206d70a104789d1f7f21ca9f9090c7a73d6db337bff4f5205b
     name: rust
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-std-static-1.88.0-1.el9.x86_64.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/r/rust-std-static-1.92.0-1.el9.x86_64.rpm
     repoid: ubi-9-for-x86_64-appstream-rpms
-    size: 41209382
-    checksum: sha256:5ac616ad878773059445a8c8cbc8ee013541712b321435a9adff5989558a3227
+    size: 42991765
+    checksum: sha256:d286394aaa75a796a06db130d2a980bee8e6ab4cbaa38a3b84e12379fbae4671
     name: rust-std-static
-    evr: 1.88.0-1.el9
-    sourcerpm: rust-1.88.0-1.el9.src.rpm
+    evr: 1.92.0-1.el9
+    sourcerpm: rust-1.92.0-1.el9.src.rpm
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/codeready-builder/os/Packages/n/ninja-build-1.10.2-6.el9.x86_64.rpm
     repoid: codeready-builder-for-ubi-9-x86_64-rpms
     size: 153299
@@ -165,12 +285,24 @@ arches:
     evr: 1.10.2-6.el9
     sourcerpm: ninja-build-1.10.2-6.el9.src.rpm
   source:
-  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/r/rust-1.88.0-1.el9.src.rpm
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/a/annobin-12.98-2.el9.src.rpm
     repoid: ubi-9-for-x86_64-appstream-source-rpms
-    size: 284842616
-    checksum: sha256:d20ea801b5d19e41896aae3023f0318b27250d00c53bd756a0ec6609f7eb540b
+    size: 1017147
+    checksum: sha256:6724882369b201d4cc564b60c5c8271e30f3622488f27b844a2748a52da9287a
+    name: annobin
+    evr: 12.98-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/l/llvm-21.1.8-2.el9.src.rpm
+    repoid: ubi-9-for-x86_64-appstream-source-rpms
+    size: 159117579
+    checksum: sha256:874ba2fef672cefaf755ca1b7811bc69c98466039bf06f38009336f8d552d87a
+    name: llvm
+    evr: 21.1.8-2.el9
+  - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/source/SRPMS/Packages/r/rust-1.92.0-1.el9.src.rpm
+    repoid: ubi-9-for-x86_64-appstream-source-rpms
+    size: 273467363
+    checksum: sha256:ce5ba5cdce92a48756096032a97da81ea4e893dd546f2f149ea0f5755bfa9c7e
     name: rust
-    evr: 1.88.0-1.el9
+    evr: 1.92.0-1.el9
   - url: https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/codeready-builder/source/SRPMS/Packages/n/ninja-build-1.10.2-6.el9.src.rpm
     repoid: codeready-builder-for-ubi-9-x86_64-source-rpms
     size: 227908

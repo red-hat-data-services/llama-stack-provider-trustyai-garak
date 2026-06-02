@@ -371,9 +371,9 @@ docstring-parser==0.17.0 \
 ecoji==0.1.1 \
     --hash=sha256:9665b2545d73ea0b4e0c9897cc6575df8ae7dc3946a82ac9d62db2f147139a9c
     # via garak
-eval-type-backport==0.3.0 \
-    --hash=sha256:1638210401e184ff17f877e9a2fa076b60b5838790f4532a21761cc2be67aea1 \
-    --hash=sha256:975a10a0fe333c8b6260d7fdb637698c9a16c3a9e3b6eb943fee6a6f67a37fe8
+eval-type-backport==0.4.0 \
+    --hash=sha256:8397d25e6524c2e67b9576bb0636be27dea2192017711220c534ec2de921e9b0 \
+    --hash=sha256:ad5e2a8db71b6696a56eafb938b0f5a337d3217f256b8e158b469422b4772b20
     # via mistralai
 fastapi==0.123.0 \
     --hash=sha256:1410678b3c44418245eec85088b15140d894074b86e66061017e2b492c09b138 \

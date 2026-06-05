@@ -360,9 +360,9 @@ pathspec==1.0.4 \
     # via
     #   hatchling
     #   scikit-build-core
-pdm-backend==2.4.7 \
-    --hash=sha256:1599e3afa6f229b30cb4d3bd9caeca42229c42eb5730abd13e0b5256ec93c9f7 \
-    --hash=sha256:a509d083850378ce919d41e7a2faddfc57a1764d376913c66731125d6b14110f
+pdm-backend==2.4.9 \
+    --hash=sha256:8d1064751dadb0c40b1026b46826a448d85c8228a564985c62fb53d4aba538a1 \
+    --hash=sha256:c41a852ccbf4b567b033db9b2ae78660d7a4ea49307719959ab88a01f0aabb2e
     # via
     #   annotated-doc
     #   fastapi

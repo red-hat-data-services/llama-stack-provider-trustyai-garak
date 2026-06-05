@@ -548,9 +548,9 @@ cryptography==46.0.3 \
     --hash=sha256:ef639cb3372f69ec44915fafcd6698b6cc78fbe0c2ea41be867f6ed612811963 \
     --hash=sha256:f260d0d41e9b4da1ed1e0f1ce571f97fe370b152ab18778e9e8f67d6af432018
     # via pyjwt
-datasets==4.4.1 \
-    --hash=sha256:80322699aa8c0bbbdb7caa87906da689c3c2e29523cff698775c67f28fdab1fc \
-    --hash=sha256:c1163de5211e42546079ab355cc0250c7e6db16eb209ac5ac6252f801f596c44
+datasets==5.0.0 \
+    --hash=sha256:7dd34927a0fd7046e98aad5cb9430e699c373238a15befa7b9bf22b991a7fee6 \
+    --hash=sha256:83dbbbdb07a33b82192b8c419deb18739b138ee2ce1a322d55ce6b100954ec1a
     # via garak
 datetime==6.0 \
     --hash=sha256:c1514936d2f901e10c8e08d83bf04e6c9dbd7ca4f244da94fec980980a3bc4d5 \

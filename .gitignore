@@ -13,4 +13,5 @@ _providers.d/
 
 # Hermeto outputs (generated during testing)
 hermeto-output*/
-hermeto*.env.venv/
+hermeto*.env
+.venv/

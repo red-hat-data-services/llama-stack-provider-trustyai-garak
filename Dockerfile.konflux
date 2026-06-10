@@ -5,6 +5,7 @@ USER root
 
 # For Rust-based Python packages
 RUN dnf install -y --setopt install_weak_deps=0 --nodocs \
+    llvm-libs \
     cargo \
     rust \
     && dnf clean all

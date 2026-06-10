@@ -4,7 +4,7 @@ WORKDIR /opt/app-root
 USER root
 
 # For Rust-based Python packages
-RUN dnf install -y --setopt install_weak_deps=0 --nodocs --nobest \
+RUN dnf install -y --setopt install_weak_deps=0 --nodocs --skip-broken \
     llvm-libs \
     cargo \
     rust \

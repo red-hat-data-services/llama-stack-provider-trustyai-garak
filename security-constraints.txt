@@ -7,3 +7,8 @@
 # RHOAIENG-59311: CVE-2026-23490 - pyasn1 Denial of Service due to memory exhaustion from malformed RELATIVE-OID
 # Fixed in: pyasn1 >= 0.6.3 (addresses both CVEs)
 pyasn1>=0.6.3
+
+# CVE-2026-39892: cryptography buffer overflow vulnerability
+# RHOAIENG-62112: Cryptography - Buffer overflow via non-contiguous buffer in API
+# Fixed in: cryptography >= 46.0.7
+cryptography>=46.0.7

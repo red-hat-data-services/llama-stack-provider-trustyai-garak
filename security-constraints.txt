@@ -12,3 +12,8 @@ pyasn1>=0.6.3
 # RHOAIENG-62112: Cryptography - Buffer overflow via non-contiguous buffer in API
 # Fixed in: cryptography >= 46.0.7
 cryptography>=46.0.7
+
+# CVE-2026-40192: Pillow FITS decompression bomb vulnerability
+# RHOAIENG-58604: Pillow - Denial of Service via decompression bomb in FITS image processing
+# Fixed in: Pillow >= 12.2.0 (affected versions 10.3.0 through 12.1.1)
+pillow>=12.2.0

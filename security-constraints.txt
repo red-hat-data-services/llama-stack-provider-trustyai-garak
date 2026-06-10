@@ -22,3 +22,8 @@ pillow>=12.2.0
 # RHOAIENG-53163: PyJWT - accepts unknown crit header extensions (RFC 7515 §4.1.11 MUST violation)
 # Fixed in: PyJWT >= 2.12.0
 pyjwt>=2.12.0
+
+# CVE-2026-28684: python-dotenv symlink vulnerability
+# RHOAIENG-59256: python-dotenv - arbitrary file overwrite via symbolic link following
+# Fixed in: python-dotenv >= 1.2.2
+python-dotenv>=1.2.2

@@ -4,24 +4,27 @@ WORKDIR /opt/app-root
 USER root
 
 # For Rust-based Python packages
-# rust-1.88.0-1.el9 was compiled against LLVM 20.1, but the base image now ships LLVM 21.
-# Workaround: create a compat symlink for libLLVM.so.20.1, then install rust/cargo directly
-# from the hermeto RPM cache using rpm --nodeps to bypass DNF's dependency resolution.
-RUN ARCH=$(uname -m) && \
-    LLVM21=$(ls /usr/lib64/libLLVM-21.so 2>/dev/null || \
-             ls /usr/lib64/libLLVM.so.21* 2>/dev/null | head -1) && \
-    if [ -n "$LLVM21" ] && [ ! -e /usr/lib64/libLLVM.so.20.1 ]; then \
-        ln -sf "$LLVM21" /usr/lib64/libLLVM.so.20.1; \
-    fi && \
-    RUST_RPM=$(find /cachi2/output/deps/rpm/${ARCH} \
-               -name "rust-1.88.0-1.el9.${ARCH}.rpm" 2>/dev/null | head -1) && \
-    CARGO_RPM=$(find /cachi2/output/deps/rpm/${ARCH} \
-                -name "cargo-1.88.0-1.el9.${ARCH}.rpm" 2>/dev/null | head -1) && \
-    if [ -n "$RUST_RPM" ] && [ -n "$CARGO_RPM" ]; then \
-        rpm -ivh --nodeps "$RUST_RPM" "$CARGO_RPM"; \
-    fi && \
-    ldconfig
-
+# # rust-1.88.0-1.el9 was compiled against LLVM 20.1, but the base image now ships LLVM 21.
+# # Workaround: create a compat symlink for libLLVM.so.20.1, then install rust/cargo directly
+# # from the hermeto RPM cache using rpm --nodeps to bypass DNF's dependency resolution.
+# RUN ARCH=$(uname -m) && \
+#     LLVM21=$(ls /usr/lib64/libLLVM-21.so 2>/dev/null || \
+#              ls /usr/lib64/libLLVM.so.21* 2>/dev/null | head -1) && \
+#     if [ -n "$LLVM21" ] && [ ! -e /usr/lib64/libLLVM.so.20.1 ]; then \
+#         ln -sf "$LLVM21" /usr/lib64/libLLVM.so.20.1; \
+#     fi && \
+#     RUST_RPM=$(find /cachi2/output/deps/rpm/${ARCH} \
+#                -name "rust-1.88.0-1.el9.${ARCH}.rpm" 2>/dev/null | head -1) && \
+#     CARGO_RPM=$(find /cachi2/output/deps/rpm/${ARCH} \
+#                 -name "cargo-1.88.0-1.el9.${ARCH}.rpm" 2>/dev/null | head -1) && \
+#     if [ -n "$RUST_RPM" ] && [ -n "$CARGO_RPM" ]; then \
+#         rpm -ivh --nodeps "$RUST_RPM" "$CARGO_RPM"; \
+#     fi && \
+#     ldconfig
+RUN dnf install -y --setopt install_weak_deps=0 --nodocs \
+    cargo \
+    rust \
+    && dnf clean all
 COPY . .
 
 # Build argument to specify architecture

@@ -1,0 +1,9 @@
+# Security constraints for CVE fixes
+# This file pins library versions to address security vulnerabilities
+# Use with: pip-compile --constraint security-constraints.txt ...
+
+# CVE-2026-30922 & CVE-2026-23490: pyasn1 DoS vulnerabilities
+# RHOAIENG-54258: CVE-2026-30922 - pyasn1 Vulnerable to Denial of Service via Unbounded Recursion
+# RHOAIENG-59311: CVE-2026-23490 - pyasn1 Denial of Service due to memory exhaustion from malformed RELATIVE-OID
+# Fixed in: pyasn1 >= 0.6.3 (addresses both CVEs)
+pyasn1>=0.6.3

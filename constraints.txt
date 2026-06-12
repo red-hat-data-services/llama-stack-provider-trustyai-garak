@@ -1,0 +1,6 @@
+# Security constraints for CVE fixes
+# Used with: uv pip compile --constraint security-constraints.txt
+
+# CVE-2026-42271 (KEV): LiteLLM authenticated command execution via MCP stdio test endpoints
+# Fixed in 1.83.7 - https://github.com/BerriAI/litellm/security/advisories
+litellm>=1.83.7

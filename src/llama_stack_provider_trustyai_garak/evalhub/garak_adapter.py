@@ -129,14 +129,6 @@ class GarakAdapter(FrameworkAdapter):
             execution_mode = self._resolve_execution_mode(benchmark_config)
             logger.info("Execution mode: %s", execution_mode)
 
-            # Early check: intents benchmarks require KFP mode
-            _intents_required = benchmark_config.get("art_intents")
-            if _intents_required is None:
-                _profile = self._resolve_profile(config.benchmark_id)
-                _intents_required = _profile.get("art_intents", False) if _profile else False
-            if _intents_required and execution_mode != EXECUTION_MODE_KFP:
-                raise ValueError("Intents benchmarks are only supported in KFP execution mode. ")
-
             # Build merged garak config (common to both modes)
             scan_dir = get_scan_base_dir() / config.id
             scan_dir.mkdir(parents=True, exist_ok=True)
@@ -166,6 +158,15 @@ class GarakAdapter(FrameworkAdapter):
                     timeout=timeout,
                     intents_params=intents_params,
                     eval_threshold=eval_threshold,
+                )
+            elif art_intents:
+                result = self._run_simple_intents(
+                    config=config,
+                    callbacks=callbacks,
+                    garak_config_dict=garak_config_dict,
+                    scan_dir=scan_dir,
+                    timeout=timeout,
+                    intents_params=intents_params,
                 )
             else:
                 result = self._run_simple(
@@ -449,6 +450,186 @@ class GarakAdapter(FrameworkAdapter):
         return result
 
     # ------------------------------------------------------------------
+    # Simple intents (subprocess with SDG preprocessing)
+    # ------------------------------------------------------------------
+
+    def _run_simple_intents(
+        self,
+        config: JobSpec,
+        callbacks: JobCallbacks,
+        garak_config_dict: dict,
+        scan_dir: Path,
+        timeout: int,
+        intents_params: dict[str, Any],
+    ) -> GarakScanResult:
+        """Run an intents benchmark as a local subprocess with in-process SDG.
+
+        Executes the intents pipeline steps sequentially:
+        1. Resolve taxonomy (local file or default BASE_TAXONOMY)
+        2. Run SDG generation (or bypass if intents_s3_key provided)
+        3. Normalize prompts
+        4. Delegate to setup_and_run_garak() for stub generation + scan
+
+        External files (taxonomy, bypass prompts) are expected as local
+        paths pre-downloaded by the EvalHub SDK to ``/test_data``.  The
+        existing ``policy_s3_key`` / ``intents_s3_key`` parameters are
+        reused as local file paths in simple mode.
+        """
+        from ..core.pipeline_steps import (
+            normalize_prompts,
+            resolve_taxonomy_data,
+            run_sdg_generation,
+            setup_and_run_garak,
+        )
+
+        policy_path = intents_params.get("policy_s3_key", "")
+        policy_format = intents_params.get("policy_format", "csv")
+        intents_path = intents_params.get("intents_s3_key", "")
+        intents_format = intents_params.get("intents_format", "csv")
+
+        # -- Step 1: Resolve taxonomy --------------------------------
+        callbacks.report_status(
+            JobStatusUpdate(
+                status=JobStatus.RUNNING,
+                phase=JobPhase.RUNNING_EVALUATION,
+                progress=0.05,
+                message=MessageInfo(
+                    message="Resolving taxonomy for intents scan",
+                    message_code="resolving_taxonomy",
+                ),
+                current_step="Resolving taxonomy",
+            )
+        )
+
+        policy_content: bytes | None = None
+        if policy_path and policy_path.strip():
+            policy_file = Path(policy_path)
+            if not policy_file.exists():
+                raise FileNotFoundError(
+                    f"Taxonomy file not found at '{policy_path}'. Ensure the file is available via test_data_ref."
+                )
+            policy_content = policy_file.read_bytes()
+            logger.info("Read taxonomy from local path: %s (%d bytes)", policy_path, len(policy_content))
+
+        taxonomy_df = resolve_taxonomy_data(policy_content, format=policy_format)
+        logger.info("Resolved taxonomy: %d entries", len(taxonomy_df))
+
+        # -- Step 2: Generate prompts (SDG or bypass) ----------------
+        raw_content: str | None = None
+
+        if intents_path and intents_path.strip():
+            callbacks.report_status(
+                JobStatusUpdate(
+                    status=JobStatus.RUNNING,
+                    phase=JobPhase.RUNNING_EVALUATION,
+                    progress=0.1,
+                    message=MessageInfo(
+                        message="Loading pre-generated prompts (bypass SDG)",
+                        message_code="bypass_sdg",
+                    ),
+                    current_step="Loading bypass prompts",
+                )
+            )
+            intents_file = Path(intents_path)
+            if not intents_file.exists():
+                raise FileNotFoundError(
+                    f"Intents file not found at '{intents_path}'. Ensure the file is available via test_data_ref."
+                )
+            raw_content = intents_file.read_text(encoding="utf-8")
+            logger.info("Read bypass prompts from local path: %s (%d bytes)", intents_path, len(raw_content))
+        else:
+            callbacks.report_status(
+                JobStatusUpdate(
+                    status=JobStatus.RUNNING,
+                    phase=JobPhase.RUNNING_EVALUATION,
+                    progress=0.1,
+                    message=MessageInfo(
+                        message="Running Synthetic Data Generation",
+                        message_code="running_sdg",
+                    ),
+                    current_step="Generating adversarial prompts via SDG",
+                )
+            )
+            sdg_model = intents_params.get("sdg_model", "")
+            sdg_api_base = intents_params.get("sdg_api_base", "")
+            if not sdg_model or not sdg_api_base:
+                raise ValueError(
+                    "Intents benchmark requires sdg_model and sdg_api_base "
+                    "for prompt generation when intents_s3_key is not provided."
+                )
+
+            raw_df = run_sdg_generation(
+                taxonomy_df=taxonomy_df,
+                sdg_model=sdg_model,
+                sdg_api_base=sdg_api_base,
+                sdg_flow_id=intents_params.get("sdg_flow_id", DEFAULT_SDG_FLOW_ID),
+                sdg_max_concurrency=intents_params.get("sdg_max_concurrency", DEFAULT_SDG_MAX_CONCURRENCY),
+                sdg_num_samples=intents_params.get("sdg_num_samples", DEFAULT_SDG_NUM_SAMPLES),
+                sdg_max_tokens=intents_params.get("sdg_max_tokens", DEFAULT_SDG_MAX_TOKENS),
+            )
+            raw_content = raw_df.to_csv(index=False)
+            logger.info("SDG produced %d rows", len(raw_df))
+
+        # -- Persist raw SDG output ----------------------------------
+        raw_output_path = scan_dir / "sdg_raw_output.csv"
+        raw_output_path.write_text(raw_content, encoding="utf-8")
+        logger.info("Saved raw SDG output to %s", raw_output_path)
+
+        # -- Step 3: Normalize prompts -------------------------------
+        callbacks.report_status(
+            JobStatusUpdate(
+                status=JobStatus.RUNNING,
+                phase=JobPhase.RUNNING_EVALUATION,
+                progress=0.3,
+                message=MessageInfo(
+                    message="Normalizing prompts",
+                    message_code="normalizing_prompts",
+                ),
+                current_step="Normalizing prompts",
+            )
+        )
+
+        if not (intents_path and intents_path.strip()) and intents_format.strip().lower() != "csv":
+            logger.warning(
+                "intents_format=%r ignored — SDG output is always CSV. "
+                "intents_format only applies when intents_s3_key provides a bypass file.",
+                intents_format,
+            )
+        fmt = intents_format if (intents_path and intents_path.strip()) else "csv"
+        normalized_df = normalize_prompts(raw_content, format=fmt)
+
+        norm_output_path = scan_dir / "sdg_normalized_output.csv"
+        normalized_df.to_csv(norm_output_path, index=False)
+        logger.info("Saved normalized prompts to %s (%d rows)", norm_output_path, len(normalized_df))
+
+        prompts_csv_path = scan_dir / "prompts.csv"
+        normalized_df.to_csv(prompts_csv_path, index=False)
+
+        # -- Step 4: Run garak scan ----------------------------------
+        callbacks.report_status(
+            JobStatusUpdate(
+                status=JobStatus.RUNNING,
+                phase=JobPhase.RUNNING_EVALUATION,
+                progress=0.4,
+                message=MessageInfo(
+                    message=f"Running Garak intents scan for {config.benchmark_id}",
+                    message_code="running_scan",
+                ),
+                current_step="Executing intents probes",
+            )
+        )
+
+        config_json = json.dumps(garak_config_dict)
+        result = setup_and_run_garak(
+            config_json=config_json,
+            prompts_csv_path=prompts_csv_path,
+            scan_dir=scan_dir,
+            timeout_seconds=timeout,
+        )
+
+        return result
+
+    # ------------------------------------------------------------------
     # KFP execution
     # ------------------------------------------------------------------
 
@@ -617,21 +798,22 @@ class GarakAdapter(FrameworkAdapter):
                     "S3 credentials from secret '%s/%s' are empty. "
                     "Ensure the secret exists and the Job pod's service account "
                     "has RBAC permissions to read secrets in namespace '%s'. "
-                    "Falling back to environment variables for S3 access."
-                    "If no environment variables are set, the job will fail",
+                    "Falling back to environment variables for S3 access. "
+                    "If no environment variables are set, the job will fail "
                     "as it will not be able to interact with S3.",
                     kfp_config.namespace,
                     kfp_config.s3_secret_name,
                     kfp_config.namespace,
                 )
-            s3_bucket = kfp_config.s3_bucket or creds.pop("bucket", "") or os.getenv("AWS_S3_BUCKET", "")
-            s3_endpoint = kfp_config.s3_endpoint or creds.pop("endpoint_url", "") or None
+            resolved = self._resolve_s3_credentials(kfp_config, creds)
             self._download_results_from_s3(
-                s3_bucket,
+                resolved["bucket"],
                 s3_prefix,
                 scan_dir,
-                endpoint_url=s3_endpoint,
-                **creds,
+                endpoint_url=resolved["endpoint_url"],
+                access_key=resolved["access_key"],
+                secret_key=resolved["secret_key"],
+                region=resolved["region"],
             )
 
         report_prefix = scan_dir / "scan"
@@ -786,6 +968,54 @@ class GarakAdapter(FrameworkAdapter):
         except Exception as exc:
             logger.warning("Could not read S3 credentials from secret %s/%s: %s", namespace, secret_name, exc)
             return {}
+
+    @staticmethod
+    def _resolve_s3_credentials(kfp_config: "KFPConfig", secret_creds: dict) -> dict:
+        """Merge S3 credentials from KFPConfig, K8s secret, and env vars.
+
+        For ``bucket`` and ``endpoint_url``, the first non-empty value wins:
+          1. kfp_config (benchmark_config / env override)
+          2. K8s secret (read via _read_s3_credentials_from_secret)
+          3. Environment variable (``AWS_S3_BUCKET`` / ``AWS_S3_ENDPOINT``)
+
+        For ``access_key``, ``secret_key``, and ``region``, values come
+        only from the K8s secret.  These fields have no kfp_config
+        equivalent; when the secret is empty, ``create_s3_client``
+        applies its own env-var fallback (``AWS_ACCESS_KEY_ID``, etc.).
+
+        When both kfp_config and the secret provide different non-empty
+        values for the same field, the kfp_config value is used and a
+        warning is logged so the operator can spot misconfigurations.
+        """
+        _FIELD_MAP: list[tuple[str, str, str]] = [
+            # (field_name, kfp_config_attr, env_var)
+            ("bucket", "s3_bucket", "AWS_S3_BUCKET"),
+            ("endpoint_url", "s3_endpoint", "AWS_S3_ENDPOINT"),
+        ]
+
+        resolved: dict[str, str | None] = {}
+
+        for field, kfp_attr, env_var in _FIELD_MAP:
+            cfg_val = (getattr(kfp_config, kfp_attr, "") or "").strip()
+            secret_val = (secret_creds.get(field, "") or "").strip()
+            env_val = (os.getenv(env_var, "") or "").strip()
+
+            if cfg_val and secret_val and cfg_val != secret_val:
+                logger.warning(
+                    "S3 %s mismatch: kfp_config=%r vs secret=%r — using kfp_config value. "
+                    "Check that kfp_config.%s and the Data Connection secret agree.",
+                    field,
+                    cfg_val,
+                    secret_val,
+                    kfp_attr,
+                )
+
+            resolved[field] = cfg_val or secret_val or env_val or None
+
+        for field in ("access_key", "secret_key", "region"):
+            resolved[field] = (secret_creds.get(field, "") or "").strip() or None
+
+        return resolved
 
     @staticmethod
     def _create_s3_client(
@@ -1422,103 +1652,11 @@ class GarakAdapter(FrameworkAdapter):
     def _get_garak_version(self) -> str:
         """Get Garak version string."""
         try:
-            from ..version_utils import get_garak_version
+            from importlib.metadata import version
 
-            return get_garak_version()
+            return f"garak=={version('garak')}"
         except Exception:
             return "unknown"
-
-
-class _GarakCallbacks(DefaultCallbacks):
-    """Extends DefaultCallbacks to forward evaluation_metadata artifacts.
-
-    Workaround until the SDK natively forwards evaluation_metadata into
-    the status event's ``artifacts`` field (tracked for SDK 3.4).
-
-    Overrides ``report_results`` to merge ``evaluation_metadata["artifacts"]``
-    into the single COMPLETED status event alongside OCI refs and metrics.
-    """
-
-    def report_results(self, results: JobResults) -> None:
-        eval_artifacts = (results.evaluation_metadata or {}).get("artifacts", {})
-
-        if not eval_artifacts:
-            super().report_results(results)
-            return
-
-        error: str | None = None
-
-        if self.sidecar_url and self._httpx_available and self._http_client:
-            try:
-                url = f"{self.sidecar_url}{self._events_path_template.format(job_id=self.job_id)}"
-
-                metrics = {}
-                for result in results.results:
-                    metrics[result.metric_name] = result.metric_value
-
-                status_event: dict[str, Any] = {
-                    "id": self.benchmark_id,
-                    "benchmark_index": self.benchmark_index,
-                    "state": JobStatus.COMPLETED.value,
-                    "status": JobStatus.COMPLETED.value,
-                    "message": {
-                        "message": "Evaluation completed successfully",
-                        "message_code": "evaluation_completed",
-                    },
-                    "metrics": metrics,
-                    "completed_at": results.completed_at.isoformat(),
-                    "duration_seconds": int(results.duration_seconds),
-                }
-
-                if self.provider_id:
-                    status_event["provider_id"] = self.provider_id
-
-                if results.mlflow_run_id:
-                    status_event["mlflow_run_id"] = results.mlflow_run_id
-
-                artifacts_payload: dict[str, Any] = {}
-                if results.oci_artifact:
-                    artifacts_payload["oci_reference"] = results.oci_artifact.reference
-                    artifacts_payload["oci_digest"] = results.oci_artifact.digest
-                artifacts_payload.update(eval_artifacts)
-                status_event["artifacts"] = artifacts_payload
-
-                data = {"benchmark_status_event": status_event}
-                logger.debug("Events report_results body: %s", data)
-
-                response = self._http_client.post(
-                    url,
-                    json=data,
-                    headers=self._request_headers(),
-                    timeout=10.0,
-                )
-                response.raise_for_status()
-
-                logger.info(
-                    "Results reported to evalhub | Metrics: %d | Score: %s | Artifacts: %d",
-                    len(metrics),
-                    results.overall_score,
-                    len(eval_artifacts),
-                )
-
-            except self.httpx.HTTPStatusError as e:
-                error = f"Failed to send results to evalhub (HTTP {e.response.status_code}): {e}"
-                logger.exception(error)
-            except Exception as e:
-                error = f"Failed to send results to evalhub: {e}"
-                logger.exception(error)
-
-        logger.info(
-            "Job %s completed | Benchmark: %s | Model: %s | Score: %s | Examples: %s | Duration: %.2fs",
-            results.id,
-            results.benchmark_id,
-            results.model_name,
-            results.overall_score,
-            results.num_examples_evaluated,
-            results.duration_seconds,
-        )
-
-        self._signal_termination(error)
 
 
 def main(adapter_cls: type[GarakAdapter] = GarakAdapter) -> None:
@@ -1542,7 +1680,7 @@ def main(adapter_cls: type[GarakAdapter] = GarakAdapter) -> None:
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    callbacks: _GarakCallbacks | None = None
+    callbacks: DefaultCallbacks | None = None
     exit_error: str | None = None
     try:
         job_spec_path = os.getenv("EVALHUB_JOB_SPEC_PATH", "/meta/job.json")
@@ -1551,22 +1689,7 @@ def main(adapter_cls: type[GarakAdapter] = GarakAdapter) -> None:
         logger.info(f"Benchmark: {adapter.job_spec.benchmark_id}")
         logger.info(f"Model: {adapter.job_spec.model.name}")
 
-        from evalhub.adapter.config import DEFAULT_TERMINATION_FILE_PATH, EvalHubMode
-        from evalhub.adapter.oci import DEFAULT_OCI_PROXY_HOST
-
-        callbacks = _GarakCallbacks(
-            job_id=adapter.job_spec.id,
-            benchmark_id=adapter.job_spec.benchmark_id,
-            benchmark_index=adapter.job_spec.benchmark_index,
-            provider_id=adapter.job_spec.provider_id,
-            sidecar_url=adapter.job_spec.callback_url,
-            insecure=adapter.settings.evalhub_insecure,
-            oci_auth_config_path=adapter.settings.oci_auth_config_path,
-            oci_insecure=adapter.settings.oci_insecure,
-            oci_proxy_host=(DEFAULT_OCI_PROXY_HOST if adapter.settings.mode == EvalHubMode.K8S else None),
-            termination_file_path=(DEFAULT_TERMINATION_FILE_PATH if adapter.settings.mode == EvalHubMode.K8S else None),
-            mlflow_backend=adapter.settings.mlflow_backend,
-        )
+        callbacks = DefaultCallbacks.from_adapter(adapter)
 
         results = adapter.run_benchmark_job(adapter.job_spec, callbacks)
         logger.info(f"Job completed successfully: {results.id}")
@@ -1587,9 +1710,6 @@ def main(adapter_cls: type[GarakAdapter] = GarakAdapter) -> None:
         exit_error = f"Job failed: {e}"
         logger.exception(exit_error)
         sys.exit(1)
-    finally:
-        if callbacks:
-            callbacks._signal_termination(exit_error)
 
 
 if __name__ == "__main__":

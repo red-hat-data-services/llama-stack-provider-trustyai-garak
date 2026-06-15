@@ -225,7 +225,7 @@ huggingface-hub==1.7.2
     #   garak
     #   tokenizers
     #   transformers
-idna==3.11
+idna==3.18
     # via
     #   anyio
     #   httpx

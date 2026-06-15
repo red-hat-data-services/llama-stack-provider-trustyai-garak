@@ -376,7 +376,7 @@ opentelemetry-proto==1.40.0
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.40.0
+opentelemetry-sdk==1.42.1
     # via
     #   llama-stack-api
     #   opentelemetry-exporter-otlp-proto-http

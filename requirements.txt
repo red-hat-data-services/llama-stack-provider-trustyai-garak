@@ -300,7 +300,7 @@ langgraph-sdk==0.3.12
     # via langgraph
 langsmith==0.7.22
     # via langchain-core
-litellm==1.75.8
+litellm==1.84.0
     # via
     #   garak
     #   sdg-hub

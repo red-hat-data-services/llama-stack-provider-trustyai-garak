@@ -104,7 +104,7 @@ ecoji==0.1.1
     # via garak
 eval-hub-sdk==0.1.4
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
-eval-type-backport==0.3.1
+eval-type-backport==0.4.0
     # via mistralai
 fastapi==0.135.2
     # via llama-stack-api

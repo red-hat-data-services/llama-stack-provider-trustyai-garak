@@ -277,9 +277,9 @@ maturin==1.11.5 \
     #   safetensors
     #   tokenizers
     #   uuid-utils
-meson-python==0.19.0 \
-    --hash=sha256:67b5906c37404396d23c195e12c8825506074460d4a2e7083266b845d14f0298 \
-    --hash=sha256:9959d198aa69b57fcfd354a34518c6f795b781a73ed0656f4d01660160cc2553
+meson-python==0.20.0 \
+    --hash=sha256:6a744cf0c09e76ecbdc58cfa374b48c8902dac1b74479628238634efbf36aec9 \
+    --hash=sha256:6d9726ae6cd37e22f210c74b364b30180a68c20442e97ff09f3c566a414af738
     # via
     #   numpy
     #   pandas

@@ -112,7 +112,7 @@ fastavro==1.12.1
     # via cohere
 fastuuid==0.14.0
     # via litellm
-filelock==3.25.2
+filelock==3.29.3
     # via
     #   datasets
     #   huggingface-hub

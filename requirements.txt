@@ -150,7 +150,7 @@ google-cloud-core==2.6.0
     # via
     #   google-cloud-storage
     #   google-cloud-translate
-google-cloud-storage==3.10.1
+google-cloud-storage==3.11.0
     # via kfp
 google-cloud-translate==3.26.0
     # via garak

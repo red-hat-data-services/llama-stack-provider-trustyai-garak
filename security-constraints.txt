@@ -37,3 +37,8 @@ aiohttp>=3.14.0
 # no upper bound), which is within llama-stack's fastapi<1.0,>=0.115.0 constraint.
 starlette>=1.0.1
 fastapi>=0.135.0
+
+# CVE-2026-44431 (RHOAIENG-64536): urllib3 cross-origin redirect header disclosure
+# CVE-2026-44432 (RHOAIENG-63917): urllib3 DoS via excessive decompression
+# Fixed in: urllib3 >= 2.7.0
+urllib3>=2.7.0

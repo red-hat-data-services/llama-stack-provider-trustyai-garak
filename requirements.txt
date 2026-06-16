@@ -319,7 +319,7 @@ mistralai==1.5.2
     # via garak
 mlflow-tracing==3.13.0
     # via sdg-hub
-mpmath==1.3.0
+mpmath==1.4.1
     # via sympy
 multidict==6.7.1
     # via

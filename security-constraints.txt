@@ -27,3 +27,7 @@ pyjwt>=2.12.0
 # RHOAIENG-59256: python-dotenv - arbitrary file overwrite via symbolic link following
 # Fixed in: python-dotenv >= 1.2.2
 python-dotenv>=1.2.2
+
+# CVE-2026-34993 (RHOAIENG-65992): aiohttp arbitrary code execution via CookieJar.load()
+# Fixed in: aiohttp >= 3.14.0
+aiohttp>=3.14.0

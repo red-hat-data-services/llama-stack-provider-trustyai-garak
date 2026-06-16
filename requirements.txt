@@ -65,7 +65,7 @@ click==8.4.1
     #   sdg-hub
     #   typer
     #   uvicorn
-click-option-group==0.5.7
+click-option-group==0.5.9
     # via kfp
 cmd2==2.4.3
     # via garak

@@ -315,7 +315,7 @@ mdurl==0.1.2
     # via markdown-it-py
 mikeshardmind-base2048==1.0.4
     # via garak
-mistralai==1.5.2
+mistralai==2.4.9
     # via garak
 mlflow-tracing==3.13.0
     # via sdg-hub

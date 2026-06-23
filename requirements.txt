@@ -540,7 +540,7 @@ sdg-hub==0.9.4
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 sentencepiece==0.2.1
     # via garak
-setuptools==80.10.2
+setuptools==82.0.1
     # via
     #   grpcio-tools
     #   nvidia-riva-client

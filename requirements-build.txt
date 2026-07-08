@@ -580,7 +580,7 @@ setuptools==80.9.0 \
     #   zipp
     #   zope-interface
     #   zstandard
-setuptools==82.0.0 \
+setuptools==82.0.1 \
     --hash=sha256:22e0a2d69474c6ae4feb01951cb69d515ed23728cf96d05513d36e42b62b37cb \
     --hash=sha256:70b18734b607bd1da571d097d236cfcfacaf01de45717d59e6e04b96877532e0
     # via

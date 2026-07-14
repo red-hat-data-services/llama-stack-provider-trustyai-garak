@@ -254,9 +254,9 @@ meson-python==0.18.0 \
     # via
     #   numpy
     #   pandas
-meson==1.10.0 \
-    --hash=sha256:4b27aafce281e652dcb437b28007457411245d975c48b5db3a797d3e93ae1585 \
-    --hash=sha256:8071860c1f46a75ea34801490fd1c445c9d75147a65508cd3a10366a7006cc1c
+meson==1.11.2 \
+    --hash=sha256:698feae069cef3ecd4d7aaf281d7df359bdfcf555a9a1564383d3b913fa8a736 \
+    --hash=sha256:7e4f6e83fec83e3eaac928e058b073c7557b282c35b6a2024cea143a39926a39
     # via
     #   meson-python
     #   pandas

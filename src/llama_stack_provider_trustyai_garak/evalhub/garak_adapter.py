@@ -39,9 +39,9 @@ from evalhub.adapter import (
     JobSpec,
     JobStatus,
     JobStatusUpdate,
+    MessageInfo,
     OCIArtifactSpec,
 )
-from evalhub.adapter.models.job import ErrorInfo, MessageInfo
 from evalhub.models.api import EvaluationResult
 
 from ..core.command_builder import build_generator_options
@@ -111,17 +111,8 @@ class GarakAdapter(FrameworkAdapter):
 
         try:
             # Phase 1: Initialize
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.INITIALIZING,
-                    progress=0.0,
-                    message=MessageInfo(
-                        message="Validating configuration and building scan command",
-                        message_code="initializing",
-                    ),
-                )
-            )
+            callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.INITIALIZING))
+            logger.info("Validating configuration and building scan command")
 
             self._validate_config(config)
 
@@ -149,7 +140,7 @@ class GarakAdapter(FrameworkAdapter):
 
             eval_threshold = float(garak_config_dict.get("run", {}).get("eval_threshold", DEFAULT_EVAL_THRESHOLD))
 
-            # Phase 2: Execute scan (mode-dependent)
+            # Phase 2–3: Loading data + Execute scan (mode-dependent)
             if execution_mode == EXECUTION_MODE_KFP:
                 result, scan_dir = self._run_via_kfp(
                     config=config,
@@ -181,27 +172,23 @@ class GarakAdapter(FrameworkAdapter):
                 error_msg = f"Garak scan failed: {result.stderr}" if result.stderr else "Unknown error"
                 if result.timed_out:
                     error_msg = f"Scan timed out after {timeout} seconds"
+                if result.log_errors:
+                    error_msg += "\nscan.log errors:\n" + "\n".join(result.log_errors)
 
                 callbacks.report_status(
                     JobStatusUpdate(
                         status=JobStatus.FAILED,
-                        error=ErrorInfo(message=error_msg, message_code="scan_failed"),
+                        error_message=MessageInfo(
+                            message=error_msg,
+                            message_code="scan_failed",
+                        ),
                     )
                 )
                 raise RuntimeError(error_msg)
 
-            # Phase 3: Parse results (common to both modes)
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.POST_PROCESSING,
-                    progress=0.8,
-                    message=MessageInfo(
-                        message="Parsing scan results",
-                        message_code="parsing_results",
-                    ),
-                )
-            )
+            # Phase 4: Parse results (common to both modes)
+            callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.POST_PROCESSING))
+            logger.info("Parsing scan results")
 
             metrics, overall_score, num_examples, overall_summary = self._parse_results(
                 result,
@@ -210,7 +197,7 @@ class GarakAdapter(FrameworkAdapter):
             )
             logger.info(f"Parsed {len(metrics)} probe metrics, overall score: {overall_score}")
 
-            # Phase 3b: Generate ART HTML report for intents scans
+            # Phase 4b: Generate ART HTML report for intents scans
             if art_intents and result.report_jsonl.exists():
                 try:
                     report_content = result.report_jsonl.read_text()
@@ -234,13 +221,15 @@ class GarakAdapter(FrameworkAdapter):
                 except Exception as exc:
                     logger.warning("Could not redact config.json: %s", exc)
 
-            # Phase 4: Persist artifacts
+            # Phase 5: Persist artifacts
             oci_artifact = None
-            if config.exports and config.exports.oci:
+            oci_exports = config.exports.oci if config.exports else None
+            if oci_exports is not None:
+                callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.PERSISTING_ARTIFACTS))
                 oci_artifact = callbacks.create_oci_artifact(
                     OCIArtifactSpec(
                         files_path=scan_dir,
-                        coordinates=config.exports.oci.coordinates,
+                        coordinates=oci_exports.coordinates,
                     )
                 )
                 logger.info(f"Persisted scan artifacts: {oci_artifact.reference}")
@@ -269,6 +258,7 @@ class GarakAdapter(FrameworkAdapter):
                 artifact_keys: dict[str, str] = {
                     "scan_report": f"{s3_prefix}/scan.report.jsonl",
                     "scan_html_report": f"{s3_prefix}/scan.report.html",
+                    "scan_hitlog": f"{s3_prefix}/scan.hitlog.jsonl",
                 }
                 if art_intents:
                     artifact_keys["sdg_raw_output"] = f"{s3_prefix}/sdg_raw_output.csv"
@@ -299,7 +289,7 @@ class GarakAdapter(FrameworkAdapter):
                 oci_artifact=oci_artifact,
             )
 
-            # Phase 5: Save to MLflow (if experiment_name configured)
+            # Phase 6: Save to MLflow (if experiment_name configured)
             try:
                 from evalhub.adapter.mlflow import MlflowArtifact
 
@@ -326,6 +316,14 @@ class GarakAdapter(FrameworkAdapter):
                         MlflowArtifact(
                             "scan.report.jsonl",
                             result.report_jsonl.read_bytes(),
+                            "application/jsonl",
+                        )
+                    )
+                if result.hitlog_jsonl.exists():
+                    mlflow_artifacts.append(
+                        MlflowArtifact(
+                            "scan.hitlog.jsonl",
+                            result.hitlog_jsonl.read_bytes(),
                             "application/jsonl",
                         )
                     )
@@ -362,8 +360,10 @@ class GarakAdapter(FrameworkAdapter):
             callbacks.report_status(
                 JobStatusUpdate(
                     status=JobStatus.FAILED,
-                    error=ErrorInfo(message=str(e), message_code="job_failed"),
-                    error_details={"exception_type": type(e).__name__},
+                    error_message=MessageInfo(
+                        message=str(e),
+                        message_code="job_failed",
+                    ),
                 )
             )
             raise
@@ -401,28 +401,20 @@ class GarakAdapter(FrameworkAdapter):
         log_file = scan_dir / "scan.log"
         report_prefix = scan_dir / "scan"
 
+        callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.LOADING_DATA))
+
         config_file = scan_dir / "config.json"
         with open(config_file, "w") as f:
             json.dump(garak_config_dict, f, indent=1)
-
-        callbacks.report_status(
-            JobStatusUpdate(
-                status=JobStatus.RUNNING,
-                phase=JobPhase.RUNNING_EVALUATION,
-                progress=0.1,
-                message=MessageInfo(
-                    message=f"Running Garak scan for {config.benchmark_id}",
-                    message_code="running_scan",
-                ),
-                current_step="Executing probes",
-            )
-        )
 
         env: dict[str, str] = {}
         hf_cache = (config.parameters or {}).get("hf_cache_path", "")
         if hf_cache:
             env["HF_HUB_CACHE"] = hf_cache
             logger.info("Using HF cache from mounted path: %s", hf_cache)
+
+        callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.RUNNING_EVALUATION))
+        logger.info("Running Garak scan for %s", config.benchmark_id)
 
         result = run_garak_scan(
             config_file=config_file,
@@ -434,17 +426,7 @@ class GarakAdapter(FrameworkAdapter):
 
         # AVID conversion
         if result.success:
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.POST_PROCESSING,
-                    progress=0.7,
-                    message=MessageInfo(
-                        message="Converting results to AVID format",
-                        message_code="post_processing",
-                    ),
-                )
-            )
+            logger.info("Converting results to AVID format")
             convert_to_avid_report(result.report_jsonl)
 
         return result
@@ -482,24 +464,15 @@ class GarakAdapter(FrameworkAdapter):
             setup_and_run_garak,
         )
 
+        callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.LOADING_DATA))
+        logger.info("Resolving taxonomy for intents scan")
+
         policy_path = intents_params.get("policy_s3_key", "")
         policy_format = intents_params.get("policy_format", "csv")
         intents_path = intents_params.get("intents_s3_key", "")
         intents_format = intents_params.get("intents_format", "csv")
 
         # -- Step 1: Resolve taxonomy --------------------------------
-        callbacks.report_status(
-            JobStatusUpdate(
-                status=JobStatus.RUNNING,
-                phase=JobPhase.RUNNING_EVALUATION,
-                progress=0.05,
-                message=MessageInfo(
-                    message="Resolving taxonomy for intents scan",
-                    message_code="resolving_taxonomy",
-                ),
-                current_step="Resolving taxonomy",
-            )
-        )
 
         policy_content: bytes | None = None
         if policy_path and policy_path.strip():
@@ -518,18 +491,7 @@ class GarakAdapter(FrameworkAdapter):
         raw_content: str | None = None
 
         if intents_path and intents_path.strip():
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.RUNNING_EVALUATION,
-                    progress=0.1,
-                    message=MessageInfo(
-                        message="Loading pre-generated prompts (bypass SDG)",
-                        message_code="bypass_sdg",
-                    ),
-                    current_step="Loading bypass prompts",
-                )
-            )
+            logger.info("Loading pre-generated prompts (bypass SDG)")
             intents_file = Path(intents_path)
             if not intents_file.exists():
                 raise FileNotFoundError(
@@ -538,18 +500,7 @@ class GarakAdapter(FrameworkAdapter):
             raw_content = intents_file.read_text(encoding="utf-8")
             logger.info("Read bypass prompts from local path: %s (%d bytes)", intents_path, len(raw_content))
         else:
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.RUNNING_EVALUATION,
-                    progress=0.1,
-                    message=MessageInfo(
-                        message="Running Synthetic Data Generation",
-                        message_code="running_sdg",
-                    ),
-                    current_step="Generating adversarial prompts via SDG",
-                )
-            )
+            logger.info("Running Synthetic Data Generation")
             sdg_model = intents_params.get("sdg_model", "")
             sdg_api_base = intents_params.get("sdg_api_base", "")
             if not sdg_model or not sdg_api_base:
@@ -576,19 +527,7 @@ class GarakAdapter(FrameworkAdapter):
         logger.info("Saved raw SDG output to %s", raw_output_path)
 
         # -- Step 3: Normalize prompts -------------------------------
-        callbacks.report_status(
-            JobStatusUpdate(
-                status=JobStatus.RUNNING,
-                phase=JobPhase.RUNNING_EVALUATION,
-                progress=0.3,
-                message=MessageInfo(
-                    message="Normalizing prompts",
-                    message_code="normalizing_prompts",
-                ),
-                current_step="Normalizing prompts",
-            )
-        )
-
+        logger.info("Normalizing prompts")
         if not (intents_path and intents_path.strip()) and intents_format.strip().lower() != "csv":
             logger.warning(
                 "intents_format=%r ignored — SDG output is always CSV. "
@@ -606,19 +545,8 @@ class GarakAdapter(FrameworkAdapter):
         normalized_df.to_csv(prompts_csv_path, index=False)
 
         # -- Step 4: Run garak scan ----------------------------------
-        callbacks.report_status(
-            JobStatusUpdate(
-                status=JobStatus.RUNNING,
-                phase=JobPhase.RUNNING_EVALUATION,
-                progress=0.4,
-                message=MessageInfo(
-                    message=f"Running Garak intents scan for {config.benchmark_id}",
-                    message_code="running_scan",
-                ),
-                current_step="Executing intents probes",
-            )
-        )
-
+        callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.RUNNING_EVALUATION))
+        logger.info("Running Garak intents scan for %s", config.benchmark_id)
         config_json = json.dumps(garak_config_dict)
         result = setup_and_run_garak(
             config_json=config_json,
@@ -656,6 +584,8 @@ class GarakAdapter(FrameworkAdapter):
             Tuple of (GarakScanResult, local scan_dir with downloaded results).
         """
         from .kfp_pipeline import KFPConfig, evalhub_garak_pipeline
+
+        callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.LOADING_DATA))
 
         benchmark_config = config.parameters or {}
         kfp_config = KFPConfig.from_env_and_config(benchmark_config)
@@ -699,18 +629,8 @@ class GarakAdapter(FrameworkAdapter):
                         "is not provided."
                     )
 
-        callbacks.report_status(
-            JobStatusUpdate(
-                status=JobStatus.RUNNING,
-                phase=JobPhase.RUNNING_EVALUATION,
-                progress=0.1,
-                message=MessageInfo(
-                    message=f"Submitting KFP pipeline for {config.benchmark_id}",
-                    message_code="kfp_submitting",
-                ),
-                current_step="Submitting to Kubeflow Pipelines",
-            )
-        )
+        logger.info("Submitting KFP pipeline for %s", config.benchmark_id)
+        callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.RUNNING_EVALUATION))
 
         # Resolve model auth secret from EvalHub SDK model.auth.secret_ref
         # Falls back to pipeline default ("model-auth") when not specified.
@@ -774,17 +694,7 @@ class GarakAdapter(FrameworkAdapter):
         success = final_state == "SUCCEEDED"
 
         if success:
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.POST_PROCESSING,
-                    progress=0.7,
-                    message=MessageInfo(
-                        message="Downloading scan results from S3",
-                        message_code="downloading_results",
-                    ),
-                )
-            )
+            logger.info("Downloading scan results from S3")
             creds = (
                 self._read_s3_credentials_from_secret(
                     kfp_config.s3_secret_name,
@@ -828,13 +738,30 @@ class GarakAdapter(FrameworkAdapter):
 
     @staticmethod
     def _create_kfp_client(kfp_config: "KFPConfig"):
-        """Create a KFP Client from KFPConfig."""
+        """Create a KFP Client from KFPConfig.
+
+        Two auth models are supported:
+
+        **Old model (evalhub < 0.4.4 / direct KFP)**: the full SA token is
+        auto-mounted at the standard path; this method reads it and passes it
+        to the client. KFP_ENDPOINT points at the real KFP API URL.
+
+        **New model (evalhub >= 0.4.4 / sidecar proxy)**: evalhub PR #672 sets
+        AutomountServiceAccountToken=false on the adapter pod. The SA token
+        file no longer exists, so ``token`` stays None — which is correct
+        because KFP_ENDPOINT must be set to ``localhost:8080`` and the sidecar
+        proxy injects the SA token on every outbound request automatically.
+        namespace is always passed explicitly so the KFP SDK never needs to
+        call get_kfp_healthz to auto-detect it.
+        """
         from kfp import Client
 
         ssl_ca_cert = kfp_config.ssl_ca_cert or None
         token = kfp_config.auth_token or None
 
-        # If no explicit token, try to get one from the cluster service account
+        # Old model: SA token file is present — read it for direct KFP auth.
+        # New model: file does not exist (only DownwardAPI namespace file is
+        # mounted); token stays None and the sidecar injects auth instead.
         if not token:
             sa_token_path = Path("/var/run/secrets/kubernetes.io/serviceaccount/token")
             if sa_token_path.exists():
@@ -844,6 +771,7 @@ class GarakAdapter(FrameworkAdapter):
         return Client(
             host=kfp_config.endpoint,
             existing_token=token,
+            namespace=kfp_config.namespace,
             verify_ssl=kfp_config.verify_ssl,
             ssl_ca_cert=ssl_ca_cert,
         )
@@ -868,7 +796,6 @@ class GarakAdapter(FrameworkAdapter):
         """
         terminal_states = {"SUCCEEDED", "FAILED", "SKIPPED", "CANCELED", "CANCELING"}
         deadline = (time.monotonic() + timeout) if timeout > 0 else None
-
         while True:
             run = kfp_client.get_run(run_id)
             state = run.state or "UNKNOWN"
@@ -886,19 +813,8 @@ class GarakAdapter(FrameworkAdapter):
                 )
                 return "TIMED_OUT"
 
-            callbacks.report_status(
-                JobStatusUpdate(
-                    status=JobStatus.RUNNING,
-                    phase=JobPhase.RUNNING_EVALUATION,
-                    progress=0.3,
-                    message=MessageInfo(
-                        message=f"KFP pipeline running (state: {state})",
-                        message_code="kfp_running",
-                    ),
-                    current_step=f"KFP state: {state}",
-                )
-            )
-
+            callbacks.report_status(JobStatusUpdate(status=JobStatus.RUNNING, phase=JobPhase.RUNNING_EVALUATION))
+            logger.info("KFP pipeline running (state: %s)", state)
             time.sleep(poll_interval)
 
     @staticmethod
@@ -909,65 +825,178 @@ class GarakAdapter(FrameworkAdapter):
         cluster or missing RBAC), returning an empty dict so env-var fallback
         in ``create_s3_client`` still applies.
 
-        .. note:: **RBAC requirement** — The Job pod's service account must
-           have ``get`` permission on Secrets in the target namespace.
-           Example Role/RoleBinding::
+        Resolution chain (first success wins):
 
-               apiVersion: rbac.authorization.k8s.io/v1
-               kind: Role
-               metadata:
-                 name: secret-reader
-                 namespace: <namespace>
-               rules:
-               - apiGroups: [""]
-                 resources: ["secrets"]
-                 verbs: ["get"]
-               ---
-               apiVersion: rbac.authorization.k8s.io/v1
-               kind: RoleBinding
-               metadata:
-                 name: evalhub-secret-reader
-                 namespace: <namespace>
-               subjects:
-               - kind: ServiceAccount
-                 name: <job-service-account>
-                 namespace: <namespace>
-               roleRef:
-                 kind: Role
-                 name: secret-reader
-                 apiGroup: rbac.authorization.k8s.io
-
-           Without this, the call returns an empty dict and S3 operations
-           fall back to environment variables (which may also be empty,
-           causing job failures).
+        1. **Direct K8s API** (``load_incluster_config``) — works on
+           pre-sidecar evalhub where the SA token is auto-mounted.
+        2. **``KFP_AUTH_TOKEN`` + ``KUBERNETES_SERVICE_HOST``** env vars —
+           fallback when SA token file is absent but env vars are set.
+        3. **Sidecar proxy** (``k8s_sa_token:ref``) — evalhub >= 0.4.4
+           sidecar model.  Reads the secret via the K8s API through the
+           sidecar at ``localhost:8080``, which resolves the ref token and
+           injects the pod SA token.  Requires ``k8s_sa_token`` and
+           ``k8s_url`` keys in the model auth secret.
+        4. **Model auth secret** (``read_model_auth_key``) — last resort
+           if the user placed S3 credentials directly in the model auth
+           secret (keys: ``s3_access_key``, ``s3_secret_key``,
+           ``s3_endpoint``, ``s3_bucket``, ``s3_region``).
+        5. **``load_kube_config``** — local development only.
         """
         import base64
 
+        _S3_KEYS = {
+            "access_key": "AWS_ACCESS_KEY_ID",
+            "secret_key": "AWS_SECRET_ACCESS_KEY",
+            "region": "AWS_DEFAULT_REGION",
+            "bucket": "AWS_S3_BUCKET",
+            "endpoint_url": "AWS_S3_ENDPOINT",
+        }
+
+        def _extract_from_secret_data(data: dict) -> dict:
+            def _decode(key: str) -> str:
+                val = data.get(key, "")
+                return base64.b64decode(val).decode() if val else ""
+
+            return {field: _decode(secret_key) for field, secret_key in _S3_KEYS.items()}
+
+        # --- Step 1: Direct K8s API (pre-sidecar evalhub) ---
         try:
             from kubernetes import client as k8s_client, config as k8s_config
 
             try:
                 k8s_config.load_incluster_config()
-            except Exception:
-                k8s_config.load_kube_config()
+                v1 = k8s_client.CoreV1Api()
+                secret = v1.read_namespaced_secret(secret_name, namespace)
+                logger.info("Read S3 credentials from secret %s/%s via in-cluster config", namespace, secret_name)
+                return _extract_from_secret_data(secret.data or {})
+            except k8s_config.ConfigException:
+                logger.debug("load_incluster_config failed, trying fallbacks")
+        except Exception as exc:
+            logger.debug("K8s client import or in-cluster config failed: %s", exc)
+
+        # --- Step 2: KFP_AUTH_TOKEN + KUBERNETES_SERVICE_HOST env vars ---
+        auth_token = os.getenv("KFP_AUTH_TOKEN", "")
+        k8s_host = os.getenv("KUBERNETES_SERVICE_HOST", "")
+        k8s_port = os.getenv("KUBERNETES_SERVICE_PORT", "443")
+        if auth_token and k8s_host:
+            try:
+                from kubernetes import client as k8s_client
+
+                configuration = k8s_client.Configuration()
+                configuration.host = f"https://{k8s_host}:{k8s_port}"
+                configuration.api_key = {"authorization": f"Bearer {auth_token}"}
+                ca_cert = os.getenv("SSL_CA_CERT", "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt")
+                if os.path.isfile(ca_cert):
+                    configuration.ssl_ca_cert = ca_cert
+                else:
+                    configuration.verify_ssl = False
+                k8s_client.Configuration.set_default(configuration)
+                v1 = k8s_client.CoreV1Api()
+                secret = v1.read_namespaced_secret(secret_name, namespace)
+                logger.info("Read S3 credentials from secret %s/%s via KFP_AUTH_TOKEN", namespace, secret_name)
+                return _extract_from_secret_data(secret.data or {})
+            except Exception as exc:
+                logger.debug("KFP_AUTH_TOKEN K8s API call failed: %s", exc)
+
+        # --- Step 3: Sidecar proxy with k8s_sa_token:ref (evalhub >= 0.4.4) ---
+        try:
+            result = GarakAdapter._read_secret_via_sidecar(secret_name, namespace)
+            if result:
+                logger.info("Read S3 credentials from secret %s/%s via sidecar proxy", namespace, secret_name)
+                return _extract_from_secret_data(result)
+        except Exception as exc:
+            logger.debug("Sidecar proxy K8s API call failed: %s", exc)
+
+        # --- Step 4: read_model_auth_key for S3 keys in model auth secret ---
+        try:
+            model_auth_creds = GarakAdapter._read_s3_from_model_auth()
+            if any(model_auth_creds.values()):
+                logger.info("Read S3 credentials from model auth secret")
+                return model_auth_creds
+        except Exception as exc:
+            logger.debug("read_model_auth_key for S3 failed: %s", exc)
+
+        # --- Step 5: load_kube_config (local dev) ---
+        try:
+            from kubernetes import client as k8s_client, config as k8s_config
+
+            k8s_config.load_kube_config()
             v1 = k8s_client.CoreV1Api()
             secret = v1.read_namespaced_secret(secret_name, namespace)
-            data = secret.data or {}
-
-            def _decode(key: str) -> str:
-                val = data.get(key, "")
-                return base64.b64decode(val).decode() if val else ""
-
-            return {
-                "access_key": _decode("AWS_ACCESS_KEY_ID"),
-                "secret_key": _decode("AWS_SECRET_ACCESS_KEY"),
-                "region": _decode("AWS_DEFAULT_REGION"),
-                "bucket": _decode("AWS_S3_BUCKET"),
-                "endpoint_url": _decode("AWS_S3_ENDPOINT"),
-            }
+            logger.info("Read S3 credentials from secret %s/%s via kubeconfig", namespace, secret_name)
+            return _extract_from_secret_data(secret.data or {})
         except Exception as exc:
             logger.warning("Could not read S3 credentials from secret %s/%s: %s", namespace, secret_name, exc)
             return {}
+
+    @staticmethod
+    def _read_secret_via_sidecar(secret_name: str, namespace: str) -> dict | None:
+        """Read a K8s secret via the evalhub sidecar proxy.
+
+        Uses the ``k8s_sa_token:ref`` / ``k8s_url`` convention from evalhub
+        PR #681.  The sidecar resolves the ref token (injecting the pod SA
+        token when the secret value is empty) and routes the request to the
+        K8s API server specified by ``k8s_url``.
+
+        Returns the secret's ``.data`` dict (base64-encoded values) on
+        success, or None if the sidecar proxy is not configured.
+        """
+        try:
+            from evalhub.adapter.auth import read_model_auth_key
+        except ImportError:
+            return None
+
+        k8s_url = (read_model_auth_key("k8s_url") or "").strip()
+        if not k8s_url:
+            return None
+
+        import urllib.request
+
+        token_header = "Bearer k8s_sa_token:ref"
+        api_path = f"/api/v1/namespaces/{namespace}/secrets/{secret_name}"
+        sidecar_url = f"http://localhost:8080{api_path}"
+
+        req = urllib.request.Request(
+            sidecar_url,
+            headers={
+                "Authorization": token_header,
+                "Accept": "application/json",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            body = json.loads(resp.read().decode())
+            return body.get("data", {})
+
+    @staticmethod
+    def _read_s3_from_model_auth() -> dict:
+        """Read S3 credentials from the model auth secret.
+
+        Uses ``read_model_auth_key`` to read S3 credential keys that the
+        user may have placed directly in the model auth secret.  This is
+        a last-resort fallback when the adapter cannot read the Data
+        Connection secret via the K8s API.
+        """
+        try:
+            from evalhub.adapter.auth import read_model_auth_key
+        except ImportError:
+            return {}
+
+        _MODEL_AUTH_S3_KEYS: list[tuple[str, list[str]]] = [
+            ("access_key", ["AWS_ACCESS_KEY_ID", "aws_access_key_id", "s3_access_key"]),
+            ("secret_key", ["AWS_SECRET_ACCESS_KEY", "aws_secret_access_key", "s3_secret_key"]),
+            ("region", ["AWS_DEFAULT_REGION", "aws_default_region", "s3_region"]),
+            ("bucket", ["AWS_S3_BUCKET", "aws_s3_bucket", "s3_bucket"]),
+            ("endpoint_url", ["AWS_S3_ENDPOINT", "aws_s3_endpoint", "s3_endpoint"]),
+        ]
+        result: dict[str, str] = {}
+        for field, candidates in _MODEL_AUTH_S3_KEYS:
+            val = ""
+            for key in candidates:
+                val = (read_model_auth_key(key) or "").strip()
+                if val:
+                    break
+            result[field] = val
+        return result
 
     @staticmethod
     def _resolve_s3_credentials(kfp_config: "KFPConfig", secret_creds: dict) -> dict:
@@ -978,10 +1007,11 @@ class GarakAdapter(FrameworkAdapter):
           2. K8s secret (read via _read_s3_credentials_from_secret)
           3. Environment variable (``AWS_S3_BUCKET`` / ``AWS_S3_ENDPOINT``)
 
-        For ``access_key``, ``secret_key``, and ``region``, values come
-        only from the K8s secret.  These fields have no kfp_config
-        equivalent; when the secret is empty, ``create_s3_client``
-        applies its own env-var fallback (``AWS_ACCESS_KEY_ID``, etc.).
+        For ``access_key``, ``secret_key``, and ``region``, the first
+        non-empty value wins:
+          1. K8s secret (read via _read_s3_credentials_from_secret)
+          2. Environment variable (``AWS_ACCESS_KEY_ID`` /
+             ``AWS_SECRET_ACCESS_KEY`` / ``AWS_DEFAULT_REGION``)
 
         When both kfp_config and the secret provide different non-empty
         values for the same field, the kfp_config value is used and a
@@ -1012,8 +1042,15 @@ class GarakAdapter(FrameworkAdapter):
 
             resolved[field] = cfg_val or secret_val or env_val or None
 
-        for field in ("access_key", "secret_key", "region"):
-            resolved[field] = (secret_creds.get(field, "") or "").strip() or None
+        _CRED_ENV_MAP = {
+            "access_key": "AWS_ACCESS_KEY_ID",
+            "secret_key": "AWS_SECRET_ACCESS_KEY",
+            "region": "AWS_DEFAULT_REGION",
+        }
+        for field, env_var in _CRED_ENV_MAP.items():
+            secret_val = (secret_creds.get(field, "") or "").strip()
+            env_val = (os.getenv(env_var, "") or "").strip()
+            resolved[field] = secret_val or env_val or None
 
         return resolved
 
@@ -1164,8 +1201,9 @@ class GarakAdapter(FrameworkAdapter):
                 or os.getenv("OPENAICOMPATIBLE_API_KEY")
                 or "DUMMY"
             )
+            raw_model_url = self._resolve_kfp_model_url(config.model.url, benchmark_config)
             garak_config.plugins.generators = build_generator_options(
-                model_endpoint=self._normalize_url(config.model.url),
+                model_endpoint=self._normalize_url(raw_model_url),
                 model_name=config.model.name,
                 api_key=api_key,
                 extra_params=model_params or TARGET_DEFAULT_PARAMETERS,
@@ -1499,6 +1537,66 @@ class GarakAdapter(FrameworkAdapter):
         url = url.strip().rstrip("/")
         if not re.match(r"^.*\/v\d+$", url):
             url = f"{url}/v1"
+        return url
+
+    @staticmethod
+    def _is_sidecar_address(url: str) -> bool:
+        return "localhost" in url or "127.0.0.1" in url
+
+    @staticmethod
+    def _resolve_kfp_model_url(model_url: str, benchmark_config: dict) -> str:
+        """Resolve the target model URL for KFP component pods.
+
+        evalhub >= 0.4.4 rewrites job.json so model.url points at the
+        sidecar proxy (localhost:8080).  That works in simple mode (sidecar
+        is co-located) but KFP component pods have no sidecar.
+
+        Resolution chain (first non-sidecar URL wins):
+        1. kfp_config.model_url   — explicit override in benchmark_config
+        2. model auth secret key  — read_model_auth_key("model_url")
+        3. intents_models.*.url   — first non-localhost URL from
+           judge/attacker/evaluator config
+        4. model_url as-is        — fallback (works for simple mode and
+           pre-sidecar evalhub)
+        """
+        url = model_url.strip().rstrip("/")
+
+        if not GarakAdapter._is_sidecar_address(url):
+            return url
+
+        kfp_overrides = benchmark_config.get("kfp_config", {}) or {}
+        explicit = (kfp_overrides.get("model_url") or "").strip()
+        if explicit:
+            logger.info("Using explicit kfp_config.model_url: %s", explicit)
+            return explicit.rstrip("/")
+
+        try:
+            from evalhub.adapter.auth import read_model_auth_key
+
+            secret_url = (read_model_auth_key("model_url") or "").strip()
+            if secret_url and not GarakAdapter._is_sidecar_address(secret_url):
+                logger.info("Resolved model URL from model auth secret: %s", secret_url)
+                return secret_url.rstrip("/")
+        except Exception:
+            pass
+
+        intents_models = benchmark_config.get("intents_models", {})
+        if isinstance(intents_models, dict):
+            for role in ("judge", "attacker", "evaluator"):
+                role_url = (intents_models.get(role) or {}).get("url", "").strip()
+                if role_url and not GarakAdapter._is_sidecar_address(role_url):
+                    logger.info("Resolved model URL from intents_models.%s: %s", role, role_url)
+                    return role_url.rstrip("/")
+
+        if kfp_overrides:
+            logger.warning(
+                "Model URL is a sidecar address (%s) but could not be resolved "
+                "to a real upstream URL. KFP component pods have no sidecar "
+                "proxy. Set kfp_config.model_url in benchmark_config or add a "
+                "model_url key to the model auth secret.",
+                url,
+            )
+
         return url
 
     # def _build_environment(self, config: JobSpec) -> dict[str, str]:

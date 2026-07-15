@@ -28,7 +28,6 @@ lock:
 		--extra inline \
 		--index-strategy first-index \
 		--emit-index-url \
-		--generate-hashes \
 		--default-index $(RHAI_INDEX_URL) \
 		pyproject.toml \
 		--index-url $(RHAI_INDEX_URL) \

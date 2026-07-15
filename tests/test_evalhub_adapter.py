@@ -37,8 +37,10 @@ def _load_evalhub_garak_adapter(monkeypatch) -> types.ModuleType:
 
     class JobPhase(str, Enum):
         INITIALIZING = "initializing"
+        LOADING_DATA = "loading_data"
         RUNNING_EVALUATION = "running_evaluation"
         POST_PROCESSING = "post_processing"
+        PERSISTING_ARTIFACTS = "persisting_artifacts"
 
     adapter_module = types.ModuleType("evalhub.adapter")
     adapter_models_job_module = types.ModuleType("evalhub.adapter.models.job")
@@ -55,9 +57,9 @@ def _load_evalhub_garak_adapter(monkeypatch) -> types.ModuleType:
     adapter_module.JobSpec = _SimpleModel
     adapter_module.JobStatus = JobStatus
     adapter_module.JobStatusUpdate = _SimpleModel
+    adapter_module.MessageInfo = _SimpleModel
     adapter_module.OCIArtifactSpec = _SimpleModel
 
-    adapter_models_job_module.ErrorInfo = _SimpleModel
     adapter_models_job_module.MessageInfo = _SimpleModel
     models_api_module.EvaluationResult = _SimpleModel
 
@@ -866,11 +868,515 @@ class TestResolveS3Credentials:
         module = _load_evalhub_garak_adapter(monkeypatch)
         monkeypatch.delenv("AWS_S3_BUCKET", raising=False)
         monkeypatch.delenv("AWS_S3_ENDPOINT", raising=False)
+        monkeypatch.delenv("AWS_ACCESS_KEY_ID", raising=False)
+        monkeypatch.delenv("AWS_SECRET_ACCESS_KEY", raising=False)
+        monkeypatch.delenv("AWS_DEFAULT_REGION", raising=False)
         kfp_cfg = self._make_kfp_config()
         resolved = module.GarakAdapter._resolve_s3_credentials(kfp_cfg, {})
         assert resolved["bucket"] is None
         assert resolved["endpoint_url"] is None
         assert resolved["access_key"] is None
+
+    def test_access_key_falls_back_to_env(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        monkeypatch.setenv("AWS_ACCESS_KEY_ID", "env-ak")
+        monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "env-sk")
+        monkeypatch.setenv("AWS_DEFAULT_REGION", "env-region")
+        kfp_cfg = self._make_kfp_config()
+        resolved = module.GarakAdapter._resolve_s3_credentials(kfp_cfg, {})
+        assert resolved["access_key"] == "env-ak"
+        assert resolved["secret_key"] == "env-sk"
+        assert resolved["region"] == "env-region"
+
+    def test_secret_creds_take_precedence_over_env_for_access_key(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        monkeypatch.setenv("AWS_ACCESS_KEY_ID", "env-ak")
+        monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "env-sk")
+        monkeypatch.setenv("AWS_DEFAULT_REGION", "env-region")
+        secret = {
+            "access_key": "secret-ak",
+            "secret_key": "secret-sk",
+            "region": "secret-region",
+        }
+        kfp_cfg = self._make_kfp_config()
+        resolved = module.GarakAdapter._resolve_s3_credentials(kfp_cfg, secret)
+        assert resolved["access_key"] == "secret-ak"
+        assert resolved["secret_key"] == "secret-sk"
+        assert resolved["region"] == "secret-region"
+
+
+class TestReadS3CredentialsCascade:
+    """Tests for the cascading fallback chain in _read_s3_credentials_from_secret."""
+
+    def test_step1_incluster_config_success(self, monkeypatch):
+        """Step 1: Direct K8s API via load_incluster_config succeeds."""
+        import base64
+
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        fake_secret_data = {
+            "AWS_ACCESS_KEY_ID": base64.b64encode(b"ak-incluster").decode(),
+            "AWS_SECRET_ACCESS_KEY": base64.b64encode(b"sk-incluster").decode(),
+            "AWS_DEFAULT_REGION": base64.b64encode(b"us-east-1").decode(),
+            "AWS_S3_BUCKET": base64.b64encode(b"bucket-incluster").decode(),
+            "AWS_S3_ENDPOINT": base64.b64encode(b"http://s3:9000").decode(),
+        }
+
+        class FakeV1:
+            def read_namespaced_secret(self, name, ns):
+                return SimpleNamespace(data=fake_secret_data)
+
+        k8s_config = types.ModuleType("kubernetes.config")
+        k8s_config.load_incluster_config = lambda: None
+        k8s_config.ConfigException = type("ConfigException", (Exception,), {})
+
+        k8s_client = types.ModuleType("kubernetes.client")
+        k8s_client.CoreV1Api = FakeV1
+        k8s_client.Configuration = type(
+            "Configuration",
+            (),
+            {
+                "host": "",
+                "api_key": {},
+                "verify_ssl": True,
+                "set_default": classmethod(lambda cls, c: None),
+            },
+        )
+
+        k8s_module = types.ModuleType("kubernetes")
+        k8s_module.client = k8s_client
+        k8s_module.config = k8s_config
+
+        monkeypatch.setitem(sys.modules, "kubernetes", k8s_module)
+        monkeypatch.setitem(sys.modules, "kubernetes.client", k8s_client)
+        monkeypatch.setitem(sys.modules, "kubernetes.config", k8s_config)
+
+        result = module.GarakAdapter._read_s3_credentials_from_secret("my-secret", "ns")
+        assert result["access_key"] == "ak-incluster"
+        assert result["bucket"] == "bucket-incluster"
+
+    def test_step2_kfp_auth_token_fallback(self, monkeypatch):
+        """Step 2: KFP_AUTH_TOKEN + KUBERNETES_SERVICE_HOST env vars."""
+        import base64
+
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        monkeypatch.setenv("KFP_AUTH_TOKEN", "fake-token")
+        monkeypatch.setenv("KUBERNETES_SERVICE_HOST", "10.0.0.1")
+        monkeypatch.setenv("KUBERNETES_SERVICE_PORT", "443")
+
+        fake_data = {
+            "AWS_ACCESS_KEY_ID": base64.b64encode(b"ak-token").decode(),
+            "AWS_SECRET_ACCESS_KEY": base64.b64encode(b"sk-token").decode(),
+            "AWS_DEFAULT_REGION": "",
+            "AWS_S3_BUCKET": base64.b64encode(b"bucket-token").decode(),
+            "AWS_S3_ENDPOINT": base64.b64encode(b"http://s3:9000").decode(),
+        }
+
+        _incluster_called = {"v": False}
+
+        class FakeV1:
+            def read_namespaced_secret(self, name, ns):
+                return SimpleNamespace(data=fake_data)
+
+        class FakeConfigException(Exception):
+            pass
+
+        k8s_config = types.ModuleType("kubernetes.config")
+
+        def _fail_incluster():
+            raise FakeConfigException("no SA token")
+
+        k8s_config.load_incluster_config = _fail_incluster
+        k8s_config.ConfigException = FakeConfigException
+
+        k8s_client = types.ModuleType("kubernetes.client")
+        k8s_client.CoreV1Api = FakeV1
+        k8s_client.Configuration = type(
+            "Configuration",
+            (),
+            {
+                "host": "",
+                "api_key": {},
+                "verify_ssl": True,
+                "set_default": classmethod(lambda cls, c: None),
+            },
+        )
+
+        k8s_module = types.ModuleType("kubernetes")
+        k8s_module.client = k8s_client
+        k8s_module.config = k8s_config
+
+        monkeypatch.setitem(sys.modules, "kubernetes", k8s_module)
+        monkeypatch.setitem(sys.modules, "kubernetes.client", k8s_client)
+        monkeypatch.setitem(sys.modules, "kubernetes.config", k8s_config)
+
+        result = module.GarakAdapter._read_s3_credentials_from_secret("my-secret", "ns")
+        assert result["access_key"] == "ak-token"
+        assert result["bucket"] == "bucket-token"
+
+    def test_step3_sidecar_proxy_fallback(self, monkeypatch):
+        """Step 3: Sidecar proxy with k8s_sa_token:ref."""
+        import base64
+
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        monkeypatch.delenv("KFP_AUTH_TOKEN", raising=False)
+        monkeypatch.delenv("KUBERNETES_SERVICE_HOST", raising=False)
+
+        class FakeConfigException(Exception):
+            pass
+
+        k8s_config = types.ModuleType("kubernetes.config")
+        k8s_config.load_incluster_config = lambda: (_ for _ in ()).throw(FakeConfigException("no"))
+        k8s_config.ConfigException = FakeConfigException
+
+        k8s_client = types.ModuleType("kubernetes.client")
+        k8s_module = types.ModuleType("kubernetes")
+        k8s_module.client = k8s_client
+        k8s_module.config = k8s_config
+
+        monkeypatch.setitem(sys.modules, "kubernetes", k8s_module)
+        monkeypatch.setitem(sys.modules, "kubernetes.client", k8s_client)
+        monkeypatch.setitem(sys.modules, "kubernetes.config", k8s_config)
+
+        sidecar_data = {
+            "AWS_ACCESS_KEY_ID": base64.b64encode(b"ak-sidecar").decode(),
+            "AWS_SECRET_ACCESS_KEY": base64.b64encode(b"sk-sidecar").decode(),
+            "AWS_DEFAULT_REGION": base64.b64encode(b"eu-west-1").decode(),
+            "AWS_S3_BUCKET": base64.b64encode(b"sidecar-bucket").decode(),
+            "AWS_S3_ENDPOINT": base64.b64encode(b"http://s3-sidecar:9000").decode(),
+        }
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_secret_via_sidecar",
+            staticmethod(lambda name, ns: sidecar_data),
+        )
+
+        result = module.GarakAdapter._read_s3_credentials_from_secret("my-secret", "ns")
+        assert result["access_key"] == "ak-sidecar"
+        assert result["bucket"] == "sidecar-bucket"
+        assert result["endpoint_url"] == "http://s3-sidecar:9000"
+
+    def test_step4_model_auth_fallback(self, monkeypatch):
+        """Step 4: read_model_auth_key for S3 keys."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        monkeypatch.delenv("KFP_AUTH_TOKEN", raising=False)
+        monkeypatch.delenv("KUBERNETES_SERVICE_HOST", raising=False)
+
+        class FakeConfigException(Exception):
+            pass
+
+        k8s_config = types.ModuleType("kubernetes.config")
+        k8s_config.load_incluster_config = lambda: (_ for _ in ()).throw(FakeConfigException("no"))
+        k8s_config.ConfigException = FakeConfigException
+
+        k8s_client = types.ModuleType("kubernetes.client")
+        k8s_module = types.ModuleType("kubernetes")
+        k8s_module.client = k8s_client
+        k8s_module.config = k8s_config
+
+        monkeypatch.setitem(sys.modules, "kubernetes", k8s_module)
+        monkeypatch.setitem(sys.modules, "kubernetes.client", k8s_client)
+        monkeypatch.setitem(sys.modules, "kubernetes.config", k8s_config)
+
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_secret_via_sidecar",
+            staticmethod(lambda name, ns: None),
+        )
+
+        model_auth_data = {
+            "access_key": "ak-model-auth",
+            "secret_key": "sk-model-auth",
+            "region": "ap-south-1",
+            "bucket": "model-auth-bucket",
+            "endpoint_url": "http://s3-model:9000",
+        }
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_s3_from_model_auth",
+            staticmethod(lambda: model_auth_data),
+        )
+
+        result = module.GarakAdapter._read_s3_credentials_from_secret("my-secret", "ns")
+        assert result["access_key"] == "ak-model-auth"
+        assert result["bucket"] == "model-auth-bucket"
+        assert result["region"] == "ap-south-1"
+
+    def test_step5_kubeconfig_fallback(self, monkeypatch):
+        """Step 5: load_kube_config for local dev."""
+        import base64
+
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        monkeypatch.delenv("KFP_AUTH_TOKEN", raising=False)
+        monkeypatch.delenv("KUBERNETES_SERVICE_HOST", raising=False)
+
+        fake_data = {
+            "AWS_ACCESS_KEY_ID": base64.b64encode(b"ak-kubeconfig").decode(),
+            "AWS_SECRET_ACCESS_KEY": base64.b64encode(b"sk-kubeconfig").decode(),
+            "AWS_DEFAULT_REGION": "",
+            "AWS_S3_BUCKET": base64.b64encode(b"kube-bucket").decode(),
+            "AWS_S3_ENDPOINT": base64.b64encode(b"http://s3-local:9000").decode(),
+        }
+
+        class FakeConfigException(Exception):
+            pass
+
+        class FakeV1:
+            def read_namespaced_secret(self, name, ns):
+                return SimpleNamespace(data=fake_data)
+
+        k8s_config = types.ModuleType("kubernetes.config")
+        k8s_config.load_incluster_config = lambda: (_ for _ in ()).throw(FakeConfigException("no"))
+        k8s_config.load_kube_config = lambda: None
+        k8s_config.ConfigException = FakeConfigException
+
+        k8s_client = types.ModuleType("kubernetes.client")
+        k8s_client.CoreV1Api = FakeV1
+        k8s_client.Configuration = type(
+            "Configuration",
+            (),
+            {
+                "host": "",
+                "api_key": {},
+                "verify_ssl": True,
+                "set_default": classmethod(lambda cls, c: None),
+            },
+        )
+
+        k8s_module = types.ModuleType("kubernetes")
+        k8s_module.client = k8s_client
+        k8s_module.config = k8s_config
+
+        monkeypatch.setitem(sys.modules, "kubernetes", k8s_module)
+        monkeypatch.setitem(sys.modules, "kubernetes.client", k8s_client)
+        monkeypatch.setitem(sys.modules, "kubernetes.config", k8s_config)
+
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_secret_via_sidecar",
+            staticmethod(lambda name, ns: None),
+        )
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_s3_from_model_auth",
+            staticmethod(lambda: {}),
+        )
+
+        result = module.GarakAdapter._read_s3_credentials_from_secret("my-secret", "ns")
+        assert result["access_key"] == "ak-kubeconfig"
+        assert result["bucket"] == "kube-bucket"
+
+    def test_all_fallbacks_fail_returns_empty(self, monkeypatch):
+        """All steps fail — returns empty dict."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        monkeypatch.delenv("KFP_AUTH_TOKEN", raising=False)
+        monkeypatch.delenv("KUBERNETES_SERVICE_HOST", raising=False)
+
+        class FakeConfigException(Exception):
+            pass
+
+        k8s_config = types.ModuleType("kubernetes.config")
+        k8s_config.load_incluster_config = lambda: (_ for _ in ()).throw(FakeConfigException("no"))
+        k8s_config.load_kube_config = lambda: (_ for _ in ()).throw(Exception("no kubeconfig"))
+        k8s_config.ConfigException = FakeConfigException
+
+        k8s_client = types.ModuleType("kubernetes.client")
+        k8s_client.CoreV1Api = lambda: None
+        k8s_client.Configuration = type(
+            "Configuration",
+            (),
+            {
+                "host": "",
+                "api_key": {},
+                "verify_ssl": True,
+                "set_default": classmethod(lambda cls, c: None),
+            },
+        )
+
+        k8s_module = types.ModuleType("kubernetes")
+        k8s_module.client = k8s_client
+        k8s_module.config = k8s_config
+
+        monkeypatch.setitem(sys.modules, "kubernetes", k8s_module)
+        monkeypatch.setitem(sys.modules, "kubernetes.client", k8s_client)
+        monkeypatch.setitem(sys.modules, "kubernetes.config", k8s_config)
+
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_secret_via_sidecar",
+            staticmethod(lambda name, ns: None),
+        )
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_s3_from_model_auth",
+            staticmethod(lambda: {}),
+        )
+
+        result = module.GarakAdapter._read_s3_credentials_from_secret("my-secret", "ns")
+        assert result == {}
+
+
+class TestReadSecretViaSidecar:
+    """Tests for _read_secret_via_sidecar."""
+
+    def test_returns_none_when_k8s_url_not_set(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        auth_module = sys.modules["evalhub.adapter.auth"]
+        auth_module.read_model_auth_key = lambda _name: None
+
+        result = module.GarakAdapter._read_secret_via_sidecar("secret", "ns")
+        assert result is None
+
+    def test_calls_sidecar_with_correct_url_and_headers(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        auth_keys = {
+            "k8s_url": "https://api.cluster.local:6443",
+            "k8s_sa_token": "",
+        }
+        auth_module = sys.modules["evalhub.adapter.auth"]
+        auth_module.read_model_auth_key = lambda name: auth_keys.get(name)
+
+        import base64
+
+        secret_payload = {
+            "data": {
+                "AWS_ACCESS_KEY_ID": base64.b64encode(b"ak").decode(),
+                "AWS_S3_BUCKET": base64.b64encode(b"bkt").decode(),
+            }
+        }
+
+        captured = {}
+
+        class FakeResponse:
+            def read(self):
+                return json.dumps(secret_payload).encode()
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                pass
+
+        original_urlopen = None
+
+        def fake_urlopen(req, timeout=None, context=None):
+            captured["url"] = req.full_url
+            captured["auth"] = req.get_header("Authorization")
+            return FakeResponse()
+
+        import urllib.request
+
+        monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+
+        result = module.GarakAdapter._read_secret_via_sidecar("my-s3-secret", "evalhub-tenant")
+        assert result["AWS_ACCESS_KEY_ID"] == base64.b64encode(b"ak").decode()
+        assert captured["url"] == "http://localhost:8080/api/v1/namespaces/evalhub-tenant/secrets/my-s3-secret"
+        assert captured["auth"] == "Bearer k8s_sa_token:ref"
+
+
+class TestReadS3FromModelAuth:
+    """Tests for _read_s3_from_model_auth."""
+
+    def test_reads_standard_aws_keys_uppercase(self, monkeypatch):
+        """Standard AWS_* uppercase keys (most common format)."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        model_auth_keys = {
+            "AWS_ACCESS_KEY_ID": "ma-ak",
+            "AWS_SECRET_ACCESS_KEY": "ma-sk",
+            "AWS_DEFAULT_REGION": "us-west-2",
+            "AWS_S3_BUCKET": "ma-bucket",
+            "AWS_S3_ENDPOINT": "http://s3-ma:9000",
+        }
+        auth_module = sys.modules["evalhub.adapter.auth"]
+        auth_module.read_model_auth_key = lambda name: model_auth_keys.get(name)
+
+        result = module.GarakAdapter._read_s3_from_model_auth()
+        assert result["access_key"] == "ma-ak"
+        assert result["secret_key"] == "ma-sk"
+        assert result["region"] == "us-west-2"
+        assert result["bucket"] == "ma-bucket"
+        assert result["endpoint_url"] == "http://s3-ma:9000"
+
+    def test_reads_standard_aws_keys_lowercase(self, monkeypatch):
+        """Lowercase aws_* keys also work."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        model_auth_keys = {
+            "aws_access_key_id": "ma-ak-lower",
+            "aws_secret_access_key": "ma-sk-lower",
+            "aws_default_region": "eu-west-1",
+            "aws_s3_bucket": "lower-bucket",
+            "aws_s3_endpoint": "http://s3-lower:9000",
+        }
+        auth_module = sys.modules["evalhub.adapter.auth"]
+        auth_module.read_model_auth_key = lambda name: model_auth_keys.get(name)
+
+        result = module.GarakAdapter._read_s3_from_model_auth()
+        assert result["access_key"] == "ma-ak-lower"
+        assert result["secret_key"] == "ma-sk-lower"
+        assert result["region"] == "eu-west-1"
+        assert result["bucket"] == "lower-bucket"
+        assert result["endpoint_url"] == "http://s3-lower:9000"
+
+    def test_reads_custom_s3_prefix_keys(self, monkeypatch):
+        """Custom s3_* keys as fallback."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        model_auth_keys = {
+            "s3_access_key": "ma-ak-custom",
+            "s3_secret_key": "ma-sk-custom",
+            "s3_region": "ap-south-1",
+            "s3_bucket": "custom-bucket",
+            "s3_endpoint": "http://s3-custom:9000",
+        }
+        auth_module = sys.modules["evalhub.adapter.auth"]
+        auth_module.read_model_auth_key = lambda name: model_auth_keys.get(name)
+
+        result = module.GarakAdapter._read_s3_from_model_auth()
+        assert result["access_key"] == "ma-ak-custom"
+        assert result["secret_key"] == "ma-sk-custom"
+        assert result["region"] == "ap-south-1"
+        assert result["bucket"] == "custom-bucket"
+        assert result["endpoint_url"] == "http://s3-custom:9000"
+
+    def test_uppercase_takes_precedence_over_lowercase(self, monkeypatch):
+        """AWS_ACCESS_KEY_ID wins over aws_access_key_id."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        model_auth_keys = {
+            "AWS_ACCESS_KEY_ID": "upper-ak",
+            "aws_access_key_id": "lower-ak",
+            "s3_access_key": "custom-ak",
+        }
+        auth_module = sys.modules["evalhub.adapter.auth"]
+        auth_module.read_model_auth_key = lambda name: model_auth_keys.get(name)
+
+        result = module.GarakAdapter._read_s3_from_model_auth()
+        assert result["access_key"] == "upper-ak"
+
+    def test_returns_empty_when_no_keys_set(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+
+        auth_module = sys.modules["evalhub.adapter.auth"]
+        auth_module.read_model_auth_key = lambda _name: None
+
+        result = module.GarakAdapter._read_s3_from_model_auth()
+        assert result["access_key"] == ""
+        assert result["bucket"] == ""
+
+    def test_returns_empty_dict_when_evalhub_not_importable(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        monkeypatch.delitem(sys.modules, "evalhub.adapter.auth", raising=False)
+
+        result = module.GarakAdapter._read_s3_from_model_auth()
+        assert result == {}
 
 
 class TestPollKFPRun:
@@ -980,6 +1486,345 @@ class TestPollKFPRun:
             timeout=100,
         )
         assert state == "TIMED_OUT"
+
+
+class TestJobPhaseReporting:
+    """Tests for JobPhase lifecycle reporting added by the SDK contract alignment."""
+
+    def test_run_simple_phase_sequence(self, monkeypatch, tmp_path):
+        """_run_simple emits LOADING_DATA then RUNNING_EVALUATION."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+
+        report_prefix = tmp_path / "scan"
+        report_prefix.with_suffix(".report.jsonl").write_text("{}", encoding="utf-8")
+
+        def _fake_run(config_file, timeout_seconds, report_prefix, env=None, log_file=None):
+            return module.GarakScanResult(
+                returncode=0,
+                stdout="",
+                stderr="",
+                report_prefix=report_prefix,
+            )
+
+        monkeypatch.setattr(module, "run_garak_scan", _fake_run)
+        monkeypatch.setattr(module, "convert_to_avid_report", lambda _: True)
+
+        statuses = []
+
+        class _Callbacks:
+            def report_status(self, update):
+                statuses.append(update)
+
+        job = SimpleNamespace(
+            benchmark_id="trustyai_garak::quick",
+            parameters={},
+        )
+        adapter._run_simple(job, _Callbacks(), {"run": {}}, tmp_path, timeout=60)
+
+        phases = [s.phase for s in statuses]
+        assert phases == [module.JobPhase.LOADING_DATA, module.JobPhase.RUNNING_EVALUATION]
+        assert all(s.status == module.JobStatus.RUNNING for s in statuses)
+
+    def test_run_simple_intents_phase_sequence(self, monkeypatch, tmp_path):
+        """_run_simple_intents emits LOADING_DATA then RUNNING_EVALUATION."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+
+        import pandas as pd
+
+        fake_df = pd.DataFrame({"policy_concept": ["X"], "concept_definition": ["x"], "prompt": ["p"]})
+
+        monkeypatch.setattr(
+            "llama_stack_provider_trustyai_garak.core.pipeline_steps.resolve_taxonomy_data",
+            lambda *a, **kw: fake_df,
+        )
+        monkeypatch.setattr(
+            "llama_stack_provider_trustyai_garak.core.pipeline_steps.run_sdg_generation",
+            lambda **kw: fake_df,
+        )
+        monkeypatch.setattr(
+            "llama_stack_provider_trustyai_garak.core.pipeline_steps.normalize_prompts",
+            lambda *a, **kw: fake_df,
+        )
+
+        report_prefix = tmp_path / "scan"
+        report_prefix.with_suffix(".report.jsonl").write_text("{}", encoding="utf-8")
+
+        monkeypatch.setattr(
+            "llama_stack_provider_trustyai_garak.core.pipeline_steps.setup_and_run_garak",
+            lambda **kw: module.GarakScanResult(
+                returncode=0,
+                stdout="",
+                stderr="",
+                report_prefix=report_prefix,
+            ),
+        )
+
+        statuses = []
+
+        class _Callbacks:
+            def report_status(self, update):
+                statuses.append(update)
+
+        job = SimpleNamespace(benchmark_id="trustyai_garak::intents", parameters={})
+        intents_params = {
+            "sdg_model": "sdg-m",
+            "sdg_api_base": "http://sdg:7000/v1",
+        }
+        adapter._run_simple_intents(job, _Callbacks(), {"run": {}}, tmp_path, 60, intents_params)
+
+        phases = [s.phase for s in statuses]
+        assert phases == [module.JobPhase.LOADING_DATA, module.JobPhase.RUNNING_EVALUATION]
+
+    def test_run_via_kfp_phase_sequence(self, monkeypatch, tmp_path):
+        """_run_via_kfp emits LOADING_DATA then RUNNING_EVALUATION."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        report_prefix = tmp_path / "kfp-job" / "scan"
+        report_prefix.parent.mkdir(parents=True, exist_ok=True)
+        report_prefix.with_suffix(".report.jsonl").write_text("{}", encoding="utf-8")
+
+        kfp_cfg = SimpleNamespace(
+            endpoint="http://kfp:8080",
+            namespace="ns",
+            s3_secret_name="s3-secret",
+            s3_prefix="prefix",
+            s3_bucket="bucket",
+            poll_interval_seconds=5,
+            timeout_seconds=0,
+            pipeline_root="",
+            experiment_name="default",
+        )
+        monkeypatch.setattr(
+            "llama_stack_provider_trustyai_garak.evalhub.kfp_pipeline.KFPConfig.from_env_and_config",
+            staticmethod(lambda _cfg: kfp_cfg),
+        )
+        monkeypatch.setattr(
+            "llama_stack_provider_trustyai_garak.evalhub.kfp_pipeline.evalhub_garak_pipeline",
+            lambda **kw: None,
+        )
+        monkeypatch.setattr(
+            "llama_stack_provider_trustyai_garak.core.pipeline_steps.redact_api_keys",
+            lambda d: d,
+        )
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_create_kfp_client",
+            lambda self, _cfg: SimpleNamespace(
+                create_run_from_pipeline_func=lambda *a, **kw: SimpleNamespace(run_id="run-1"),
+            ),
+        )
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_poll_kfp_run",
+            staticmethod(lambda *a, **kw: "SUCCEEDED"),
+        )
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_read_s3_credentials_from_secret",
+            staticmethod(lambda *a, **kw: {}),
+        )
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_resolve_s3_credentials",
+            staticmethod(
+                lambda *a, **kw: {
+                    "bucket": "test-bucket",
+                    "endpoint_url": None,
+                    "access_key": None,
+                    "secret_key": None,
+                    "region": None,
+                }
+            ),
+        )
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_download_results_from_s3",
+            lambda self, *a, **kw: None,
+        )
+
+        statuses = []
+
+        class _Callbacks:
+            def report_status(self, update):
+                statuses.append(update)
+
+        job = SimpleNamespace(
+            id="kfp-job",
+            benchmark_id="trustyai_garak::quick",
+            model=SimpleNamespace(url="http://localhost:8000", name="m"),
+            parameters={},
+        )
+        adapter._run_via_kfp(job, _Callbacks(), {"run": {}}, timeout=60)
+
+        phases = [s.phase for s in statuses]
+        assert phases == [module.JobPhase.LOADING_DATA, module.JobPhase.RUNNING_EVALUATION]
+
+    def test_full_lifecycle_with_oci(self, monkeypatch, tmp_path):
+        """Full run_benchmark_job with OCI exports emits the complete phase sequence."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        report_prefix = tmp_path / "oci-job" / "scan"
+        report_prefix.parent.mkdir(parents=True, exist_ok=True)
+        report_prefix.with_suffix(".report.jsonl").write_text("{}", encoding="utf-8")
+
+        def _fake_run(config_file, timeout_seconds, report_prefix, env=None, log_file=None):
+            return module.GarakScanResult(
+                returncode=0,
+                stdout="",
+                stderr="",
+                report_prefix=report_prefix,
+            )
+
+        monkeypatch.setattr(module, "run_garak_scan", _fake_run)
+        monkeypatch.setattr(module, "convert_to_avid_report", lambda _: True)
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_parse_results",
+            lambda self, result, eval_threshold, art_intents=False: ([], None, 0, {"total_attempts": 0}),
+        )
+
+        statuses = []
+
+        class _Callbacks:
+            def report_status(self, update):
+                statuses.append(update)
+
+            def create_oci_artifact(self, _spec):
+                return SimpleNamespace(reference="oci://ref", digest="sha256:test")
+
+            def report_results(self, _results):
+                return None
+
+        job = SimpleNamespace(
+            id="oci-job",
+            benchmark_id="trustyai_garak::quick",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://localhost:8000", name="test-model"),
+            parameters={},
+            exports=SimpleNamespace(
+                oci=SimpleNamespace(coordinates="quay.io/test/artifact:latest"),
+            ),
+        )
+        adapter.run_benchmark_job(job, _Callbacks())
+
+        phases = [s.phase for s in statuses if hasattr(s, "phase")]
+        assert phases == [
+            module.JobPhase.INITIALIZING,
+            module.JobPhase.LOADING_DATA,
+            module.JobPhase.RUNNING_EVALUATION,
+            module.JobPhase.POST_PROCESSING,
+            module.JobPhase.PERSISTING_ARTIFACTS,
+        ]
+
+    def test_full_lifecycle_without_oci(self, monkeypatch, tmp_path):
+        """Without OCI exports, PERSISTING_ARTIFACTS is not emitted."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        report_prefix = tmp_path / "no-oci-job" / "scan"
+        report_prefix.parent.mkdir(parents=True, exist_ok=True)
+        report_prefix.with_suffix(".report.jsonl").write_text("{}", encoding="utf-8")
+
+        def _fake_run(config_file, timeout_seconds, report_prefix, env=None, log_file=None):
+            return module.GarakScanResult(
+                returncode=0,
+                stdout="",
+                stderr="",
+                report_prefix=report_prefix,
+            )
+
+        monkeypatch.setattr(module, "run_garak_scan", _fake_run)
+        monkeypatch.setattr(module, "convert_to_avid_report", lambda _: True)
+        monkeypatch.setattr(
+            module.GarakAdapter,
+            "_parse_results",
+            lambda self, result, eval_threshold, art_intents=False: ([], None, 0, {"total_attempts": 0}),
+        )
+
+        statuses = []
+
+        class _Callbacks:
+            def report_status(self, update):
+                statuses.append(update)
+
+            def report_results(self, _results):
+                return None
+
+        job = SimpleNamespace(
+            id="no-oci-job",
+            benchmark_id="trustyai_garak::quick",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://localhost:8000", name="test-model"),
+            parameters={},
+            exports=None,
+        )
+        adapter.run_benchmark_job(job, _Callbacks())
+
+        phases = [s.phase for s in statuses if hasattr(s, "phase")]
+        assert module.JobPhase.PERSISTING_ARTIFACTS not in phases
+        assert phases == [
+            module.JobPhase.INITIALIZING,
+            module.JobPhase.LOADING_DATA,
+            module.JobPhase.RUNNING_EVALUATION,
+            module.JobPhase.POST_PROCESSING,
+        ]
+
+    def test_error_uses_message_info_not_error_info(self, monkeypatch, tmp_path):
+        """Scan failure reports status=FAILED with error_message (not error)."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        report_prefix = tmp_path / "err-job" / "scan"
+        report_prefix.parent.mkdir(parents=True, exist_ok=True)
+        report_prefix.with_suffix(".report.jsonl").write_text("{}", encoding="utf-8")
+
+        def _fake_run(config_file, timeout_seconds, report_prefix, env=None, log_file=None):
+            return module.GarakScanResult(
+                returncode=1,
+                stdout="",
+                stderr="boom",
+                report_prefix=report_prefix,
+            )
+
+        monkeypatch.setattr(module, "run_garak_scan", _fake_run)
+        monkeypatch.setattr(module, "convert_to_avid_report", lambda _: True)
+
+        statuses = []
+
+        class _Callbacks:
+            def report_status(self, update):
+                statuses.append(update)
+
+            def report_results(self, _results):
+                return None
+
+        job = SimpleNamespace(
+            id="err-job",
+            benchmark_id="trustyai_garak::quick",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://localhost:8000", name="test-model"),
+            parameters={},
+            exports=None,
+        )
+
+        with pytest.raises(RuntimeError, match="boom"):
+            adapter.run_benchmark_job(job, _Callbacks())
+
+        failed = [s for s in statuses if s.status == module.JobStatus.FAILED]
+        assert len(failed) == 2
+        # First FAILED: scan_failed (from the result.success check)
+        assert "boom" in failed[0].error_message.message
+        assert failed[0].error_message.message_code == "scan_failed"
+        # Second FAILED: job_failed (from the outer exception handler)
+        assert failed[1].error_message.message_code == "job_failed"
 
 
 class TestResolveExecutionModeNonString:
@@ -3437,6 +4282,7 @@ class TestArtifactMetadataSurfacing:
             "sdg_normalized_output": f"{s3_prefix}/sdg_normalized_output.csv",
             "intents_html_report": f"{s3_prefix}/scan.intents.html",
             "scan_report": f"{s3_prefix}/scan.report.jsonl",
+            "scan_hitlog": f"{s3_prefix}/scan.hitlog.jsonl",
         }
         verified = {}
         if _bucket:
@@ -3453,6 +4299,7 @@ class TestArtifactMetadataSurfacing:
         assert "sdg_normalized_output" in verified
         assert "scan_report" in verified
         assert "intents_html_report" not in verified
+        assert "scan_hitlog" not in verified
         assert verified["sdg_raw_output"] == f"s3://{bucket}/{s3_prefix}/sdg_raw_output.csv"
 
     def test_intents_kfp_job_bucket_from_kfp_config(self, monkeypatch):
@@ -3768,3 +4615,131 @@ class TestWriteKfpOutputsComponent:
 
         html_content = Path(html.path).read_text()
         assert "Report generation failed" in html_content
+
+
+class TestResolveKfpModelUrl:
+    """Tests for _resolve_kfp_model_url model URL resolution chain."""
+
+    def test_non_localhost_url_passes_through(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        result = module.GarakAdapter._resolve_kfp_model_url("https://model.example.com/v1", {})
+        assert result == "https://model.example.com/v1"
+
+    def test_explicit_kfp_config_model_url_wins(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        bc = {"kfp_config": {"model_url": "https://override.example.com/v1"}}
+        result = module.GarakAdapter._resolve_kfp_model_url("http://localhost:8080", bc)
+        assert result == "https://override.example.com/v1"
+
+    def test_model_auth_secret_fallback(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        auth_mod = sys.modules["evalhub.adapter.auth"]
+        auth_mod.read_model_auth_key = lambda name: (
+            "https://from-secret.example.com/v1" if name == "model_url" else None
+        )
+        result = module.GarakAdapter._resolve_kfp_model_url("http://localhost:8080", {})
+        assert result == "https://from-secret.example.com/v1"
+
+    def test_intents_models_judge_fallback(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        bc = {
+            "intents_models": {
+                "judge": {"url": "https://judge.example.com/v1", "name": "j"},
+            }
+        }
+        result = module.GarakAdapter._resolve_kfp_model_url("http://localhost:8080", bc)
+        assert result == "https://judge.example.com/v1"
+
+    def test_intents_models_skips_localhost_urls(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        bc = {
+            "intents_models": {
+                "judge": {"url": "http://localhost:8080/v1", "name": "j"},
+                "attacker": {"url": "https://real-attacker.example.com/v1", "name": "a"},
+            }
+        }
+        result = module.GarakAdapter._resolve_kfp_model_url("http://localhost:8080", bc)
+        assert result == "https://real-attacker.example.com/v1"
+
+    def test_returns_localhost_when_no_fallbacks(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        result = module.GarakAdapter._resolve_kfp_model_url("http://localhost:8080", {})
+        assert result == "http://localhost:8080"
+
+    def test_warns_when_localhost_remains_in_kfp_mode(self, monkeypatch, caplog):
+        import logging
+
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        bc = {"kfp_config": {"namespace": "test-ns"}}
+        with caplog.at_level(logging.WARNING):
+            result = module.GarakAdapter._resolve_kfp_model_url("http://localhost:8080", bc)
+        assert result == "http://localhost:8080"
+        assert "sidecar address" in caplog.text
+        assert "kfp_config.model_url" in caplog.text
+
+    def test_no_warning_without_kfp_config(self, monkeypatch, caplog):
+        import logging
+
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        with caplog.at_level(logging.WARNING):
+            module.GarakAdapter._resolve_kfp_model_url("http://localhost:8080", {})
+        assert "sidecar address" not in caplog.text
+
+    def test_127_0_0_1_treated_as_sidecar(self, monkeypatch):
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        bc = {"kfp_config": {"model_url": "https://real.example.com"}}
+        result = module.GarakAdapter._resolve_kfp_model_url("http://127.0.0.1:8080/v1", bc)
+        assert result == "https://real.example.com"
+
+    def test_end_to_end_generator_uses_intents_url(self, monkeypatch, tmp_path):
+        """When model.url is localhost and intents_models has a real URL,
+        the generator URI in the final config should use the intents URL."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="kfp-sidecar-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://localhost:8080", name="my-model"),
+            parameters={
+                **_INTENTS_MODELS_SINGLE,
+                "kfp_config": {"namespace": "test-ns"},
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        generator_uri = config_dict["plugins"]["generators"]["openai"]["OpenAICompatible"]["uri"]
+        assert "localhost" not in generator_uri
+        assert generator_uri == "http://judge:8000/v1"
+
+    def test_precedence_kfp_config_over_intents_models(self, monkeypatch, tmp_path):
+        """kfp_config.model_url should take precedence over intents_models."""
+        module = _load_evalhub_garak_adapter(monkeypatch)
+        adapter = module.GarakAdapter()
+        monkeypatch.setenv("GARAK_SCAN_DIR", str(tmp_path))
+
+        job = SimpleNamespace(
+            id="kfp-explicit-job",
+            benchmark_id="trustyai_garak::intents",
+            benchmark_index=0,
+            model=SimpleNamespace(url="http://localhost:8080", name="my-model"),
+            parameters={
+                **_INTENTS_MODELS_SINGLE,
+                "kfp_config": {
+                    "namespace": "test-ns",
+                    "model_url": "https://explicit-override.example.com/v1",
+                },
+            },
+            exports=None,
+        )
+
+        report_prefix = tmp_path / "scan"
+        config_dict, _, _ = adapter._build_config_from_spec(job, report_prefix)
+
+        generator_uri = config_dict["plugins"]["generators"]["openai"]["OpenAICompatible"]["uri"]
+        assert generator_uri == "https://explicit-override.example.com/v1"

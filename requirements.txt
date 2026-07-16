@@ -424,7 +424,7 @@ proto-plus==1.28.1
     # via
     #   google-api-core
     #   google-cloud-translate
-protobuf==6.33.6
+protobuf==7.35.1
     # via
     #   databricks-sdk
     #   google-api-core

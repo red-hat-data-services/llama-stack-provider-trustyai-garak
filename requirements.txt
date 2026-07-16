@@ -88,7 +88,7 @@ cryptography==49.0.0
     #   pyjwt
 databricks-sdk==0.120.0
     # via mlflow-tracing
-datasets==4.8.5
+datasets==5.0.0
     # via
     #   garak
     #   sdg-hub

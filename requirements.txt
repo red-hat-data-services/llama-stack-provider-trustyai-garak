@@ -198,7 +198,7 @@ h11==0.16.0
     # via
     #   httpcore
     #   uvicorn
-hf-xet==1.5.1
+hf-xet==1.5.2
     # via huggingface-hub
 httpcore==1.0.9
     # via httpx

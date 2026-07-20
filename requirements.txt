@@ -34,7 +34,7 @@ avidtools==0.1.2
     # via garak
 backoff==2.2.1
     # via garak
-boto3==1.43.46
+boto3==1.43.50
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   garak

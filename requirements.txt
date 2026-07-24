@@ -298,7 +298,7 @@ langchain-protocol==0.0.18
     #   langgraph-sdk
 langdetect==1.0.9
     # via garak
-langgraph==1.2.8
+langgraph==1.2.9
     # via langchain
 langgraph-checkpoint==4.1.1
     # via

@@ -190,7 +190,7 @@ grpcio==1.82.1
     #   grpcio-tools
 grpcio-status==1.81.1
     # via google-api-core
-grpcio-tools==1.81.1
+grpcio-tools==1.82.1
     # via
     #   garak
     #   nvidia-riva-client

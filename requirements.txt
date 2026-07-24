@@ -641,7 +641,7 @@ tqdm==4.68.4
     #   openai
     #   sdg-hub
     #   transformers
-transformers==5.13.0
+transformers==5.14.1
     # via garak
 triton==3.6.0
     # via torch

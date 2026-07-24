@@ -1459,9 +1459,9 @@ langchain==0.3.27 \
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   garak
-langchain-core==0.3.80 \
-    --hash=sha256:2141e3838d100d17dce2359f561ec0df52c526bae0de6d4f469f8026c5747456 \
-    --hash=sha256:29636b82513ab49e834764d023c4d18554d3d719a185d37b019d0a8ae948c6bb
+langchain-core==1.5.0 \
+    --hash=sha256:e1fa09d55b354192c8f60dade06a55bd6add2318c822a684555b8d4a30a16143 \
+    --hash=sha256:f122efee35446632b38687119fca33711abbf3b6b555e31156762298fbe78a65
     # via
     #   langchain
     #   langchain-text-splitters

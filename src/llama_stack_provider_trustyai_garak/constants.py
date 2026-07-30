@@ -3,7 +3,7 @@ GARAK_PROVIDER_IMAGE_CONFIGMAP_NAME = "trustyai-service-operator-config"
 GARAK_PROVIDER_IMAGE_CONFIGMAP_KEY = (
     "garak-provider-image"  # from https://github.com/opendatahub-io/opendatahub-operator/pull/2567
 )
-DEFAULT_GARAK_PROVIDER_IMAGE = "quay.io/trustyai/trustyai-garak-lls-provider-dsp:latest"
+DEFAULT_GARAK_PROVIDER_IMAGE = "quay.io/trustyai/trustyai-garak-lls-provider-dsp@sha256:c960230103493b8dece955012b0a34105c185dd4ac5a3034460b50efa8303084"
 KUBEFLOW_CANDIDATE_NAMESPACES = ["redhat-ods-applications", "opendatahub"]
 
 # Default values

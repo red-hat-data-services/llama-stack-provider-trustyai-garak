@@ -16,3 +16,10 @@ starlette>=1.0.1
 # CVE-2026-48526 (RHOAIENG-66616): PyJWT: Authentication bypass due to forged JSON Web Tokens
 # Fixed in: pyjwt >= 2.13.0
 pyjwt>=2.13.0
+
+# Pillow (transitive via garak / llama-stack): batch of image/PDF/font parsing flaws
+# CVE-2026-59197, CVE-2026-59199, CVE-2026-59200, CVE-2026-59204, CVE-2026-59205,
+# CVE-2026-54058, CVE-2026-54060, CVE-2026-55379, CVE-2026-55380 (fixed in 12.3.0)
+# CVE-2026-42311 (PSD, potential ACE, fixed in 12.2.0)
+# Fixed in: pillow >= 12.3.0
+pillow>=12.3.0

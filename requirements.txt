@@ -188,7 +188,7 @@ grpcio==1.82.1
     #   grpc-google-iam-v1
     #   grpcio-status
     #   grpcio-tools
-grpcio-status==1.81.1
+grpcio-status==1.82.1
     # via google-api-core
 grpcio-tools==1.81.1
     # via

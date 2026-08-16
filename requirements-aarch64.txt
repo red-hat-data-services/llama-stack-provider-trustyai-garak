@@ -556,9 +556,9 @@ datetime==6.0 \
     --hash=sha256:c1514936d2f901e10c8e08d83bf04e6c9dbd7ca4f244da94fec980980a3bc4d5 \
     --hash=sha256:d19988f0657a4e72c9438344157254a8dcad6aea8cd5ae70a5d1b5a75e5dc930
     # via avidtools
-deepl==1.17.0 \
-    --hash=sha256:23004a8247d75d80206adec4e29012e5ff5434e998f72463e193fce704ade1cb \
-    --hash=sha256:2fb51fa8d9c04a081123c1f17c5bc3dd9c4711acd59687a71c470a345ab9b70c
+deepl==1.32.0 \
+    --hash=sha256:3016bf86f1f53eb6e5fedb458746c6bf6579a840b57c54a2ed701b0344bc79e1 \
+    --hash=sha256:36f2faadc79a64712489bfeab32f344536eab25b3c38ea2e39a72084a71e0a7e
     # via garak
 dill==0.4.0 \
     --hash=sha256:0633f1d2df477324f53a895b02c901fb961bdbf65a17122586ea7019292cbcf0 \

@@ -3239,9 +3239,9 @@ websocket-client==1.9.0 \
     --hash=sha256:9e813624b6eb619999a97dc7958469217c3176312b3a16a4bd1bc7e08a46ec98 \
     --hash=sha256:af248a825037ef591efbf6ed20cc5faa03d3b47b9e5a2230a529eeee1c1fc3ef
     # via kubernetes
-wn==0.9.5 \
-    --hash=sha256:9ae62e0e6607f56e63e9eb8360930c8337ecc44e9e0488430aa1fa3fb9c51be4 \
-    --hash=sha256:fa17477bd39bcb8417a11aa8e08c67b9ea72e0c0557cd6f4de26fe9c93e60e39
+wn==1.1.1 \
+    --hash=sha256:0555ea875f13df648f343b9c622153e4f71ee42bc9d57a00f260e1928f86b128 \
+    --hash=sha256:feaea1ef53806729b4629daa769546adb55a45cd029fa8e524db2ada837f8d24
     # via garak
 xdg-base-dirs==6.0.2 \
     --hash=sha256:3c01d1b758ed4ace150ac960ac0bd13ce4542b9e2cdf01312dcda5012cfebabe \

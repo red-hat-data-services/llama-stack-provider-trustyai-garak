@@ -3645,9 +3645,9 @@ uvicorn==0.38.0 \
 wavedrom==2.0.3.post3 \
     --hash=sha256:327b4d5dca593c81257c202fea516f7a908747fb11527c359f034f5b7af7f47b
     # via markdown2
-wcwidth==0.2.14 \
-    --hash=sha256:4d478375d31bc5395a3c55c40ccdf3354688364cd61c4f6adacaa9215d0b3605 \
-    --hash=sha256:a7bb560c8aee30f9957e5f9895805edd20602f2d7f720186dfd906e82b4982e1
+wcwidth==0.8.3 \
+    --hash=sha256:d128512515fbf4612e0ff21fd6380399210318b7b54a9af59dff8454cf9730eb \
+    --hash=sha256:d5b73dba6158a595ec9370350e7f2637bcac8d6c5e4fde34f30fcffb6103a5e4
     # via
     #   cmd2
     #   ftfy

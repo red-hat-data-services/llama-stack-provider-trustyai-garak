@@ -2603,9 +2603,9 @@ requests==2.32.5 \
     #   tiktoken
     #   transformers
     #   wn
-requests-futures==1.0.2 \
-    --hash=sha256:6b7eb57940336e800faebc3dab506360edec9478f7b22dc570858ad3aa7458da \
-    --hash=sha256:a3534af7c2bf670cd7aa730716e9e7d4386497554f87792be7514063b8912897
+requests-futures==1.1.0 \
+    --hash=sha256:c9bd8a88d27630a5b418a809f1a89d451d4bc4bdca87c07a50735ab6f66f423a \
+    --hash=sha256:f839cf536e6638a6e0ca1cfd54ac761bf3bb2b5a7ecf9349557e53acc5244d36
     # via nemollm
 requests-oauthlib==2.0.0 \
     --hash=sha256:7dd8a5c40426b779b0868c404bdef9768deccf22749cde15852df527e6269b36 \

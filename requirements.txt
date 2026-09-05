@@ -82,7 +82,7 @@ colorama==0.4.6
     # via garak
 condense-json==0.1.3
     # via llm
-cryptography==49.0.0
+cryptography==50.0.1
     # via
     #   google-auth
     #   pyjwt

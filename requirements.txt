@@ -2890,9 +2890,9 @@ setuptools==80.9.0 \
     #   torch
     #   triton
     #   zope-interface
-setuptools-scm==9.2.0 \
-    --hash=sha256:6662c9b9497b6c9bf13bead9d7a9084756f68238302c5ed089fb4dbd29d102d7 \
-    --hash=sha256:c551ef54e2270727ee17067881c9687ca2aedf179fa5b8f3fab9e8d73bdc421f
+setuptools-scm==10.2.2 \
+    --hash=sha256:36b5dcef6bbeee0bc76b7756d1b574b3762e2138611a4f18e898f22f1aaee462 \
+    --hash=sha256:509585ce0628ede1c64ab1e40e7464481fb880c80a388effce9067bf6b2142fe
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 shortuuid==1.0.13 \
     --hash=sha256:3bb9cf07f606260584b1df46399c0b87dd84773e7b25912b7e391e30797c5e72 \

@@ -673,9 +673,9 @@ google-api-core==2.28.1 \
     #   google-cloud-core
     #   google-cloud-storage
     #   kfp
-google-auth==2.45.0 \
-    --hash=sha256:82344e86dc00410ef5382d99be677c6043d72e502b625aa4f4afa0bdacca0f36 \
-    --hash=sha256:90d3f41b6b72ea72dd9811e765699ee491ab24139f34ebf1ca2b9cc0c38708f3
+google-auth==2.57.1 \
+    --hash=sha256:ab439dee60a6856412bc058f13a68eb6a59c5b81526bb89cfdcf89ce9c0a48c9 \
+    --hash=sha256:eb47b230fc6707eed4aee1c9cef55ec05bc1785eecba74ff8b572d531e921b1e
     # via
     #   google-api-core
     #   google-cloud-core

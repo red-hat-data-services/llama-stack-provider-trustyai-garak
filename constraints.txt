@@ -27,3 +27,6 @@ pillow>=12.3.0
 # NLTK security fix (RHOAIENG-71566)
 # Fixed in: nltk >= 3.10.0
 nltk>=3.10.0
+
+# pyasn1 - RHOAIENG-78467, RHOAIENG-77183, RHOAIENG-76707
+pyasn1>=0.6.4

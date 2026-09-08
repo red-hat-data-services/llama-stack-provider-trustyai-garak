@@ -14,6 +14,18 @@ COPY . .
 # Build argument to specify architecture
 ARG TARGETARCH=x86_64
 
+# Install the patched pip version from the hermetic package cache.
+RUN if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ] || \
+       [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" = "aarch64" ]; then \
+        pip_requirements=requirements-pip.txt; \
+    elif [ "$TARGETARCH" = "s390x" ] || [ "$TARGETARCH" = "ppc64le" ]; then \
+        pip_requirements=.konflux/${TARGETARCH}/requirements-pip.txt; \
+    else \
+        echo "ERROR: Unsupported architecture: $TARGETARCH"; \
+        exit 1; \
+    fi && \
+    pip install --no-cache-dir --require-hashes --upgrade -r "$pip_requirements"
+
 # Install dependencies
 RUN echo "Installing $TARGETARCH dependencies ..." && \
     if [ "$TARGETARCH" = "amd64" ] || [ "$TARGETARCH" = "x86_64" ]; then \

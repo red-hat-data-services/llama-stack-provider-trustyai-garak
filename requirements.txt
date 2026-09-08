@@ -340,8 +340,10 @@ nest-asyncio==1.6.0
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 networkx==3.6.1
     # via torch
-nltk==3.9.3
-    # via garak
+nltk==3.10.0
+    # via
+    #   -c constraints.txt
+    #   garak
 numpy==2.4.3
     # via
     #   accelerate

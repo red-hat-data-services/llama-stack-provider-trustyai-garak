@@ -23,3 +23,7 @@ pyjwt>=2.13.0
 # CVE-2026-42311 (PSD, potential ACE, fixed in 12.2.0)
 # Fixed in: pillow >= 12.3.0
 pillow>=12.3.0
+
+# NLTK security fix (RHOAIENG-71566)
+# Fixed in: nltk >= 3.10.0
+nltk>=3.10.0

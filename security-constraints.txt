@@ -13,10 +13,10 @@ pyasn1>=0.6.3
 # Fixed in: cryptography >= 46.0.7
 cryptography>=46.0.7
 
-# CVE-2026-40192: Pillow FITS decompression bomb vulnerability
-# RHOAIENG-58604: Pillow - Denial of Service via decompression bomb in FITS image processing
-# Fixed in: Pillow >= 12.2.0 (affected versions 10.3.0 through 12.1.1)
-pillow>=12.2.0
+
+# RHOAIENG-77738, RHOAIENG-74947, RHOAIENG-77410, RHOAIENG-77402, RHOAIENG-77323, RHOAIENG-77213, 
+# RHOAIENG-77071, RHOAIENG-75284, RHOAIENG-75199, RHOAIENG-75067, RHOAIENG-74947
+pillow>=12.3.0
 
 # CVE-2026-32597: PyJWT unknown crit header vulnerability
 # RHOAIENG-53163: PyJWT - accepts unknown crit header extensions (RFC 7515 §4.1.11 MUST violation)

@@ -89,6 +89,8 @@ datetime==6.0
     # via avidtools
 deepl==1.17.0
     # via garak
+defusedxml==0.7.1
+    # via nltk
 dill==0.4.1
     # via
     #   datasets
@@ -340,8 +342,10 @@ nest-asyncio==1.6.0
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 networkx==3.6.1
     # via torch
-nltk==3.9.3
-    # via garak
+nltk==3.10.0
+    # via
+    #   -c constraints.txt
+    #   garak
 numpy==2.4.3
     # via
     #   accelerate
@@ -407,7 +411,9 @@ pandas==3.0.1
     #   llama-stack-client
     #   sdg-hub
 pillow==12.3.0
-    # via garak
+    # via
+    #   -c constraints.txt
+    #   garak
 prompt-toolkit==3.0.52
     # via llama-stack-client
 propcache==0.4.1

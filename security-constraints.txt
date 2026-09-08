@@ -44,3 +44,7 @@ fastapi>=0.135.0
 # CVE-2026-44432 (RHOAIENG-63917): urllib3 DoS via excessive decompression
 # Fixed in: urllib3 >= 2.7.0
 urllib3>=2.7.0
+
+# CVE-2026-42561 (RHOAIENG-71854): python-multipart DoS via excessive multipart part headers
+# Fixed in: python-multipart >= 0.0.27
+python-multipart>=0.0.27

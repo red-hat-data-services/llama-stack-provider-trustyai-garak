@@ -28,3 +28,7 @@ nltk>=3.10.0
 
 # pyasn1 - RHOAIENG-78467, RHOAIENG-77183, RHOAIENG-76707
 pyasn1>=0.6.4
+
+# RHOAIENG-75540: Security update
+# Fixed in: langchain >= 1.3.3
+langchain>=1.3.3

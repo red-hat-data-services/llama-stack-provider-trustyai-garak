@@ -420,11 +420,11 @@ maturin==1.10.2 \
     #   rpds-py
     #   safetensors
     #   tokenizers
-meson-python==0.15.0 \
-    --hash=sha256:3ae38253ff02b2e947a05e362a2eaf5a9a09d133c5666b4123399ee5fbf2e591 \
-    --hash=sha256:fddb73eecd49e89c1c41c87937cd89c2d0b65a1c63ba28238681d4bd9484d26f
+meson-python==0.21.0 \
+    --hash=sha256:595c2f40b76692c78274c87b733379d86562583e9ffb975487b9eafada03055b \
+    --hash=sha256:b5d93fc66c80874c28916f6cb55a912fcd92a699563a4047158c50216867ad94
     # via numpy
-meson-python==0.18.0 \
+meson-python==0.21.0 \
     --hash=sha256:3b0fe051551cc238f5febb873247c0949cd60ded556efa130aa57021804868e2 \
     --hash=sha256:c56a99ec9df669a40662fe46960321af6e4b14106c14db228709c1628e23848d
     # via

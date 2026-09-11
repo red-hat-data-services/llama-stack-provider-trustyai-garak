@@ -29,6 +29,7 @@ lock:
 		--index-strategy first-index \
 		--emit-index-url \
 		--default-index $(RHAI_INDEX_URL) \
+		--constraint constraints.txt \
 		pyproject.toml \
 		--index-url $(RHAI_INDEX_URL) \
 		-o requirements.txt

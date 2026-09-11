@@ -308,7 +308,7 @@ langgraph-prebuilt==1.1.0
     # via langgraph
 langgraph-sdk==0.4.2
     # via langgraph
-langsmith==0.10.1
+langsmith==0.10.5
     # via langchain-core
 litellm==1.84.0
     # via

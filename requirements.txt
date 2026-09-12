@@ -379,7 +379,7 @@ opentelemetry-api==1.43.0
     #   opentelemetry-semantic-conventions
 opentelemetry-proto==1.43.0
     # via mlflow-tracing
-opentelemetry-sdk==1.43.0
+opentelemetry-sdk==1.44.0
     # via mlflow-tracing
 opentelemetry-semantic-conventions==0.64b0
     # via opentelemetry-sdk

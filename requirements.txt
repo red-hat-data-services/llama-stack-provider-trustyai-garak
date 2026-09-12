@@ -353,7 +353,7 @@ nltk==3.10.0
     # via
     #   -c constraints.txt
     #   garak
-numpy==2.4.3
+numpy==2.4.6
     # via
     #   accelerate
     #   datasets

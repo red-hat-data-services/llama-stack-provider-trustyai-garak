@@ -717,9 +717,9 @@ google-api-python-client==2.181.0 \
     --hash=sha256:348730e3ece46434a01415f3d516d7a0885c8e624ce799f50f2d4d86c2475fb7 \
     --hash=sha256:d7060962a274a16a2c6f8fb4b1569324dbff11bfbca8eb050b88ead1dd32261c
     # via garak
-google-auth==2.40.3 \
-    --hash=sha256:1370d4593e86213563547f97a92752fc658456fe4514c809544f330fed45a7ca \
-    --hash=sha256:500c3a29adedeb36ea9cf24b8d10858e152f2412e3ca37829b3fa18e33d63b77
+google-auth==2.58.0 \
+    --hash=sha256:55e30cf15e737de92c5323d78cda8a83fcd57e7ffbaf900c4600039fd60a80fd \
+    --hash=sha256:8a9c4645bb4c8e91668fb1934b95ae6a8687084232753639220ba9bf04a1610d
     # via
     #   google-api-core
     #   google-api-python-client

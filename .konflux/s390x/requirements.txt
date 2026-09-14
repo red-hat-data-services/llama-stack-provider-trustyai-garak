@@ -923,9 +923,9 @@ httpx==0.28.1 \
     #   llama-stack-client
     #   openai
     #   replicate
-huggingface-hub==1.4.0 \
-    --hash=sha256:49d380ffddb31d9d4b6acc0792691f8fa077e1ed51980ed42c7abca62ec1b3b6 \
-    --hash=sha256:dd8ca29409be10f544b624265f7ffe13a1a5c3f049f493b5dc9816ef3c6bd57b
+huggingface-hub==1.31.0 \
+    --hash=sha256:9dbb6a503cbe2494ea666695207e7262d410659e09134059deb83e5480864667 \
+    --hash=sha256:f8e9e710a210613fa5d0f26bba6da05ef4aef9fba5a0f23f508f5ac4d08b6f90
     # via
     #   accelerate
     #   datasets

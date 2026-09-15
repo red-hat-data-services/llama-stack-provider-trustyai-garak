@@ -573,7 +573,7 @@ sdg-hub==0.9.4
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 sentencepiece==0.2.1
     # via garak
-setuptools==81.0.0
+setuptools==83.0.0
     # via
     #   grpcio-tools
     #   llm

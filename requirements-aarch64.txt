@@ -180,9 +180,9 @@ boto3==1.40.27 \
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   garak
-botocore==1.40.76 \
-    --hash=sha256:2b16024d68b29b973005adfb5039adfe9099ebe772d40a90ca89f2e165c495dc \
-    --hash=sha256:fe425d386e48ac64c81cbb4a7181688d813df2e2b4c78b95ebe833c9e868c6f4
+botocore==1.43.93 \
+    --hash=sha256:3ca57bb5d26d88b554a74de708a5c991f45306436c91aacca931252d1d4d54ff \
+    --hash=sha256:82da355d18a7f784347b00444be33942834651f31b6c5ffef49999cd47364c5e
     # via
     #   boto3
     #   s3transfer

@@ -571,7 +571,7 @@ safetensors==0.8.0
     #   transformers
 sdg-hub==0.9.4
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
-sentencepiece==0.2.1
+sentencepiece==0.2.2
     # via garak
 setuptools==81.0.0
     # via

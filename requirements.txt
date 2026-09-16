@@ -647,7 +647,7 @@ triton==3.6.0
     # via torch
 typer==0.26.8
     # via transformers
-types-requests==2.33.0.20260518
+types-requests==2.33.0.20260712
     # via cohere
 typing-extensions==4.16.0
     # via

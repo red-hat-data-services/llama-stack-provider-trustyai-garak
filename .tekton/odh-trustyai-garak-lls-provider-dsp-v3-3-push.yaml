@@ -48,8 +48,6 @@ spec:
     - linux/s390x
   - name: hermetic
     value: true
-  - name: prefetch-mode
-    value: "permissive"
   - name: prefetch-input
     value: |
       [

@@ -595,7 +595,7 @@ sqlite-fts4==1.0.3
     # via sqlite-utils
 sqlite-migrate==0.2
     # via llm
-sqlite-utils==4.0
+sqlite-utils==4.1.1
     # via
     #   llm
     #   sqlite-migrate

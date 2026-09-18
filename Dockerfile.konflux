@@ -17,6 +17,9 @@ ENV XDG_CACHE_HOME=/tmp/.cache
 ENV XDG_DATA_HOME=/tmp/.local/share
 ENV XDG_CONFIG_HOME=/tmp/.config
 
+# Allow nltk to use proxies to download words corpora for translation
+ENV NLTK_ALLOW_PROXIED_URLOPEN=1
+
 LABEL com.redhat.component="odh-trustyai-garak-lls-provider-dsp-rhel9" \
       name="rhoai/odh-trustyai-garak-lls-provider-dsp-rhel9" \
       description="TrustyAI Garak Llama Stack Provider for DSP" \

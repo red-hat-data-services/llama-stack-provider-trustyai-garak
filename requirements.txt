@@ -201,7 +201,7 @@ grpcio==1.83.1
     #   opentelemetry-exporter-otlp-proto-grpc
 grpcio-status==1.83.1
     # via google-api-core
-grpcio-tools==1.81.1
+grpcio-tools==1.83.1
     # via
     #   garak
     #   nvidia-riva-client

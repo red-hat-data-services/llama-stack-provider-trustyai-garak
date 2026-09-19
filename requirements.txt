@@ -254,7 +254,7 @@ idna==3.19
     #   httpx2
     #   requests
     #   yarl
-importlib-metadata==8.9.0
+importlib-metadata==9.0.1
     # via
     #   eval-hub-sdk
     #   litellm

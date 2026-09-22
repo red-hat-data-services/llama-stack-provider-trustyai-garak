@@ -565,7 +565,7 @@ regex==2026.9.10
     #   transformers
 replicate==1.0.7
     # via garak
-requests==2.33.0
+requests==2.34.2
     # via
     #   cohere
     #   databricks-sdk

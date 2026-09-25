@@ -1472,9 +1472,9 @@ mypy-extensions==1.1.0 \
 nemollm==0.3.5 \
     --hash=sha256:de3962d82d557ce5f3d773144361b897a181028b8e1bbdf94804eff865eead88
     # via garak
-networkx==3.5 \
-    --hash=sha256:0030d386a9a06dee3565298b4a734b68589749a544acbb6c412dc9e2489ec6ec \
-    --hash=sha256:d4c6f9cf81f52d69230866796b82afbccdec3db7ae4fbd1b65ea750feed50037
+networkx==3.7 \
+    --hash=sha256:e3fd2c13a7814cee3746340d8d7f8598a67f16a58bf47fb7f8793fab6efca1b0 \
+    --hash=sha256:fd77a511bd90f39f3d016351345b52cf5319b813bdca01de3f755d3cca62e96a
     # via torch
 nh3==0.3.0 \
     --hash=sha256:0649464ac8eee018644aacbc103874ccbfac80e3035643c3acaab4287e36e7f5 \

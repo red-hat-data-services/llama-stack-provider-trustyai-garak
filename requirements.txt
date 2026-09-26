@@ -401,7 +401,7 @@ packaging==26.2
     #   mlflow-tracing
     #   replicate
     #   transformers
-pandas==3.0.3
+pandas==3.0.6
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   datasets

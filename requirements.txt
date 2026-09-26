@@ -719,7 +719,7 @@ xxhash==3.8.1
     #   datasets
     #   langgraph
     #   langsmith
-yarl==1.24.2
+yarl==1.25.1
     # via aiohttp
 zalgolib==0.2.2
     # via garak

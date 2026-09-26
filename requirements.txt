@@ -524,7 +524,7 @@ referencing==0.37.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2026.7.10
+regex==2026.9.10
     # via
     #   nltk
     #   tiktoken

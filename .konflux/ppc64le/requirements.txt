@@ -3069,9 +3069,9 @@ wn==0.9.5 \
     --hash=sha256:9ae62e0e6607f56e63e9eb8360930c8337ecc44e9e0488430aa1fa3fb9c51be4 \
     --hash=sha256:fa17477bd39bcb8417a11aa8e08c67b9ea72e0c0557cd6f4de26fe9c93e60e39
     # via garak
-xdg-base-dirs==6.0.2 \
-    --hash=sha256:3c01d1b758ed4ace150ac960ac0bd13ce4542b9e2cdf01312dcda5012cfebabe \
-    --hash=sha256:950504e14d27cf3c9cb37744680a43bf0ac42efefc4ef4acf98dc736cab2bced
+xdg-base-dirs==6.0.3 \
+    --hash=sha256:9e8274f6d2514b587d257bda21d7fcf758180343c4ad5a47be0b202548211ec2 \
+    --hash=sha256:c80886a8f4e369d6148fdebd7abf182bf053ce6c744f7b7eec5853fec835ff44
     # via garak
 xxhash==3.6.0 \
     --hash=sha256:01262da8798422d0685f7cef03b2bd3f4f46511b02830861df548d7def4402ad \

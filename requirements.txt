@@ -367,7 +367,7 @@ ollama==0.6.2
     # via garak
 olot==1.0.0
     # via eval-hub-sdk
-openai==2.45.0
+openai==3.16.2
     # via
     #   garak
     #   litellm

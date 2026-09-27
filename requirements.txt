@@ -2,7 +2,7 @@
 #    uv pip compile --python-platform linux --extra inline --index-strategy first-index --emit-index-url --default-index https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/ pyproject.toml --index-url https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/ -o requirements.txt
 --index-url https://packages.redhat.com/api/pypi/public-rhai/rhoai/3.5/cpu-ubi9/simple/
 
-accelerate==1.14.0
+accelerate==1.15.0
     # via garak
 aiohappyeyeballs==2.7.1
     # via aiohttp

@@ -422,9 +422,9 @@ pyproject-metadata==0.11.0 \
     --hash=sha256:85bbecca8694e2c00f63b492c96921d6c228454057c88e7c352b2077fcaa4096 \
     --hash=sha256:c72fa49418bb7c5a10f25e050c418009898d1c051721d19f98a6fb6da59a66cf
     # via meson-python
-scikit-build-core==0.11.6 \
-    --hash=sha256:5982ccd839735be99cfd3b92a8847c6c196692f476c215da84b79d2ad12f9f1b \
-    --hash=sha256:ce6d8fe64e6b4c759ea0fb95d2f8a68f60d2df31c2989838633b8ec930736360
+scikit-build-core==1.1.0 \
+    --hash=sha256:d421f837a0f645e51b99fc0d8b00c976917845d954d609ce6b06b11b2c94621b \
+    --hash=sha256:ef439fc8b352913ef6e76257e3115a7910c9f294a2cf27781b6f571cf6cd0033
     # via
     #   pybind11
     #   rapidfuzz

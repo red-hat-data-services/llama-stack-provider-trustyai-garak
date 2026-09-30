@@ -252,9 +252,9 @@ maturin==1.15.0 \
     #   jiter
     #   pydantic-core
     #   rpds-py
-meson-python==0.21.0 \
-    --hash=sha256:595c2f40b76692c78274c87b733379d86562583e9ffb975487b9eafada03055b \
-    --hash=sha256:b5d93fc66c80874c28916f6cb55a912fcd92a699563a4047158c50216867ad94
+meson-python==0.22.0 \
+    --hash=sha256:0ce9fa40bb8bfaecccba97347063970e1a18cca2730d6e68a341dc0b73b284a4 \
+    --hash=sha256:9c819d0d4efa746edadfaae4663c0e9c75659186ef7e5bab12330bfe22964dfc
     # via
     #   numpy
     #   pandas

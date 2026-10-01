@@ -1872,8 +1872,9 @@ numpy==1.26.4 \
     #   garak
     #   pandas
     #   transformers
-nvdlib==0.8.3 \
-    --hash=sha256:ba9df19942351353da5f3aa9ae9e106bbacd505a89d72d15c49f94d822690128
+nvdlib==0.9.0 \
+    --hash=sha256:6f4a6d74c18264bd3b4b18b0f1a7ddfda2e74e547a26355c42cbea30165dd277 \
+    --hash=sha256:d066b1696cd39c6258c52c00219ef7020651fd93606bc6a026e5de6da97e6949
     # via avidtools
 nvidia-cublas-cu12==12.8.4.1 \
     --hash=sha256:47e9b82132fa8d2b4944e708049229601448aaad7e6f296f630f2d1a32de35af \

@@ -1645,9 +1645,9 @@ ollama==0.5.3 \
     --hash=sha256:40b6dff729df3b24e56d4042fd9d37e231cee8e528677e0d085413a1d6692394 \
     --hash=sha256:a8303b413d99a9043dbf77ebf11ced672396b59bec27e6d5db67c88f01b279d2
     # via garak
-openai==1.99.9 \
-    --hash=sha256:9dbcdb425553bae1ac5d947147bebbd630d91bbfc7788394d4c4f3a35682ab3a \
-    --hash=sha256:f2082d155b1ad22e83247c3de3958eb4255b20ccf4a1de2e6681b6957b554e92
+openai==3.22.1 \
+    --hash=sha256:2575f961e4c1df8761f8eeb4d78e967de3f9b9f91b22f7120d60e393e970094d \
+    --hash=sha256:43ff3de5457a8beb4afa177d4e0ba6841cfadd5219ebc62297fde6c8a9d401a6
     # via
     #   garak
     #   litellm

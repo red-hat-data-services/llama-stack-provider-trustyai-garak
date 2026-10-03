@@ -1301,9 +1301,9 @@ oauthlib==3.3.1 \
     # via
     #   kubernetes
     #   requests-oauthlib
-openai==2.13.0 \
-    --hash=sha256:746521065fed68df2f9c2d85613bb50844343ea81f60009b60e6a600c9352c79 \
-    --hash=sha256:9ff633b07a19469ec476b1e2b5b26c5ef700886524a7a72f65e6f0b5203142d5
+openai==3.22.1 \
+    --hash=sha256:2575f961e4c1df8761f8eeb4d78e967de3f9b9f91b22f7120d60e393e970094d \
+    --hash=sha256:43ff3de5457a8beb4afa177d4e0ba6841cfadd5219ebc62297fde6c8a9d401a6
     # via llama-stack
 opentelemetry-api==1.39.1 \
     --hash=sha256:2edd8463432a7f8443edce90972169b195e7d6a05500cd29e6d13898187c9950 \

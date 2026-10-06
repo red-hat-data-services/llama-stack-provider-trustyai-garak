@@ -76,7 +76,7 @@ cohere==5.20.7
     # via garak
 colorama==0.4.6
     # via garak
-cryptography==46.0.5
+cryptography==48.0.0
     # via
     #   google-auth
     #   pyjwt

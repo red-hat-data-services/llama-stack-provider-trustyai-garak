@@ -402,7 +402,7 @@ pandas==3.0.1
     #   datasets
     #   llama-stack-client
     #   sdg-hub
-pillow==12.1.1
+pillow==12.2.0
     # via garak
 prompt-toolkit==3.0.52
     # via llama-stack-client

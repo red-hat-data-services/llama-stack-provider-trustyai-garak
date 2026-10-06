@@ -381,7 +381,7 @@ opentelemetry-semantic-conventions==0.61b0
     # via opentelemetry-sdk
 oras==0.2.42
     # via eval-hub-sdk
-orjson==3.11.7
+orjson==3.11.8
     # via
     #   langgraph-sdk
     #   langsmith

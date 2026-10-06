@@ -414,7 +414,7 @@ proto-plus==1.27.1
     # via
     #   google-api-core
     #   google-cloud-translate
-protobuf==6.33.6
+protobuf==7.34.1
     # via
     #   google-api-core
     #   google-cloud-translate

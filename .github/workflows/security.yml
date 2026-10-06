@@ -2,9 +2,9 @@ name: Security Scan
 
 on:
   pull_request:
-    branches: [main, 'rhoai-*']
+    branches: [main]
   push:
-    branches: [main, 'rhoai-*']
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,6 +17,7 @@ concurrency:
 jobs:
   trivy-scan:
     name: Trivy Security Scan
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

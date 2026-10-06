@@ -1,4 +1,4 @@
-ARG BASE_IMAGE
+ARG BASE_IMAGE=quay.io/aipcc/base-images/cpu-el9.8:3.6.0-ea.2@sha256:5dbe6a3e14877ef9fbda55e6cef66430a244c6a5c73a9a72bfef5b3af31e44c5
 FROM ${BASE_IMAGE}
 
 ARG BASE_IMAGE
@@ -9,8 +9,9 @@ USER root
 COPY pyproject.toml .
 COPY src src
 
-# Install the package itself using prefetched dependencies
-RUN pip install --no-cache-dir ".[inline]"
+# Install the package with prefetched dependencies and test native imports.
+RUN pip install --no-cache-dir ".[inline]" && \
+    python -c "import pyarrow; import llama_stack_provider_trustyai_garak"
 
 # uv is build tooling inherited from the base image, not a runtime dependency.
 # Remove its bundled crypto and the uvx companion (RHOAIENG-97373).

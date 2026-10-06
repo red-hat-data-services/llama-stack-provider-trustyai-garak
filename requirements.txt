@@ -681,7 +681,7 @@ uuid-utils==0.14.1
     #   langsmith
 uvicorn==0.42.0
     # via mcp
-wcwidth==0.6.0
+wcwidth==0.7.0
     # via
     #   cmd2
     #   ftfy

@@ -80,7 +80,7 @@ cryptography==46.0.5
     # via
     #   google-auth
     #   pyjwt
-datasets==4.8.3
+datasets==4.8.5
     # via
     #   garak
     #   sdg-hub

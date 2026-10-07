@@ -32,3 +32,6 @@ pyasn1>=0.6.4
 # RHOAIENG-75540: Security update
 # Fixed in: langchain >= 1.3.3
 langchain>=1.3.3
+
+# RHOAIENG-76002
+httplib2>=0.32.0

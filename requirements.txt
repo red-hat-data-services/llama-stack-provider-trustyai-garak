@@ -17,7 +17,7 @@ annotated-doc==0.0.4
     # via typer
 annotated-types==0.7.0
     # via pydantic
-anyio==4.14.1
+anyio==4.14.2
     # via
     #   httpx
     #   langsmith
@@ -307,7 +307,7 @@ langgraph-checkpoint==4.1.1
     #   langgraph-prebuilt
 langgraph-prebuilt==1.1.0
     # via langgraph
-langgraph-sdk==0.4.2
+langgraph-sdk==0.4.5
     # via langgraph
 langsmith==0.10.1
     # via langchain-core

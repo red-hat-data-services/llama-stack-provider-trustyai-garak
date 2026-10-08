@@ -741,7 +741,7 @@ wcwidth==0.8.3
     #   ftfy
 websocket-client==1.9.2
     # via kubernetes
-websockets==16.1.1
+websockets==17.1
     # via
     #   garak
     #   langgraph-sdk

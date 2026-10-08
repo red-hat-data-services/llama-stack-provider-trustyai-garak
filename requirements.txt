@@ -310,8 +310,10 @@ langgraph-checkpoint==4.1.1
     #   langgraph-prebuilt
 langgraph-prebuilt==1.1.0
     # via langgraph
-langgraph-sdk==0.4.2
-    # via langgraph
+langgraph-sdk==0.4.4
+    # via
+    #   -c constraints.txt
+    #   langgraph
 langsmith==0.7.22
     # via langchain-core
 litellm==1.84.0

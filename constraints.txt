@@ -32,6 +32,8 @@ pyasn1>=0.6.4
 # Fixed in: langchain >= 1.3.3
 langchain>=1.3.3
 
+# RHAI-4893
+langgraph-sdk>=0.4.4
 # RHOAIENG-76002
 httplib2>=0.32.0
 # RHAI-3983

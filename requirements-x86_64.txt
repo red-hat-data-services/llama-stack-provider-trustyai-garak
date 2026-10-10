@@ -1135,10 +1135,9 @@ jsonpatch==1.33 \
     --hash=sha256:0ae28c0cd062bbd8b8ecc26d7d164fbbea9652a1a3693f3b956c1eae5145dade \
     --hash=sha256:9fcd4009c41e6d12348b4a0ff2563ba56a2923a7dfee731d004e212e1ee5030c
     # via langchain-core
-jsonpath-ng==1.7.0 \
-    --hash=sha256:898c93fc173f0c336784a3fa63d7434297544b7198124a68f9a3ef9597b0ae6e \
-    --hash=sha256:f3d7f9e848cba1b6da28c55b1c26ff915dc9e0b1ba7e752a53d6da8d5cbd00b6 \
-    --hash=sha256:f6f5f7fd4e5ff79c785f1573b394043b39849fb2bb47bcead935d12b00beab3c
+jsonpath-ng==1.9.1 \
+    --hash=sha256:39f6b5bdbf3f70ae02ea58a2a6d3631415f6655894bb1f40514a0de8486e5976 \
+    --hash=sha256:a820147664d759ef233357592d86dba7dc345a53c65aea19791f8c0372635627
     # via garak
 jsonpath-python==1.1.4 \
     --hash=sha256:8700cb8610c44da6e5e9bff50232779c44bf7dc5bc62662d49319ee746898442 \

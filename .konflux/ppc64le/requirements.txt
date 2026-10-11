@@ -1133,9 +1133,15 @@ langsmith==0.4.49 \
     --hash=sha256:4a16ef6f3a9b20c5471884991a12ff37d81f2c13a50660cfe27fa79a7ca2c1b0 \
     --hash=sha256:95f84edcd8e74ed658e4a3eb7355b530f35cb08a9a8865dbfde6740e4b18323c
     # via langchain-core
-litellm==1.80.0 \
-    --hash=sha256:eeac733eb6b226f9e5fb020f72fe13a32b3354b001dc62bcf1bc4d9b526d6231 \
-    --hash=sha256:fd0009758f4772257048d74bf79bb64318859adb4ea49a8b66fdbc718cd80b6e
+litellm==1.104.1 \
+    --hash=sha256:0958540cd261a7c7cb8f941ccf506dc6a95675633af0345bf07f34089735467b \
+    --hash=sha256:580eb84144bcc775d30879d3126b9e87b8efc2adb4e1f40455486c78ca4be944 \
+    --hash=sha256:6a5b0afd85b4aa1282759ef364c572d49b7fad8a9020ddd53a30449117544afc \
+    --hash=sha256:bea8edd7ebeb9886f731e9c8b4230ef96e4bb3ea112ce74c4de5d205ee9fd904 \
+    --hash=sha256:c06d0aeef8b3f14dd6c9c6f128a7c0722bfd190f9d127e1477577fd9f0b0f37d \
+    --hash=sha256:c56bb45611f86e55d69b9feeca73781c6f609055b323cef357ca2b2fb10e5d29 \
+    --hash=sha256:d43ec32ce02420a0edb0addd51f528b4f5a2de755f56a42800a5851fce00c7f3 \
+    --hash=sha256:de28daced45385ad073a54492ebab5e69e973eca3f01e817ad38ab10d712ac84
     # via garak
 llama-stack-api==0.4.4 \
     --hash=sha256:3973ca3bacf86916e04e521f77e7909533eec7364d32c3eabc35dc2976dbfe7d \

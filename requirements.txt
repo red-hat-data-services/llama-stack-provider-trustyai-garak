@@ -296,7 +296,7 @@ langchain-core==1.4.6
     #   langgraph-checkpoint
     #   langgraph-prebuilt
     #   langgraph-sdk
-langchain-protocol==0.0.16
+langchain-protocol==0.0.19
     # via
     #   langchain-core
     #   langgraph-sdk

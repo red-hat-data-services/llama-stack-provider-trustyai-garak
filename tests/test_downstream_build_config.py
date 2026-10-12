@@ -8,6 +8,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCKERFILE = ROOT / "Dockerfile.konflux"
+RENOVATE_CONFIG = ROOT / ".github" / "renovate.json"
 pytestmark = pytest.mark.skipif(not DOCKERFILE.exists(), reason="The checkout has no downstream Dockerfile.")
 
 
@@ -38,8 +39,12 @@ def test_complete_image_build_tests_native_imports():
     assert 'python -c "import pyarrow; import llama_stack_provider_trustyai_garak"' in text
 
 
+@pytest.mark.skipif(
+    not RENOVATE_CONFIG.exists(),
+    reason="The Renovate config is synced to the default branch, not each release branch.",
+)
 def test_renovate_waits_for_checks_before_a_merge():
-    config = json.loads((ROOT / ".github" / "renovate.json").read_text())
+    config = json.loads(RENOVATE_CONFIG.read_text())
     assert config["automerge"] is True
     assert config["ignoreTests"] is False
     assert config["platformAutomerge"] is False
@@ -49,8 +54,12 @@ def test_renovate_waits_for_checks_before_a_merge():
     assert config["pinDigests"] is True
 
 
+@pytest.mark.skipif(
+    not RENOVATE_CONFIG.exists(),
+    reason="The Renovate config is synced to the default branch, not each release branch.",
+)
 def test_renovate_preserves_mintmaker_defaults():
-    config = json.loads((ROOT / ".github" / "renovate.json").read_text())
+    config = json.loads(RENOVATE_CONFIG.read_text())
     assert "enabledManagers" not in config
     assert "branchPrefix" not in config
     assert "baseBranches" not in config

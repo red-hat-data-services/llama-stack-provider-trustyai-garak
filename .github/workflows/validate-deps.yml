@@ -45,6 +45,23 @@ jobs:
           cache: pip
           cache-dependency-path: ${{ steps.lockfile.outputs.path }}
 
+      # The Makefile index URL matches main and rhoai-3.6 only.
+      - name: Set up uv for lockfile validation
+        if: >-
+          github.ref_name == 'main' || github.ref_name == 'rhoai-3.6' ||
+          github.base_ref == 'main' || github.base_ref == 'rhoai-3.6'
+        uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: 0.12.19
+
+      - name: Verify requirements.txt matches pyproject.toml
+        if: >-
+          github.ref_name == 'main' || github.ref_name == 'rhoai-3.6' ||
+          github.base_ref == 'main' || github.base_ref == 'rhoai-3.6'
+        run: |
+          make lock
+          git diff --exit-code -- requirements.txt
+
       - name: Install locked dependencies
         env:
           LOCK_FILE: ${{ steps.lockfile.outputs.path }}

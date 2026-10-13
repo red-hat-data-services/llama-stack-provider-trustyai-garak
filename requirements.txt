@@ -334,7 +334,7 @@ litellm==1.84.0
     # via
     #   garak
     #   sdg-hub
-llm==0.32.1
+llm==0.35
     # via garak
 lorem==0.1.1
     # via garak

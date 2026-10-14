@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=quay.io/aipcc/base-images/cpu-el9.8:3.6.0-ea.2@sha256:5dbe6a3e14877ef9fbda55e6cef66430a244c6a5c73a9a72bfef5b3af31e44c5
+ARG BASE_IMAGE=quay.io/aipcc/base-images/cpu-el9.8:3.6.0-ea.2@sha256:501370c1183fc16239e7d157f3c907d8ee9f8683d6e07e422b22c79b9adab01e
 FROM ${BASE_IMAGE}
 
 ARG BASE_IMAGE

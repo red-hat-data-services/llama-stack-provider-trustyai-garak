@@ -60,14 +60,14 @@ jobs:
           exit-code: '1'  # Fail if critical vulnerabilities found
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@ce5e7eeac396d720fe2d802714996c8ce561e311 # v3
+        uses: github/codeql-action/upload-sarif@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4
         if: always() && github.event_name == 'pull_request' && github.base_ref == 'main'
         with:
           sarif_file: 'trivy-fs-results.sarif'
           category: 'trivy-filesystem'
 
       - name: Upload Trivy dependency scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@ce5e7eeac396d720fe2d802714996c8ce561e311 # v3
+        uses: github/codeql-action/upload-sarif@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4
         if: always() && github.event_name == 'pull_request' && github.base_ref == 'main'
         with:
           sarif_file: 'trivy-deps-results.sarif'

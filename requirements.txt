@@ -6,7 +6,7 @@ accelerate==1.14.0
     # via garak
 aiohappyeyeballs==2.7.1
     # via aiohttp
-aiohttp==3.14.3
+aiohttp==3.14.4
     # via
     #   -c constraints.txt
     #   fsspec
@@ -724,7 +724,7 @@ xxhash==3.8.1
     #   datasets
     #   langgraph
     #   langsmith
-yarl==1.24.2
+yarl==1.25.1
     # via aiohttp
 zalgolib==0.2.2
     # via garak

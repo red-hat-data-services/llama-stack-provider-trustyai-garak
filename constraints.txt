@@ -6,7 +6,8 @@
 litellm>=1.83.7
 
 # RHOAIENG-80756
-aiohttp>=3.14.3
+# RHAI-11010, RHAI-11142
+aiohttp>=3.14.4
 
 # RHOAIENG-76464
 starlette>=1.3.1

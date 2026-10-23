@@ -116,8 +116,9 @@ fastavro==1.12.1
     # via cohere
 fastuuid==0.14.0
     # via litellm
-filelock==3.25.2
+filelock==4.2.4
     # via
+    #   -c constraints.txt
     #   datasets
     #   huggingface-hub
     #   torch
@@ -333,8 +334,10 @@ markdown-it-py==4.0.0
     # via rich
 markupsafe==3.0.3
     # via jinja2
-mcp==1.26.0
-    # via sdg-hub
+mcp==1.30.0
+    # via
+    #   -c constraints.txt
+    #   sdg-hub
 mdurl==0.1.2
     # via markdown-it-py
 mistralai==1.5.2
@@ -421,7 +424,7 @@ pandas==3.0.1
     #   datasets
     #   llama-stack-client
     #   sdg-hub
-pillow==12.3.0
+pillow==13.0.0
     # via
     #   -c constraints.txt
     #   garak
@@ -695,8 +698,9 @@ typing-inspection==0.4.2
     #   pydantic-settings
 uritemplate==4.2.0
     # via google-api-python-client
-urllib3==2.6.3
+urllib3==2.8.0
     # via
+    #   -c constraints.txt
     #   botocore
     #   kfp
     #   kfp-server-api

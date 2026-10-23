@@ -18,8 +18,12 @@ pyjwt>=2.14.0
 # CVE-2026-59197, CVE-2026-59199, CVE-2026-59200, CVE-2026-59204, CVE-2026-59205,
 # CVE-2026-54058, CVE-2026-54060, CVE-2026-55379, CVE-2026-55380 (fixed in 12.3.0)
 # CVE-2026-42311 (PSD, potential ACE, fixed in 12.2.0)
-# Fixed in: pillow >= 12.3.0
-pillow>=12.3.0
+# CVE-2026-112892 and the 13.0.0 batch: RHAI-14818, RHAI-11359, RHAI-11456,
+# RHAI-11554, RHAI-11701, RHAI-11754, RHAI-11865, RHAI-11952, RHAI-12072,
+# RHAI-12189, RHAI-12266, RHAI-12400, RHAI-12502, RHAI-12607, RHAI-12736,
+# RHAI-13232, RHAI-13995, RHAI-14161, RHAI-14269, RHAI-14364
+# Fixed in: pillow >= 13.0.0
+pillow>=13.0.0
 
 # NLTK security fix (RHAI-3706)
 # Fixed in: nltk >= 3.10.3
@@ -38,3 +42,15 @@ langgraph-sdk>=0.4.4
 httplib2>=0.32.0
 # RHAI-3983
 anyio>=4.14.2
+
+# urllib3 - RHAI-7741, RHAI-7903
+# Fixed in: urllib3 >= 2.8.0
+urllib3>=2.8.0
+
+# mcp - RHAI-9768, RHAI-10189
+# Fixed in: mcp >= 1.30.0
+mcp>=1.30.0
+
+# filelock - RHAI-13068
+# Fixed in: filelock >= 4.2.4
+filelock>=4.2.4

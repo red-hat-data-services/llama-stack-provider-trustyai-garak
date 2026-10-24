@@ -30,7 +30,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [project.optional-dependencies]
-remote = ["kfp==2.17.0", "kfp-kubernetes==2.17.0", "kfp-server-api==2.17.0", "boto3==1.43.114"]
+remote = ["kfp==2.17.0", "kfp-kubernetes==2.17.0", "kfp-server-api==2.17.0", "boto3==1.43.116"]
 dev = ["pytest", "pytest-cov",  "pytest-asyncio", "black", "isort"]
 
 [tool.pytest.ini_options]

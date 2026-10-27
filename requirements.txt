@@ -122,7 +122,7 @@ fastavro==1.12.2
     # via cohere
 fastuuid==0.14.0
     # via litellm
-filelock==3.30.2
+filelock==4.2.4
     # via
     #   datasets
     #   huggingface-hub
@@ -271,11 +271,11 @@ jsonschema==4.26.0
     #   oras
 jsonschema-specifications==2025.9.1
     # via jsonschema
-kfp==2.17.0
+kfp==2.16.1
     # via
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   kfp-kubernetes
-kfp-kubernetes==2.17.0
+kfp-kubernetes==2.16.1
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 kfp-pipeline-spec==2.17.0
     # via kfp
@@ -328,8 +328,10 @@ markdown-it-py==4.2.0
     # via rich
 markupsafe==3.0.3
     # via jinja2
-mcp==1.28.1
-    # via sdg-hub
+mcp==1.30.0
+    # via
+    #   -c constraints.txt
+    #   sdg-hub
 mdurl==0.1.2
     # via markdown-it-py
 mikeshardmind-base2048==1.0.4
@@ -352,7 +354,7 @@ nest-asyncio==1.6.0
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 networkx==3.6.1
     # via torch
-nltk==3.10.3
+nltk==3.10.4
     # via
     #   -c constraints.txt
     #   garak
@@ -412,8 +414,10 @@ pandas==3.0.3
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   datasets
     #   sdg-hub
-pillow==12.3.0
-    # via garak
+pillow==13.0.0
+    # via
+    #   -c constraints.txt
+    #   garak
 pip==26.1.2
     # via
     #   llm
@@ -489,8 +493,10 @@ pydantic-settings==2.14.2
     #   mcp
 pygments==2.20.0
     # via rich
-pyjwt==2.13.0
-    # via mcp
+pyjwt==2.14.0
+    # via
+    #   -c constraints.txt
+    #   mcp
 pyparsing==3.3.2
     # via httplib2
 pyperclip==1.11.0
@@ -544,8 +550,6 @@ requests==2.33.0
     #   deepl
     #   google-api-core
     #   google-cloud-storage
-    #   kfp
-    #   kfp-kubernetes
     #   kubernetes
     #   langsmith
     #   nvdlib
@@ -688,12 +692,12 @@ typing-inspection==0.4.2
     #   pydantic-settings
 uritemplate==4.2.0
     # via google-api-python-client
-urllib3==2.7.0
+urllib3==2.8.0
     # via
+    #   -c constraints.txt
     #   botocore
     #   databricks-sdk
     #   kfp
-    #   kfp-kubernetes
     #   kfp-server-api
     #   kubernetes
     #   requests

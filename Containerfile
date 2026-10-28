@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/python-312:latest@sha256:5fc7dac68a887a7232428421a7e4b62a98843c80c52ff2adc1821564d209f9f3
+FROM registry.access.redhat.com/ubi9/python-312:latest@sha256:105e70cb265e82beef1687b87b77444a05b410c55d8631e9aa9aa6804fcca45d
 WORKDIR /opt/app-root
 
 # Switch to root only for installing packages

@@ -57,7 +57,7 @@ jobs:
           github.base_ref == 'main' || github.base_ref == 'rhoai-3.6'
         run: |
           make lock
-          git diff --exit-code -- requirements.txt
+          git -c safe.directory="$GITHUB_WORKSPACE" diff --exit-code -- requirements.txt
 
       - name: Install locked dependencies
         env:

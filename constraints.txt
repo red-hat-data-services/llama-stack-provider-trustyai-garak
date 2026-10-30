@@ -29,3 +29,9 @@ urllib3>=2.8.0
 
 # RHAI-13105
 filelock>=4.2.1
+# eMudhra intermediate CA distrust (RHSB-2026-012, CVE-2026-114406)
+# RHAI-17471, RHAI-17664
+httplib2>=0.32.1
+botocore>=1.43.122
+boto3>=1.43.122
+certifi>=2026.10.19

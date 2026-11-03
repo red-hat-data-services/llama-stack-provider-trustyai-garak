@@ -49,7 +49,17 @@ jobs:
         env:
           LOCK_FILE: ${{ steps.lockfile.outputs.path }}
         run: |
-          python -m pip install --upgrade pip
+          # Install the pip version pinned by the lock file before anything
+          # else. If a newer pip is installed first, "pip install -r" replaces
+          # the running pip mid-run, which can leave a broken install behind
+          # (FileNotFoundError from pip's vendored certifi, pypa/pip#12864).
+          PINNED_PIP="$(grep -E '^pip==' "$LOCK_FILE" || true)"
+          if [ -n "$PINNED_PIP" ]; then
+            python -m pip install "$PINNED_PIP"
+          else
+            python -m pip install --upgrade pip
+          fi
+          export PIP_DISABLE_PIP_VERSION_CHECK=1
           python -m pip install -r "$LOCK_FILE"
           python -m pip install --no-deps --no-build-isolation -e .
 

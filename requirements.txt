@@ -38,16 +38,19 @@ backoff==2.2.1
     # via garak
 boto3==1.43.122
     # via
+    #   -c constraints.txt
     #   llama-stack-provider-trustyai-garak (pyproject.toml)
     #   garak
 botocore==1.43.122
     # via
+    #   -c constraints.txt
     #   boto3
     #   s3transfer
 cachetools==7.1.4
     # via mlflow-tracing
 certifi==2026.10.19
     # via
+    #   -c constraints.txt
     #   httpcore
     #   httpx
     #   kfp-server-api
@@ -124,6 +127,7 @@ fastuuid==0.14.0
     # via litellm
 filelock==4.2.4
     # via
+    #   -c constraints.txt
     #   datasets
     #   huggingface-hub
     #   torch
@@ -207,6 +211,7 @@ httpcore==1.0.9
     # via httpx
 httplib2==0.32.1
     # via
+    #   -c constraints.txt
     #   google-api-python-client
     #   google-auth-httplib2
 httpx==0.28.1
@@ -457,8 +462,10 @@ py-markdown-table==1.3.0
     # via garak
 pyarrow==24.0.0
     # via datasets
-pyasn1==0.6.4
-    # via pyasn1-modules
+pyasn1==0.6.5
+    # via
+    #   -c constraints.txt
+    #   pyasn1-modules
 pyasn1-modules==0.4.2
     # via google-auth
 pycparser==3.0

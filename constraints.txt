@@ -38,3 +38,7 @@ certifi>=2026.10.19
 
 # RHAI-18139
 pyasn1>=0.6.5
+
+# oauthlib - RHAI-17281 (CVE-2026-118669)
+# Fixed in: oauthlib >= 4.0.0
+oauthlib>=4.0.0

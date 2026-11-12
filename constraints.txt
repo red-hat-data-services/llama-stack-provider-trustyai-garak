@@ -26,9 +26,13 @@ pyjwt>=2.14.0
 # Fixed in: pillow >= 13.0.0
 pillow>=13.0.0
 
-# NLTK security fix (RHAI-3706)
-# Fixed in: nltk >= 3.10.3
-nltk>=3.10.3
+# NLTK security fix
+# RHAI-3706, RHAI-8033 (CVE-2026-109956, fixed in 3.10.4)
+nltk>=3.10.4
+
+# oauthlib - RHAI-17257 (CVE-2026-118669)
+# Fixed in: oauthlib >= 4.0.0
+oauthlib>=4.0.0
 
 # RHAI-17984, RHAI-18691, RHAI-18121, RHAI-18079
 pyasn1>=0.6.5

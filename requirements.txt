@@ -359,7 +359,7 @@ nest-asyncio==1.6.0
     # via llama-stack-provider-trustyai-garak (pyproject.toml)
 networkx==3.6.1
     # via torch
-nltk==3.10.3
+nltk==3.10.4
     # via
     #   -c constraints.txt
     #   garak
@@ -374,7 +374,7 @@ nvdlib==0.6.1
     # via avidtools
 nvidia-riva-client==2.16.0
     # via garak
-oauthlib==3.3.1
+oauthlib==4.0.1
     # via requests-oauthlib
 ollama==0.6.1
     # via garak

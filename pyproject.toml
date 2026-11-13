@@ -63,6 +63,9 @@ source = ["llama_stack_provider_trustyai_garak"]
 show_missing = true
 fail_under = 60
 
+[tool.uv]
+override-dependencies = ["grpcio>=1.84.1"]
+
 [tool.ruff]
 target-version = "py312"
 line-length = 120

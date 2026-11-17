@@ -13,6 +13,14 @@ COPY src src
 RUN pip install --no-cache-dir ".[inline]" && \
     python -c "import pyarrow; import llama_stack_provider_trustyai_garak"
 
+# Remove compromised roots from the vendored bundles found by the image check.
+RUN cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/httplib2/cacerts.txt && \
+    cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/botocore/cacert.pem && \
+    cp /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/grpc/_cython/_credentials/roots.pem && \
+    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/httplib2/cacerts.txt && \
+    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/botocore/cacert.pem && \
+    cmp -s /etc/pki/tls/certs/ca-bundle.crt /opt/app-root/lib/python3.12/site-packages/grpc/_cython/_credentials/roots.pem
+
 # uv is build tooling inherited from the base image, not a runtime dependency.
 # Remove its bundled crypto and the uvx companion (RHOAIENG-97373).
 RUN /opt/app-root/bin/python -m pip uninstall -y uv && \

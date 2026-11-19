@@ -42,3 +42,7 @@ pyasn1>=0.6.5
 # oauthlib - RHAI-17281 (CVE-2026-118669)
 # Fixed in: oauthlib >= 4.0.0
 oauthlib>=4.0.0
+
+# cryptography - RHAI-48715 (CVE-2026-69247)
+# Fixed in: cryptography >= 50.0.0
+cryptography>=50.0.0

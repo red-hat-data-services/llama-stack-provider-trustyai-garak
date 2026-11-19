@@ -25,6 +25,7 @@ build:
 lock:
 	uv pip compile \
 		--python-platform linux \
+		--python-version 3.12 \
 		--extra inline \
 		--index-strategy first-index \
 		--emit-index-url \

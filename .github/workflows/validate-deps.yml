@@ -66,6 +66,12 @@ jobs:
         env:
           LOCK_FILE: ${{ steps.lockfile.outputs.path }}
         run: |
+          # The RHAI fromager rebuilds of certifi and pip point
+          # certifi.where() at the RHEL system CA path. Provide that
+          # path on Ubuntu runners so pip keeps working after the
+          # locked (fromager) certifi/pip are installed.
+          sudo mkdir -p /etc/pki/ca-trust/extracted/pem
+          sudo ln -sfn /etc/ssl/certs/ca-certificates.crt /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
           python -m pip install --upgrade pip
           python -m pip install -r "$LOCK_FILE"
           python -m pip install --no-deps --no-build-isolation -e .

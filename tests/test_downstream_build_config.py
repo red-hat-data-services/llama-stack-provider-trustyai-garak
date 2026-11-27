@@ -64,4 +64,8 @@ def test_renovate_preserves_mintmaker_defaults():
     assert "branchPrefix" not in config
     assert "baseBranches" not in config
     assert "baseBranchPatterns" not in config
-    assert "extends" not in config
+    # renovate-central syncs this file and may extend Konflux's own mintmaker presets
+    # (e.g. refresh-rpm-lockfiles), which build on mintmaker's defaults. Any other
+    # preset (config:recommended, ...) could replace them.
+    foreign = [p for p in config.get("extends", []) if not p.startswith("github>konflux-ci/mintmaker-presets:")]
+    assert not foreign, f"presets other than konflux-ci/mintmaker-presets replace mintmaker defaults: {foreign}"

@@ -27,13 +27,16 @@ LLM red-teaming scans via K8s jobs.
 
 | Mode | Code Location | How Garak Runs | Intents Support |
 |------|--------------|----------------|-----------------|
-| **Simple** | `evalhub/` (simple mode) | Directly in the eval-hub K8s job pod | No |
-| **KFP** | `evalhub/` (KFP mode) | K8s job submits to KFP, polls status, pulls artifacts via S3 | **Yes** |
+| **Simple** | `evalhub/` (simple mode) | Directly in the eval-hub K8s job pod | Yes (steps run in the pod) |
+| **KFP** | `evalhub/` (KFP mode) | K8s job submits to KFP, polls status, pulls artifacts via S3 | Yes (steps run as KFP components) |
 
 **Intents** uses SDG (synthetic data generation), TAPIntent probes, and
 MulticlassJudge detectors to test model behavior against policy taxonomies.
-Only KFP mode supports it because it requires the six-step pipeline
-(`core/pipeline_steps.py`) running as KFP components.
+Both modes run the same steps from `core/pipeline_steps.py` (taxonomy → SDG →
+prompts → scan → parse). Simple mode calls them in sequence in the job pod
+(`GarakAdapter._run_simple_intents`, with input files from `test_data_ref` at
+`/test_data`); KFP mode runs them as pipeline components that exchange files
+through S3 (`evalhub/kfp_pipeline.py`).
 
 ## Code Layout
 
@@ -82,12 +85,17 @@ pip install -e ".[dev]"   # Dev (tests + ruff + pre-commit)
 ## Running Tests
 
 ```bash
-make test      # All tests (no cluster/GPU/network needed)
+make test      # Unit tests (no cluster/GPU/network needed)
+make e2e       # EvalHub contract tests (see below)
 make coverage  # With coverage report
 make lint      # ruff check
 ```
 
-Tests are 100% unit tests. Garak is mocked — it does not need to be installed.
+Unit tests mock garak — it does not need to be installed.
+
+`make e2e` runs the EvalHub contract tests in `tests/e2e/`: the real eval-hub server
+(local mode), the real adapter and real garak against a mock model. They need garak and
+`eval-hub-server` installed and are skipped otherwise; see `tests/e2e/README.md`.
 
 ## Debugging
 

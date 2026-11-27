@@ -87,7 +87,7 @@ jobs:
             evalhub_from_source: false
             garak_ref: automated-red-teaming
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 
@@ -97,7 +97,7 @@ jobs:
 
       - name: Check out eval-hub
         if: matrix.evalhub_from_source
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           repository: eval-hub/eval-hub
           ref: ${{ inputs.evalhub_ref || 'main' }}
@@ -162,7 +162,7 @@ jobs:
     # bounds a hung run (the tests also cancel a job that outlives E2E_SWEEP_TIMEOUT, 6 h).
     timeout-minutes: 360
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
 

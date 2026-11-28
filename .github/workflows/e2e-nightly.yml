@@ -170,7 +170,7 @@ jobs:
       # night; this restores the newest one for the current lock, else any older one.
       - name: Restore detector models and garak data
         id: cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: .ci-cache
           key: garak-e2e-${{ hashFiles('requirements.txt') }}-${{ github.run_id }}
@@ -192,7 +192,7 @@ jobs:
       # Full profiles download every detector model, so this run refreshes the shared cache.
       - name: Save detector models and garak data
         if: ${{ !cancelled() }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: .ci-cache
           key: garak-e2e-${{ hashFiles('requirements.txt') }}-${{ github.run_id }}
